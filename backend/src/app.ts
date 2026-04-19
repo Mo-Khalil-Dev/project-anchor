@@ -40,7 +40,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 // ============ ROUTES ============
 
 // Health check (for ALB)
-app.get('/health', (req: Request, res: Response) => {
+app.get('/health', (_: Request, res: Response) => {
   res.json({ status: 'healthy', timestamp: new Date().toISOString() });
 });
 
