@@ -32,6 +32,7 @@ export interface AppConfig {
     environment: 'sandbox' | 'production';
     linkBaseUrl: string;
     apiBaseUrl: string;
+    expensesApiBaseUrl: string;
   };
   stripe: {
     secretKey: string;

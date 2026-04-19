@@ -31,6 +31,7 @@ const rawEnvSchema = z.object({
   TINK_ENVIRONMENT: z.enum(['sandbox', 'production']).default('sandbox'),
   TINK_LINK_BASE_URL: z.string().default('https://link.tink.com'),
   TINK_API_BASE_URL: z.string().default('https://api.tink.com'),
+  TINK_EXPENSES_API_BASE_URL: z.string().default('https://api.tink.com/risk/v1'),
   BACKEND_URL: z.string().optional(),
 
   SES_REGION: z.string().default('us-east-1'),
@@ -92,6 +93,7 @@ export const configSchema = rawEnvSchema.transform((env) => {
       environment: env.TINK_ENVIRONMENT,
       linkBaseUrl: env.TINK_LINK_BASE_URL,
       apiBaseUrl: env.TINK_API_BASE_URL,
+      expensesApiBaseUrl: env.TINK_EXPENSES_API_BASE_URL,
     },
     stripe: {
       secretKey: env.STRIPE_SECRET_KEY,

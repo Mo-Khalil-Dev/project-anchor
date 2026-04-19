@@ -111,8 +111,8 @@ export class TinkOAuthService {
     }
   }
 
-  async getExpenseCheck(customerId: string, accessToken: string): Promise<Result<any, Error>> {
-    return this.getCheckReport('expense-checks', customerId, accessToken);
+  async getExpenseCheck(code: string, accessToken: string): Promise<Result<any, Error>> {
+    return this.getCheckReport('expense-checks', code, accessToken);
   }
 
   async getIncomeReport(reportId: string): Promise<Result<any, Error>> {
@@ -156,7 +156,7 @@ export class TinkOAuthService {
 
   private async getCheckReport(type: string, customerId: string, accessToken: string): Promise<Result<any, Error>> {
     try {
-      const response = await fetch(`${this.config.tink.apiBaseUrl}/risk/v1/${type}/${customerId}`, {
+      const response = await fetch(`${this.config.tink.expensesApiBaseUrl}/${type}/${customerId}`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },

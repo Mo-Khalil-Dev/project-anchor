@@ -10,7 +10,7 @@ export class HandleBankOAuthCallbackUseCase {
     private logger: ILogger,
   ) {}
 
-  async execute(_code: string, state: string): Promise<Result<{ connectionId: string; expenseData: any }, Error>> {
+  async execute( code: string, state: string): Promise<Result<{ connectionId: string; expenseData: any }, Error>> {
     try {
       const connResult = await this.repository.findByOAuthState(state);
       if (connResult.isFail) {
@@ -31,7 +31,7 @@ export class HandleBankOAuthCallbackUseCase {
       const accessToken = tokenResult.getOrThrow();
 
       // Fetch expense check data immediately
-      const expenseResult = await this.tinkService.getExpenseCheck(connection.customerId, accessToken);
+      const expenseResult = await this.tinkService.getExpenseCheck(code, accessToken);
       if (expenseResult.isFail) {
         return Result.fail(expenseResult.getError() || new Error('Unknown error'));
       }
