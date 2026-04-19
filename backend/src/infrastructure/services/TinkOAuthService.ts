@@ -79,10 +79,10 @@ export class TinkOAuthService {
       state,
     });
 
-    return `https://link.tink.com/1.0/expense-check/create-report?${params.toString()}`;
+    return `${this.config.tink.linkBaseUrl}/1.0/expense-check/create-report?${params.toString()}`;
   }
 
-  async exchangeCodeForAccessToken(code: string): Promise<Result<string, Error>> {
+  async exchangeCodeForAccessToken(_code: string): Promise<Result<string, Error>> {
     try {
       const response = await fetch(`${this.config.tink.apiBaseUrl}/oauth/token`, {
         method: 'POST',
@@ -92,9 +92,8 @@ export class TinkOAuthService {
         body: new URLSearchParams({
           client_id: this.config.tink.clientId,
           client_secret: this.config.tink.clientSecret,
-          grant_type: 'authorization_code',
-          code,
-          redirect_uri: `${this.backendUrl}/api/bank-connections/callback`,
+          grant_type: 'client_credentials',
+          scope: 'expense-checks:readonly',
         }).toString(),
       });
 
@@ -157,14 +156,11 @@ export class TinkOAuthService {
 
   private async getCheckReport(type: string, customerId: string, accessToken: string): Promise<Result<any, Error>> {
     try {
-      const response = await fetch(
-        `${this.config.tink.apiBaseUrl}/${type}/${customerId}`,
-        {
-          headers: {
-            'Authorization': `Bearer ${accessToken}`,
-          },
-        }
-      );
+      const response = await fetch(`${this.config.tink.apiBaseUrl}/risk/v1/${type}/${customerId}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
 
       if (!response.ok) {
         return Result.fail(new Error(`Failed to fetch ${type}: ${response.statusText}`));
