@@ -1,15 +1,20 @@
 import 'dotenv/config';
 import { initConfig } from './shared/config';
+import { initLogger } from './shared/logging';
 import { createApp } from './app';
-import { logger } from './utils/logger';
 import { prisma } from './utils/db';
 
 async function main() {
   const config = await initConfig();
-  const app = createApp(config);
+  const logger = initLogger(config);
+  const app = createApp(config, logger);
 
   const server = app.listen(config.server.port, () => {
-    logger.info(`Bridge backend running on port ${config.server.port} [${config.runtime}]`);
+    logger.info('Bridge backend started', {
+      port: config.server.port,
+      runtime: config.runtime,
+      database: config.database.provider,
+    });
   });
 
   process.on('SIGTERM', async () => {
@@ -30,12 +35,12 @@ async function main() {
     });
   });
 
-  process.on('unhandledRejection', (reason, promise) => {
-    logger.error({ message: 'Unhandled Rejection', reason, promise });
+  process.on('unhandledRejection', (reason) => {
+    logger.error('Unhandled promise rejection', reason);
   });
 
   process.on('uncaughtException', (error) => {
-    logger.error({ message: 'Uncaught Exception', error: error.message, stack: error.stack });
+    logger.error('Uncaught exception', error);
     process.exit(1);
   });
 }

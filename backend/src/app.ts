@@ -1,38 +1,35 @@
 import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import { logger } from './utils/logger';
 import { globalErrorHandler } from './presentation/middleware';
 import type { AppConfig } from './shared/config';
+import type { ILogger } from './shared/logging';
 
-export function createApp(config: AppConfig): Express {
+export function createApp(config: AppConfig, logger: ILogger): Express {
   const app: Express = express();
 
   // ============ MIDDLEWARE ============
 
-  // Security
   app.use(helmet());
   app.use(cors({
     origin: config.server.frontendUrl,
     credentials: true,
   }));
 
-  // Body parsing
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
-  // Logging
+  // Request logging
   app.use((req: Request, res: Response, next: NextFunction) => {
     const start = Date.now();
+    const requestLogger = logger.child({ traceId: req.headers['x-trace-id'] as string });
 
     res.on('finish', () => {
-      const duration = Date.now() - start;
-      logger.info({
+      requestLogger.info('HTTP request', {
         method: req.method,
         path: req.path,
         statusCode: res.statusCode,
-        duration,
-        userId: (req as any).user?.id,
+        durationMs: Date.now() - start,
       });
     });
 
@@ -41,20 +38,15 @@ export function createApp(config: AppConfig): Express {
 
   // ============ ROUTES ============
 
-  // Health check (for ALB)
   app.get('/health', (_: Request, res: Response) => {
     res.json({ status: 'healthy', timestamp: new Date().toISOString() });
   });
 
-  // API Routes (to be implemented)
+  // API Routes (to be implemented per feature)
   // app.use('/assessments', createAssessmentRoutes());
-  // app.use('/payment-plans', require('./routes/payment-plans'));
-  // app.use('/admin/cases', require('./routes/cases'));
-  // app.use('/auth', require('./routes/auth'));
 
   // ============ ERROR HANDLING ============
 
-  // 404 handler
   app.use((req: Request, res: Response) => {
     res.status(404).json({
       success: false,
@@ -65,8 +57,7 @@ export function createApp(config: AppConfig): Express {
     });
   });
 
-  // Global error handler (MUST be registered last)
-  app.use(globalErrorHandler());
+  app.use(globalErrorHandler(logger));
 
   return app;
 }

@@ -3,6 +3,15 @@ import { globalErrorHandler, asyncHandler } from '../../../../src/presentation/m
 import { DomainError } from '../../../../src/domain/errors/DomainError';
 import { ApplicationError } from '../../../../src/shared/errors/ApplicationError';
 import { ValidationError } from '../../../../src/shared/errors/ValidationError';
+import type { ILogger } from '../../../../src/shared/logging';
+
+const mockLogger: ILogger = {
+  debug: jest.fn(),
+  info: jest.fn(),
+  warn: jest.fn(),
+  error: jest.fn(),
+  child: jest.fn().mockReturnThis(),
+};
 
 describe('Global Error Handler Middleware', () => {
   let req: Partial<Request>;
@@ -11,6 +20,7 @@ describe('Global Error Handler Middleware', () => {
   let handler: any;
 
   beforeEach(() => {
+    jest.clearAllMocks();
     req = {
       path: '/test-route',
       method: 'POST',
@@ -22,7 +32,7 @@ describe('Global Error Handler Middleware', () => {
     };
 
     next = jest.fn();
-    handler = globalErrorHandler();
+    handler = globalErrorHandler(mockLogger);
   });
 
   describe('DomainError handling', () => {
