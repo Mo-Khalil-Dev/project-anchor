@@ -29,7 +29,7 @@ export class TinkOAuthService {
       if (this.cachedToken && this.cachedToken.expiresAt > Date.now()) {
         return Result.ok(this.cachedToken.token);
       }
-
+console.log('getting token', this.backendUrl);
       const response = await fetch(`${this.tinkBaseUrl}/oauth/token`, {
         method: 'POST',
         headers: {
@@ -72,7 +72,7 @@ export class TinkOAuthService {
   generateAuthorizationUrl(state: string, _customerId: string): string {
     const params = new URLSearchParams({
       client_id: this.config.tink.clientId,
-      redirect_uri: `${this.backendUrl}/api/bank-connections/callback`,
+      redirect_uri: `http://localhost:3000/callback`,
       market: 'GB',
       report_types: 'EXPENSE_CHECK_REPORT',
       async: 'true',

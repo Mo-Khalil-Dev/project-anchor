@@ -1,22 +1,48 @@
-FROM node:18-alpine
+# Build stage
+FROM node:18-alpine AS builder
 
 WORKDIR /app
 
 # Install build dependencies
-RUN apk add --no-cache python3 make g++
+RUN apk add --no-cache python3 make g++ openssl openssl-dev
 
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
+# Install all dependencies (including dev)
+RUN npm ci
+
+# Copy source and prisma files
+COPY src ./src
+COPY prisma ./prisma
+COPY tsconfig.json ./
+
+# Compile TypeScript
+RUN npm run build
+
+# Generate Prisma Client with Linux targets
+RUN npx prisma generate
+
+# Runtime stage
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Install runtime dependencies only
+RUN apk add --no-cache openssl
+
+# Copy package files
+COPY package*.json ./
+
+# Install production dependencies only
 RUN npm ci --production
 
-# Copy built app
-COPY dist ./dist
+# Copy compiled app from builder
+COPY --from=builder /app/dist ./dist
 
-# Copy Prisma files
-COPY prisma ./prisma
-COPY node_modules/.prisma ./node_modules/.prisma
+# Copy Prisma files and generated client
+COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 
 # Set environment variables with defaults
 ENV TINK_LINK_BASE_URL=https://link.tink.com
