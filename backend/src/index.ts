@@ -1,50 +1,46 @@
-import app from './app';
+import 'dotenv/config';
+import { initConfig } from './shared/config';
+import { createApp } from './app';
 import { logger } from './utils/logger';
 import { prisma } from './utils/db';
 
-const PORT = process.env.PORT || 3000;
+async function main() {
+  const config = await initConfig();
+  const app = createApp(config);
 
-// Start server
-const server = app.listen(PORT, () => {
-  logger.info(`Bridge backend running on port ${PORT}`);
-});
-
-// Graceful shutdown
-process.on('SIGTERM', async () => {
-  logger.info('SIGTERM received, shutting down gracefully');
-
-  server.close(async () => {
-    await prisma.$disconnect();
-    logger.info('Server closed');
-    process.exit(0);
+  const server = app.listen(config.server.port, () => {
+    logger.info(`Bridge backend running on port ${config.server.port} [${config.runtime}]`);
   });
-});
 
-process.on('SIGINT', async () => {
-  logger.info('SIGINT received, shutting down gracefully');
-
-  server.close(async () => {
-    await prisma.$disconnect();
-    logger.info('Server closed');
-    process.exit(0);
+  process.on('SIGTERM', async () => {
+    logger.info('SIGTERM received, shutting down gracefully');
+    server.close(async () => {
+      await prisma.$disconnect();
+      logger.info('Server closed');
+      process.exit(0);
+    });
   });
-});
 
-// Unhandled promise rejection
-process.on('unhandledRejection', (reason, promise) => {
-  logger.error({
-    message: 'Unhandled Rejection',
-    reason,
-    promise,
+  process.on('SIGINT', async () => {
+    logger.info('SIGINT received, shutting down gracefully');
+    server.close(async () => {
+      await prisma.$disconnect();
+      logger.info('Server closed');
+      process.exit(0);
+    });
   });
-});
 
-// Uncaught exception
-process.on('uncaughtException', (error) => {
-  logger.error({
-    message: 'Uncaught Exception',
-    error: error.message,
-    stack: error.stack,
+  process.on('unhandledRejection', (reason, promise) => {
+    logger.error({ message: 'Unhandled Rejection', reason, promise });
   });
+
+  process.on('uncaughtException', (error) => {
+    logger.error({ message: 'Uncaught Exception', error: error.message, stack: error.stack });
+    process.exit(1);
+  });
+}
+
+main().catch((error) => {
+  console.error('Failed to start server:', error.message);
   process.exit(1);
 });

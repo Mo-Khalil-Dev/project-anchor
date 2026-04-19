@@ -23,17 +23,23 @@ services:
     container_name: bridge-backend
     environment:
       NODE_ENV: development
+      RUNTIME: docker
+      DATABASE_PROVIDER: postgresql
       DATABASE_URL: postgresql://bridge_user:dev_password@postgres:5432/bridge
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_NAME: bridge
-      DB_USER: bridge_user
-      DB_PASSWORD: dev_password
       PORT: 3000
-      JWT_SECRET: dev_secret_key
+      LOG_LEVEL: debug
+      JWT_SECRET: dev_secret_key_docker_change_in_production
       COGNITO_USER_POOL_ID: local-test
       COGNITO_CLIENT_ID: local-test
       COGNITO_REGION: us-east-1
+      AWS_REGION: us-east-1
+      TINK_CLIENT_ID: local-test
+      TINK_CLIENT_SECRET: local-test
+      TINK_ENVIRONMENT: sandbox
+      SES_FROM_ADDRESS: noreply@bridge.local
+      STRIPE_SECRET_KEY: sk_test_local
+      STRIPE_WEBHOOK_SECRET: whsec_local
+      FRONTEND_URL: http://localhost:5173
     ports:
       - "3000:3000"
     depends_on:
