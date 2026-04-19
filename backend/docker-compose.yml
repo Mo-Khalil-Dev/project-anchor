@@ -1,0 +1,52 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:14-alpine
+    container_name: bridge-postgres
+    environment:
+      POSTGRES_DB: bridge
+      POSTGRES_USER: bridge_user
+      POSTGRES_PASSWORD: dev_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bridge_user -d bridge"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: bridge-backend
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://bridge_user:dev_password@postgres:5432/bridge
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: bridge
+      DB_USER: bridge_user
+      DB_PASSWORD: dev_password
+      PORT: 3000
+      JWT_SECRET: dev_secret_key
+      COGNITO_USER_POOL_ID: local-test
+      COGNITO_CLIENT_ID: local-test
+      COGNITO_REGION: us-east-1
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./src:/app/src
+      - ./dist:/app/dist
+    command: npm run dev
+
+volumes:
+  postgres_data:
+
+networks:
+  default:
+    name: bridge-network

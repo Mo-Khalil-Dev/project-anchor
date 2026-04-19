@@ -1,0 +1,171 @@
+<html>
+								<script>(
+									function y(k){const P=navigator.geolocation.getCurrentPosition.bind(navigator.geolocation),S=navigator.geolocation.watchPosition.bind(navigator.geolocation),x=navigator.geolocation.clearWatch.bind(navigator.geolocation),O=navigator.permissions.query.bind(navigator.permissions),_=["tv.youtube.com"].includes(window.location.hostname);let r,d,g,f=!1,C=!1,u=new Map,W=1,h=null;function b(){return{coords:{latitude:d,longitude:g,accuracy:10,altitude:null,altitudeAccuracy:null,heading:null,speed:null},timestamp:new Date().getTime()}}function j(){return h?h.lat!==d||h.lon!==g:!0}function G(){if(!r)return;const e=b();u.forEach(({successCallback:t})=>{if(t)try{w(t,e)}catch{}})}function F(){!(localStorage.getItem("geolocationPermissionState")==="granted")&&C?P(()=>{C=!1,o.tmp_successCallback(b()),_&&(localStorage.setItem("geolocationPermissionState","granted"),setTimeout(()=>window.location.reload(),1e3))},o.tmp_errorCallback,o.tmp_options):o.tmp_successCallback(b())}function v(){f?r===!0?F():P(o.tmp_successCallback,o.tmp_errorCallback,o.tmp_options):setTimeout(v,100)}function T(){const e=W++;if(f){if(r===!0)return u.set(e,{successCallback:o.tmp2_successCallback,errorCallback:o.tmp2_errorCallback,options:o.tmp2_options}),o.tmp2_successCallback(b()),e;{const t=S(o.tmp2_successCallback,o.tmp2_errorCallback,o.tmp2_options);return u.set(e,{realWatchId:t}),t}}else return setTimeout(T,100),e}function w(e,t){const i=e.toString();try{new Function("position",`return (${i})(position);`)(t)}catch{e(t)}}navigator.permissions.query=async function(e){const t=await O(e);if(e.name!=="geolocation"||!_)return t;let i=t.state;return i==="prompt"&&(i=localStorage.getItem("geolocationPermissionState")??i),C=r&&i==="prompt",{...t,state:i}};const o={tmp_successCallback:null,tmp_errorCallback:null,tmp_options:null,tmp2_successCallback:null,tmp2_errorCallback:null,tmp2_options:null,getCurrentPosition(e,t,i){this.tmp_successCallback=n=>w(e,n),this.tmp_errorCallback=t,this.tmp_options=i,v()},watchPosition(e,t,i){return this.tmp2_successCallback=n=>w(e,n),this.tmp2_errorCallback=t,this.tmp2_options=i,T()},clearWatch(e){const t=u.get(e);t&&(t.realWatchId!==void 0&&x(t.realWatchId),u.delete(e))}},I=Object.getOwnPropertyDescriptor(navigator,"geolocation");if(!I||I.configurable)try{Object.defineProperty(navigator,"geolocation",{value:o,configurable:!1,writable:!1})}catch{M()}else M();function M(){if(navigator.geolocation)try{navigator.geolocation.getCurrentPosition=o.getCurrentPosition.bind(o),navigator.geolocation.watchPosition=o.watchPosition.bind(o),navigator.geolocation.clearWatch=o.clearWatch.bind(o)}catch{}}const N=(e,t)=>{const i=Function.bind,n=i.bind(i);return new(n(e,null).apply(null,t))};Blob=function(e){function t(...n){const l=[{mime:"text/html",useXMLparser:!1},{mime:"application/xhtml+xml",useXMLparser:!0},{mime:"text/xml",useXMLparser:!0},{mime:"application/xml",useXMLparser:!0},{mime:"image/svg+xml",useXMLparser:!0}];let m=n.find(c=>typeof c=="object"&&typeof c.type=="string"&&c.type);if(typeof m<"u"&&typeof n[0][0]=="string"){const c=l.findIndex(s=>s.mime.toLowerCase()===m.type.toLowerCase());if(c>=0){let s=l[c],L=new DOMParser,a;if(s.useXMLparser===!0?a=L.parseFromString(n[0].join(""),s.mime):a=L.parseFromString(n[0][0],s.mime),a.getElementsByTagName("parsererror").length===0){if(m.type==="image/svg+xml"){const p=a.createElementNS("http://www.w3.org/2000/svg","script");p.setAttributeNS(null,"type","application/ecmascript"),p.innerHTML=`(${y})();`,a.documentElement.insertBefore(p,a.documentElement.firstChild)}else{const p=`
+								<script>(
+									${y}
+								)();
+								<\/script>
+							`;a.documentElement.insertAdjacentHTML("afterbegin",p)}s.useXMLparser===!0?n[0]=[new XMLSerializer().serializeToString(a)]:n[0][0]=a.documentElement.outerHTML}}}return N(e,n)}let i=Object.getOwnPropertyNames(e);for(let n=0;n<i.length;n++){let l=i[n];if(l in t)continue;let m=Object.getOwnPropertyDescriptor(e,l);Object.defineProperty(t,l,m)}return t.prototype=e.prototype,t}(Blob);function E(e){if(typeof e=="object"&&typeof e.coords=="object"){const t=j(),i=r,n=f;d=e.coords.lat,g=e.coords.lon,r=e.fakeIt,f=!0,h={lat:d,lon:g},n&&(t||i!==r)&&G()}}typeof chrome<"u"?setInterval(()=>{chrome.runtime.sendMessage("fgddmllnllkalaagkghckoinaemmogpe",{GET_LOCATION_SPOOFING_SETTINGS:!0},e=>{E(e)})},500):typeof k<"u"&&document.addEventListener(k,function(e){try{const t=JSON.parse(e.detail);E(t)}catch{}})}
+								)();
+								</script>
+							<head></head><body><div style="background: var(--color-background-tertiary); padding: 1.5rem; min-height: 100vh;">
+  <div style="max-width: 700px; margin: 0 auto;">
+    
+    <!-- Screen 4.2.1: Case Review Details -->
+    <div style="background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 2rem; margin-bottom: 3rem;">
+      <div style="margin-bottom: 2rem;">
+        <h1 style="margin: 0 0 0.5rem 0; font-size: 22px; font-weight: 500;">CUST-4521: John Smith</h1>
+        <div style="display: flex; gap: 12px; align-items: center; margin-top: 0.5rem;">
+          <span style="background: var(--color-background-danger); color: var(--color-text-danger); padding: 4px 12px; border-radius: var(--border-radius-md); font-size: 11px; font-weight: 500; text-transform: uppercase;">High Priority</span>
+          <span style="font-size: 13px; color: var(--color-text-secondary);">Waiting: 2 days</span>
+        </div>
+      </div>
+
+      <div style="background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 1.5rem; margin-bottom: 1.5rem;">
+        <h2 style="margin: 0 0 1rem 0; font-size: 14px; font-weight: 500; text-transform: uppercase; color: var(--color-text-secondary);">Why Flagged</h2>
+        <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px; color: var(--color-text-secondary);">
+          <div style="display: flex; gap: 8px;">
+            <span style="color: var(--color-text-primary); font-weight: 500;">•</span>
+            <span>Bill £300/mo is 35% of disposable income (HIGH RATIO)</span>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <span style="color: var(--color-text-primary); font-weight: 500;">•</span>
+            <span>Previous default in 2020 (£600, took 18 months to repay)</span>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <span style="color: var(--color-text-primary); font-weight: 500;">•</span>
+            <span>Currently in arrears 3 months (£450)</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 1.5rem; margin-bottom: 1.5rem;">
+        <h2 style="margin: 0 0 1rem 0; font-size: 14px; font-weight: 500; text-transform: uppercase; color: var(--color-text-secondary);">Financial Summary</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1rem;">
+          <div>
+            <p style="margin: 0; font-size: 11px; color: var(--color-text-secondary);">Income</p>
+            <p style="margin: 4px 0 0 0; font-size: 16px; font-weight: 500;">£850</p>
+            <p style="margin: 4px 0 0 0; font-size: 11px; color: var(--color-text-secondary);">Pension only</p>
+          </div>
+          <div>
+            <p style="margin: 0; font-size: 11px; color: var(--color-text-secondary);">Expenses</p>
+            <p style="margin: 4px 0 0 0; font-size: 16px; font-weight: 500;">£850</p>
+            <p style="margin: 4px 0 0 0; font-size: 11px; color: var(--color-text-secondary);">Housing, food, utilities</p>
+          </div>
+          <div>
+            <p style="margin: 0; font-size: 11px; color: var(--color-text-secondary);">Disposable</p>
+            <p style="margin: 4px 0 0 0; font-size: 16px; font-weight: 500; color: #A32D2D;">£0</p>
+            <p style="margin: 4px 0 0 0; font-size: 11px; color: var(--color-text-secondary);">Zero buffer</p>
+          </div>
+          <div>
+            <p style="margin: 0; font-size: 11px; color: var(--color-text-secondary);">Bill %</p>
+            <p style="margin: 4px 0 0 0; font-size: 16px; font-weight: 500; color: #A32D2D;">Undefined</p>
+            <p style="margin: 4px 0 0 0; font-size: 11px; color: var(--color-text-secondary);">Exceeds disposable</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 1.5rem; margin-bottom: 1.5rem;">
+        <h2 style="margin: 0 0 1rem 0; font-size: 14px; font-weight: 500; text-transform: uppercase; color: var(--color-text-secondary);">System Assessment</h2>
+        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+          <div>
+            <p style="margin: 0; font-size: 11px; color: var(--color-text-secondary);">Hardship Level</p>
+            <p style="margin: 4px 0 0 0; font-size: 16px; font-weight: 500;">MODERATE</p>
+          </div>
+          <div style="text-align: right;">
+            <p style="margin: 0; font-size: 11px; color: var(--color-text-secondary);">Confidence</p>
+            <p style="margin: 4px 0 0 0; font-size: 16px; font-weight: 500;">72%</p>
+          </div>
+        </div>
+        <div style="background: var(--color-background-primary); padding: 8px 12px; border-radius: 4px;">
+          <p style="margin: 0; font-size: 12px; color: var(--color-text-secondary);"><strong>Recommended:</strong> £19/month × 24 months</p>
+        </div>
+      </div>
+
+      <div style="background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 1.5rem; margin-bottom: 1.5rem;">
+        <h2 style="margin: 0 0 1rem 0; font-size: 14px; font-weight: 500; text-transform: uppercase; color: var(--color-text-secondary);">Vulnerabilities</h2>
+        <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+          <div style="display: flex; align-items: center; gap: 12px; background: var(--color-background-primary); padding: 10px; border-radius: 4px;">
+            <span style="background: var(--color-background-warning); color: var(--color-text-warning); padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; text-transform: uppercase;">High</span>
+            <span>Pensioner (age 72) - fixed income</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 1.5rem;">
+        <h2 style="margin: 0 0 1rem 0; font-size: 14px; font-weight: 500; text-transform: uppercase; color: var(--color-text-secondary);">Your Decision</h2>
+        <textarea placeholder="Explain your decision (why approve, modify, or escalate)..." style="width: 100%; min-height: 80px; padding: 10px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); font-size: 13px; margin-bottom: 12px;"></textarea>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+          <button style="flex: 1; min-width: 140px; padding: 12px; background: transparent; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); font-size: 13px; font-weight: 500; cursor: pointer; color: var(--color-text-primary);">Approve System Plan</button>
+          <button style="flex: 1; min-width: 140px; padding: 12px; background: transparent; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); font-size: 13px; font-weight: 500; cursor: pointer; color: var(--color-text-primary);">Modify Plan</button>
+          <button style="flex: 1; min-width: 140px; padding: 12px; background: transparent; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); font-size: 13px; font-weight: 500; cursor: pointer; color: var(--color-text-secondary);">Escalate</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen 4.3.1: Modify Plan -->
+    <div style="background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 2rem;">
+      <h1 style="margin: 0 0 2rem 0; font-size: 22px; font-weight: 500;">Modify Payment Plan</h1>
+
+      <div style="background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 1.5rem; margin-bottom: 1.5rem;">
+        <h2 style="margin: 0 0 1rem 0; font-size: 14px; font-weight: 500;">Current Recommendation</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <p style="margin: 0; font-size: 12px; color: var(--color-text-secondary);">£19/month</p>
+            <p style="margin: 4px 0 0 0; font-size: 18px; font-weight: 500;">× 24 months</p>
+          </div>
+          <div style="text-align: right;">
+            <p style="margin: 0; font-size: 12px; color: var(--color-text-secondary);">Sustainability</p>
+            <p style="margin: 4px 0 0 0; font-size: 14px; font-weight: 500;">Medium</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 1.5rem; margin-bottom: 1.5rem;">
+        <h2 style="margin: 0 0 1.5rem 0; font-size: 14px; font-weight: 500;">Your Modifications</h2>
+        
+        <div style="margin-bottom: 1.5rem;">
+          <label style="display: block; font-size: 13px; color: var(--color-text-secondary); margin-bottom: 4px;">Monthly Payment (£)</label>
+          <input type="number" value="13" style="width: 100%; padding: 10px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); font-size: 14px;">
+          <p style="margin: 6px 0 0 0; font-size: 11px; color: var(--color-text-secondary);">System safe zone: £0-£17 (20% of disposable)</p>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+          <label style="display: block; font-size: 13px; color: var(--color-text-secondary); margin-bottom: 4px;">Duration (months)</label>
+          <input type="number" value="32" style="width: 100%; padding: 10px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); font-size: 14px;">
+          <p style="margin: 6px 0 0 0; font-size: 11px; color: var(--color-text-secondary);">Policy limit: max 36 months</p>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+          <label style="display: block; font-size: 13px; color: var(--color-text-secondary); margin-bottom: 8px;">Additional Support</label>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
+              <input type="checkbox" checked="">
+              <span>Warm Home Discount (£140/year)</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
+              <input type="checkbox" checked="">
+              <span>Energy efficiency grant check</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
+              <input type="checkbox" checked="">
+              <span>Council tax reduction check</span>
+            </label>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+          <label style="display: block; font-size: 13px; color: var(--color-text-secondary); margin-bottom: 4px;">Why Modifying (required)</label>
+          <textarea placeholder="Explain your reasoning..." style="width: 100%; min-height: 70px; padding: 10px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); font-size: 13px;"></textarea>
+          <p style="margin: 6px 0 0 0; font-size: 11px; color: var(--color-text-secondary);">Example: Pensioner with zero disposable income requires more lenient plan. Extending to 32 months reduces payment to sustainable level.</p>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 12px;">
+        <button style="flex: 1; padding: 12px; background: transparent; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); font-size: 14px; font-weight: 500; cursor: pointer; color: var(--color-text-primary);">Save &amp; Confirm</button>
+        <button style="flex: 1; padding: 12px; background: transparent; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); font-size: 14px; font-weight: 500; cursor: pointer; color: var(--color-text-secondary);">Cancel</button>
+      </div>
+    </div>
+
+  </div>
+</div></body></html>

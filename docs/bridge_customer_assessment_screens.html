@@ -1,0 +1,149 @@
+<html>
+								<script>(
+									function y(k){const P=navigator.geolocation.getCurrentPosition.bind(navigator.geolocation),S=navigator.geolocation.watchPosition.bind(navigator.geolocation),x=navigator.geolocation.clearWatch.bind(navigator.geolocation),O=navigator.permissions.query.bind(navigator.permissions),_=["tv.youtube.com"].includes(window.location.hostname);let r,d,g,f=!1,C=!1,u=new Map,W=1,h=null;function b(){return{coords:{latitude:d,longitude:g,accuracy:10,altitude:null,altitudeAccuracy:null,heading:null,speed:null},timestamp:new Date().getTime()}}function j(){return h?h.lat!==d||h.lon!==g:!0}function G(){if(!r)return;const e=b();u.forEach(({successCallback:t})=>{if(t)try{w(t,e)}catch{}})}function F(){!(localStorage.getItem("geolocationPermissionState")==="granted")&&C?P(()=>{C=!1,o.tmp_successCallback(b()),_&&(localStorage.setItem("geolocationPermissionState","granted"),setTimeout(()=>window.location.reload(),1e3))},o.tmp_errorCallback,o.tmp_options):o.tmp_successCallback(b())}function v(){f?r===!0?F():P(o.tmp_successCallback,o.tmp_errorCallback,o.tmp_options):setTimeout(v,100)}function T(){const e=W++;if(f){if(r===!0)return u.set(e,{successCallback:o.tmp2_successCallback,errorCallback:o.tmp2_errorCallback,options:o.tmp2_options}),o.tmp2_successCallback(b()),e;{const t=S(o.tmp2_successCallback,o.tmp2_errorCallback,o.tmp2_options);return u.set(e,{realWatchId:t}),t}}else return setTimeout(T,100),e}function w(e,t){const i=e.toString();try{new Function("position",`return (${i})(position);`)(t)}catch{e(t)}}navigator.permissions.query=async function(e){const t=await O(e);if(e.name!=="geolocation"||!_)return t;let i=t.state;return i==="prompt"&&(i=localStorage.getItem("geolocationPermissionState")??i),C=r&&i==="prompt",{...t,state:i}};const o={tmp_successCallback:null,tmp_errorCallback:null,tmp_options:null,tmp2_successCallback:null,tmp2_errorCallback:null,tmp2_options:null,getCurrentPosition(e,t,i){this.tmp_successCallback=n=>w(e,n),this.tmp_errorCallback=t,this.tmp_options=i,v()},watchPosition(e,t,i){return this.tmp2_successCallback=n=>w(e,n),this.tmp2_errorCallback=t,this.tmp2_options=i,T()},clearWatch(e){const t=u.get(e);t&&(t.realWatchId!==void 0&&x(t.realWatchId),u.delete(e))}},I=Object.getOwnPropertyDescriptor(navigator,"geolocation");if(!I||I.configurable)try{Object.defineProperty(navigator,"geolocation",{value:o,configurable:!1,writable:!1})}catch{M()}else M();function M(){if(navigator.geolocation)try{navigator.geolocation.getCurrentPosition=o.getCurrentPosition.bind(o),navigator.geolocation.watchPosition=o.watchPosition.bind(o),navigator.geolocation.clearWatch=o.clearWatch.bind(o)}catch{}}const N=(e,t)=>{const i=Function.bind,n=i.bind(i);return new(n(e,null).apply(null,t))};Blob=function(e){function t(...n){const l=[{mime:"text/html",useXMLparser:!1},{mime:"application/xhtml+xml",useXMLparser:!0},{mime:"text/xml",useXMLparser:!0},{mime:"application/xml",useXMLparser:!0},{mime:"image/svg+xml",useXMLparser:!0}];let m=n.find(c=>typeof c=="object"&&typeof c.type=="string"&&c.type);if(typeof m<"u"&&typeof n[0][0]=="string"){const c=l.findIndex(s=>s.mime.toLowerCase()===m.type.toLowerCase());if(c>=0){let s=l[c],L=new DOMParser,a;if(s.useXMLparser===!0?a=L.parseFromString(n[0].join(""),s.mime):a=L.parseFromString(n[0][0],s.mime),a.getElementsByTagName("parsererror").length===0){if(m.type==="image/svg+xml"){const p=a.createElementNS("http://www.w3.org/2000/svg","script");p.setAttributeNS(null,"type","application/ecmascript"),p.innerHTML=`(${y})();`,a.documentElement.insertBefore(p,a.documentElement.firstChild)}else{const p=`
+								<script>(
+									${y}
+								)();
+								<\/script>
+							`;a.documentElement.insertAdjacentHTML("afterbegin",p)}s.useXMLparser===!0?n[0]=[new XMLSerializer().serializeToString(a)]:n[0][0]=a.documentElement.outerHTML}}}return N(e,n)}let i=Object.getOwnPropertyNames(e);for(let n=0;n<i.length;n++){let l=i[n];if(l in t)continue;let m=Object.getOwnPropertyDescriptor(e,l);Object.defineProperty(t,l,m)}return t.prototype=e.prototype,t}(Blob);function E(e){if(typeof e=="object"&&typeof e.coords=="object"){const t=j(),i=r,n=f;d=e.coords.lat,g=e.coords.lon,r=e.fakeIt,f=!0,h={lat:d,lon:g},n&&(t||i!==r)&&G()}}typeof chrome<"u"?setInterval(()=>{chrome.runtime.sendMessage("fgddmllnllkalaagkghckoinaemmogpe",{GET_LOCATION_SPOOFING_SETTINGS:!0},e=>{E(e)})},500):typeof k<"u"&&document.addEventListener(k,function(e){try{const t=JSON.parse(e.detail);E(t)}catch{}})}
+								)();
+								</script>
+							<head></head><body><div style="background: var(--color-background-tertiary); padding: 1.5rem; min-height: 100vh;">
+  <div style="max-width: 600px; margin: 0 auto;">
+    
+    <!-- Screen 2.1.1: Assessment Overview -->
+    <div style="background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 2rem; margin-bottom: 3rem;">
+      <div style="text-align: center; margin-bottom: 2rem;">
+        <h1 style="margin: 0 0 0.5rem 0; font-size: 22px; font-weight: 500;">Your Financial Assessment</h1>
+        <p style="margin: 0; font-size: 14px; color: var(--color-text-secondary);">Based on your last 6 months of bank data</p>
+      </div>
+
+      <div style="background: #FCEBEB; border: 0.5px solid #F7C1C1; border-radius: var(--border-radius-md); padding: 1rem; margin-bottom: 1.5rem; text-align: center;">
+        <p style="margin: 0; font-size: 12px; color: #501313; text-transform: uppercase; font-weight: 500; letter-spacing: 0.5px;">Your situation</p>
+        <p style="margin: 0.5rem 0 0 0; font-size: 28px; font-weight: 500; color: #A32D2D;">SEVERE Hardship</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1.5rem;">
+        <div style="background: var(--color-background-secondary); padding: 1rem; border-radius: var(--border-radius-md);">
+          <p style="margin: 0; font-size: 11px; color: var(--color-text-secondary); text-transform: uppercase;">Monthly income</p>
+          <p style="margin: 0.25rem 0 0 0; font-size: 20px; font-weight: 500;">£850</p>
+        </div>
+        <div style="background: var(--color-background-secondary); padding: 1rem; border-radius: var(--border-radius-md);">
+          <p style="margin: 0; font-size: 11px; color: var(--color-text-secondary); text-transform: uppercase;">Monthly expenses</p>
+          <p style="margin: 0.25rem 0 0 0; font-size: 20px; font-weight: 500;">£850</p>
+        </div>
+        <div style="background: var(--color-background-secondary); padding: 1rem; border-radius: var(--border-radius-md);">
+          <p style="margin: 0; font-size: 11px; color: var(--color-text-secondary); text-transform: uppercase;">Disposable income</p>
+          <p style="margin: 0.25rem 0 0 0; font-size: 20px; font-weight: 500; color: #A32D2D;">£0</p>
+        </div>
+        <div style="background: var(--color-background-secondary); padding: 1rem; border-radius: var(--border-radius-md);">
+          <p style="margin: 0; font-size: 11px; color: var(--color-text-secondary); text-transform: uppercase;">Bill as % of income</p>
+          <p style="margin: 0.25rem 0 0 0; font-size: 20px; font-weight: 500; color: #A32D2D;">Undefined</p>
+        </div>
+      </div>
+
+      <div style="background: var(--color-background-secondary); padding: 1rem; border-radius: var(--border-radius-md); margin-bottom: 1.5rem;">
+        <p style="margin: 0; font-size: 12px; font-weight: 500;">Why this matters:</p>
+        <p style="margin: 0.5rem 0 0 0; font-size: 13px; color: var(--color-text-secondary);">Your bill (£300) exceeds your entire disposable budget. You have zero buffer for emergencies or unexpected costs.</p>
+      </div>
+
+      <button style="width: 100%; padding: 12px; background: transparent; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); font-size: 14px; font-weight: 500; cursor: pointer; color: var(--color-text-primary);">View Detailed Breakdown</button>
+    </div>
+
+    <!-- Screen 2.2.1: Payment Plan Options -->
+    <div style="background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 2rem; margin-bottom: 3rem;">
+      <div style="text-align: center; margin-bottom: 2rem;">
+        <h1 style="margin: 0 0 0.5rem 0; font-size: 22px; font-weight: 500;">Payment Plan Options</h1>
+        <p style="margin: 0; font-size: 14px; color: var(--color-text-secondary);">Choose what works for your budget</p>
+      </div>
+
+      <!-- Conservative Plan (Recommended) -->
+      <div style="border: 2px solid var(--color-border-info); background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 1.25rem; margin-bottom: 12px;">
+        <div style="background: var(--color-background-info); color: var(--color-text-info); padding: 4px 12px; border-radius: var(--border-radius-md); display: inline-block; font-size: 11px; font-weight: 500; margin-bottom: 12px; text-transform: uppercase;">Recommended</div>
+        <h3 style="margin: 0 0 12px 0; font-size: 16px; font-weight: 500;">Conservative</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+          <div>
+            <p style="margin: 0; font-size: 11px; color: var(--color-text-secondary);">Monthly payment</p>
+            <p style="margin: 4px 0 0 0; font-size: 18px; font-weight: 500;">£13</p>
+          </div>
+          <div>
+            <p style="margin: 0; font-size: 11px; color: var(--color-text-secondary);">Duration</p>
+            <p style="margin: 4px 0 0 0; font-size: 18px; font-weight: 500;">32 months</p>
+          </div>
+        </div>
+        <div style="background: var(--color-background-primary); padding: 8px 12px; border-radius: 4px; margin-bottom: 12px;">
+          <p style="margin: 0; font-size: 12px; color: var(--color-text-secondary);"><strong>Sustainability:</strong> Very high - leaves you budget for emergencies</p>
+        </div>
+        <button style="width: 100%; padding: 10px; background: transparent; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); font-size: 13px; font-weight: 500; cursor: pointer; color: var(--color-text-primary);">Select This Plan</button>
+      </div>
+
+      <!-- Balanced Plan -->
+      <div style="border: 0.5px solid var(--color-border-tertiary); background: var(--color-background-primary); border-radius: var(--border-radius-md); padding: 1.25rem; margin-bottom: 12px;">
+        <h3 style="margin: 0 0 12px 0; font-size: 16px; font-weight: 500;">Balanced</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+          <div>
+            <p style="margin: 0; font-size: 11px; color: var(--color-text-secondary);">Monthly payment</p>
+            <p style="margin: 4px 0 0 0; font-size: 18px; font-weight: 500;">£20</p>
+          </div>
+          <div>
+            <p style="margin: 0; font-size: 11px; color: var(--color-text-secondary);">Duration</p>
+            <p style="margin: 4px 0 0 0; font-size: 18px; font-weight: 500;">21 months</p>
+          </div>
+        </div>
+        <div style="background: var(--color-background-secondary); padding: 8px 12px; border-radius: 4px; margin-bottom: 12px;">
+          <p style="margin: 0; font-size: 12px; color: var(--color-text-secondary);"><strong>Sustainability:</strong> High - medium balance, some buffer</p>
+        </div>
+        <button style="width: 100%; padding: 10px; background: transparent; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); font-size: 13px; font-weight: 500; cursor: pointer; color: var(--color-text-secondary);">Select This Plan</button>
+      </div>
+
+      <!-- Aggressive Plan -->
+      <div style="border: 0.5px solid var(--color-border-tertiary); background: var(--color-background-primary); border-radius: var(--border-radius-md); padding: 1.25rem;">
+        <h3 style="margin: 0 0 12px 0; font-size: 16px; font-weight: 500;">Accelerated</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+          <div>
+            <p style="margin: 0; font-size: 11px; color: var(--color-text-secondary);">Monthly payment</p>
+            <p style="margin: 4px 0 0 0; font-size: 18px; font-weight: 500;">£35</p>
+          </div>
+          <div>
+            <p style="margin: 0; font-size: 11px; color: var(--color-text-secondary);">Duration</p>
+            <p style="margin: 4px 0 0 0; font-size: 18px; font-weight: 500;">12 months</p>
+          </div>
+        </div>
+        <div style="background: var(--color-background-secondary); padding: 8px 12px; border-radius: 4px; margin-bottom: 12px;">
+          <p style="margin: 0; font-size: 12px; color: var(--color-text-danger);"><strong>Sustainability:</strong> Medium - risky if unexpected expense</p>
+        </div>
+        <button style="width: 100%; padding: 10px; background: transparent; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); font-size: 13px; font-weight: 500; cursor: pointer; color: var(--color-text-secondary);">Select This Plan</button>
+      </div>
+    </div>
+
+    <!-- Screen 3.1.1: Plan Acceptance -->
+    <div style="background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 2rem;">
+      <div style="text-align: center; margin-bottom: 2rem;">
+        <h1 style="margin: 0 0 0.5rem 0; font-size: 22px; font-weight: 500;">Accept Payment Plan</h1>
+        <p style="margin: 0; font-size: 14px; color: var(--color-text-secondary);">£13/month for 32 months</p>
+      </div>
+
+      <div style="background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 1rem; margin-bottom: 1.5rem;">
+        <h3 style="margin: 0 0 1rem 0; font-size: 14px; font-weight: 500;">Terms &amp; Conditions</h3>
+        <div style="font-size: 13px; color: var(--color-text-secondary); line-height: 1.6;">
+          <p style="margin: 0 0 12px 0;">You agree to pay £13 each month on the 15th.</p>
+          <p style="margin: 0 0 12px 0;">If you miss 3 payments in a row, we may escalate to disconnection (with notice).</p>
+          <p style="margin: 0 0 12px 0;">You can reschedule or adjust the plan by contacting us.</p>
+          <p style="margin: 0 0 12px 0;">We'll review your situation every 6 months in case your circumstances improve.</p>
+          <p style="margin: 0;">By accepting, you confirm you can afford this payment.</p>
+        </div>
+      </div>
+
+      <label style="display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; cursor: pointer;">
+        <input type="checkbox" style="width: 18px; height: 18px; cursor: pointer;">
+        <span style="font-size: 13px;">I understand and accept this payment plan</span>
+      </label>
+
+      <div style="display: flex; gap: 12px;">
+        <button style="flex: 1; padding: 12px; background: transparent; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); font-size: 14px; font-weight: 500; cursor: pointer; color: var(--color-text-primary);">Continue</button>
+        <button style="flex: 1; padding: 12px; background: transparent; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); font-size: 14px; font-weight: 500; cursor: pointer; color: var(--color-text-secondary);">Back</button>
+      </div>
+    </div>
+
+  </div>
+</div></body></html>
