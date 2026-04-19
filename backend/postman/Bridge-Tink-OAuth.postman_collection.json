@@ -113,7 +113,7 @@
                 "initiate"
               ]
             },
-            "description": "Start the OAuth flow with Tink. Returns authorization URL and CSRF state token.\n\n**Prerequisites:**\n- Set {{jwt_token}} in environment\n- Set {{base_url}} in environment (default: http://localhost:3000)\n\n**Response:**\n- `authUrl`: URL to redirect customer to Tink authorization\n- `state`: CSRF protection token (saved automatically)"
+            "description": "Start the OAuth flow with Tink. Returns authorization URL and CSRF state token.\n\n**Prerequisites:**\n- Set {{jwt_token}} in environment\n- Set {{base_url}} in environment (default: http://localhost:3000)\n\n**Response:**\n- `authUrl`: URL to redirect customer to Tink authorization (https://link.tink.com/1.0/reports/create-report)\n  - Parameters: client_id, redirect_uri, market=GB, report_types (INCOME, EXPENSE, RISK), async=true, state\n- `state`: CSRF protection token (saved automatically)"
           }
         },
         {

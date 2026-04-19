@@ -68,10 +68,20 @@ Requirements:
 Response:
 ```json
 {
-  "authUrl": "https://console.tink.com/connect/oauth/authorize?...",
+  "authUrl": "https://link.tink.com/1.0/reports/create-report?client_id=...&redirect_uri=...&market=GB&report_types=INCOME_CHECK_REPORT,RISK_INSIGHTS_REPORT,EXPENSE_CHECK_REPORT&async=true&state=abc123",
   "state": "abc123..."
 }
 ```
+
+**Tink Authorization URL Structure:**
+- Base: `https://link.tink.com/1.0/reports/create-report`
+- Parameters:
+  - `client_id` — Your Tink client ID
+  - `redirect_uri` — Callback endpoint (http://localhost:3000/api/bank-connections/callback)
+  - `market` — GB (United Kingdom)
+  - `report_types` — INCOME_CHECK_REPORT,RISK_INSIGHTS_REPORT,EXPENSE_CHECK_REPORT
+  - `async` — true (asynchronous report generation)
+  - `state` — CSRF protection token
 
 Automatically saves:
 - `{{oauth_state}}` — CSRF token
