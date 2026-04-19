@@ -82,7 +82,7 @@ export class TinkOAuthService {
     return `${this.config.tink.linkBaseUrl}/1.0/expense-check/create-report?${params.toString()}`;
   }
 
-  async exchangeCodeForAccessToken(_code: string): Promise<Result<string, Error>> {
+  async exchangeCodeForAccessToken(): Promise<Result<string, Error>> {
     try {
       const response = await fetch(`${this.config.tink.apiBaseUrl}/oauth/token`, {
         method: 'POST',

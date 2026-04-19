@@ -10,7 +10,7 @@ export class HandleBankOAuthCallbackUseCase {
     private logger: ILogger,
   ) {}
 
-  async execute(code: string, state: string): Promise<Result<{ connectionId: string; expenseData: any }, Error>> {
+  async execute(_code: string, state: string): Promise<Result<{ connectionId: string; expenseData: any }, Error>> {
     try {
       const connResult = await this.repository.findByOAuthState(state);
       if (connResult.isFail) {
@@ -22,8 +22,8 @@ export class HandleBankOAuthCallbackUseCase {
         return Result.fail(new Error('Invalid OAuth state token'));
       }
 
-      // Exchange code for access token
-      const tokenResult = await this.tinkService.exchangeCodeForAccessToken(code);
+      // Get access token for API requests
+      const tokenResult = await this.tinkService.exchangeCodeForAccessToken();
       if (tokenResult.isFail) {
         return Result.fail(tokenResult.getError() || new Error('Unknown error'));
       }
