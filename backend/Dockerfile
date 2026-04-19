@@ -18,6 +18,13 @@ COPY dist ./dist
 COPY prisma ./prisma
 COPY node_modules/.prisma ./node_modules/.prisma
 
+# Set environment variables with defaults
+ENV TINK_LINK_BASE_URL=https://link.tink.com
+ENV TINK_API_BASE_URL=https://api.tink.com/api/v1
+ENV TINK_EXPENSES_API_BASE_URL=https://api.tink.com/risk/v1
+ENV NODE_ENV=production
+ENV LOG_LEVEL=info
+
 # Expose port
 EXPOSE 3000
 

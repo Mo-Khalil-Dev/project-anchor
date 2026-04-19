@@ -36,6 +36,9 @@ services:
       TINK_CLIENT_ID: local-test
       TINK_CLIENT_SECRET: local-test
       TINK_ENVIRONMENT: sandbox
+      TINK_LINK_BASE_URL: https://link.tink.com
+      TINK_API_BASE_URL: https://api.tink.com/api/v1
+      TINK_EXPENSES_API_BASE_URL: https://api.tink.com/risk/v1
       SES_FROM_ADDRESS: noreply@bridge.local
       STRIPE_SECRET_KEY: sk_test_local
       STRIPE_WEBHOOK_SECRET: whsec_local
