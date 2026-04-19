@@ -2,7 +2,6 @@ import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import { logger } from './utils/logger';
-import { createAssessmentRoutes } from './presentation/routes/assessment.routes';
 import { globalErrorHandler } from './presentation/middleware';
 
 const app: Express = express();
@@ -45,8 +44,8 @@ app.get('/health', (req: Request, res: Response) => {
   res.json({ status: 'healthy', timestamp: new Date().toISOString() });
 });
 
-// API Routes
-app.use('/assessments', createAssessmentRoutes());
+// API Routes (to be implemented)
+// app.use('/assessments', createAssessmentRoutes());
 // app.use('/payment-plans', require('./routes/payment-plans'));
 // app.use('/admin/cases', require('./routes/cases'));
 // app.use('/auth', require('./routes/auth'));
