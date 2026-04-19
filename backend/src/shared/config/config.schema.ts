@@ -9,6 +9,7 @@ const rawEnvSchema = z.object({
   RUNTIME: z.enum(['local', 'docker', 'ecs']).default('local'),
   PORT: z.coerce.number().default(3000),
   FRONTEND_URL: z.string().default('http://localhost:5173'),
+  REDIRECT_URL: z.string().optional(),
 
   // DATABASE_PROVIDER matches Prisma's provider names: sqlite | postgresql
   // Defaults: local → sqlite, docker/ecs → postgresql
@@ -66,6 +67,7 @@ export const configSchema = rawEnvSchema.transform((env) => {
       port: env.PORT,
       frontendUrl: env.FRONTEND_URL,
       backendUrl: env.BACKEND_URL || `http://localhost:${env.PORT}`,
+      redirectUrl: env.REDIRECT_URL || `${env.BACKEND_URL || `http://localhost:${env.PORT}`}/api/bank-connections/callback`,
     },
     database: {
       provider: provider as 'sqlite' | 'postgresql',

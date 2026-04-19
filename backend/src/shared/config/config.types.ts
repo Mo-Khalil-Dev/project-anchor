@@ -5,6 +5,7 @@ export interface AppConfig {
     port: number;
     frontendUrl: string;
     backendUrl: string;
+    redirectUrl: string;
   };
   database: {
     provider: 'sqlite' | 'postgresql';

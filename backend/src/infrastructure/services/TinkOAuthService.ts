@@ -12,7 +12,6 @@ interface TinkTokenResponse {
 export class TinkOAuthService {
   private cachedToken: { token: string; expiresAt: number } | null = null;
   private readonly tinkBaseUrl: string;
-  private readonly backendUrl: string;
 
   constructor(
     private config: AppConfig,
@@ -21,7 +20,6 @@ export class TinkOAuthService {
     this.tinkBaseUrl = config.tink.environment === 'sandbox'
       ? 'https://api.tink.com/api/v1'
       : 'https://api.tink.com/api/v1';
-    this.backendUrl = process.env.BACKEND_URL || `http://localhost:${config.server.port}`;
   }
 
   async getAccessToken(): Promise<Result<string, Error>> {
@@ -29,7 +27,7 @@ export class TinkOAuthService {
       if (this.cachedToken && this.cachedToken.expiresAt > Date.now()) {
         return Result.ok(this.cachedToken.token);
       }
-console.log('getting token', this.backendUrl);
+
       const response = await fetch(`${this.tinkBaseUrl}/oauth/token`, {
         method: 'POST',
         headers: {
@@ -72,7 +70,7 @@ console.log('getting token', this.backendUrl);
   generateAuthorizationUrl(state: string, _customerId: string): string {
     const params = new URLSearchParams({
       client_id: this.config.tink.clientId,
-      redirect_uri: `http://localhost:3000/callback`,
+      redirect_uri: this.config.server.redirectUrl,
       market: 'GB',
       report_types: 'EXPENSE_CHECK_REPORT',
       async: 'true',
@@ -94,6 +92,7 @@ console.log('getting token', this.backendUrl);
           client_secret: this.config.tink.clientSecret,
           grant_type: 'client_credentials',
           scope: 'expense-checks:readonly',
+          redirect_uri: this.config.server.redirectUrl,
         }).toString(),
       });
 
