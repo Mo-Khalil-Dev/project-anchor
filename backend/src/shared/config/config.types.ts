@@ -47,5 +47,6 @@ export interface AppConfig {
     emailEnabled: boolean;
     paymentProcessing: boolean;
     bankOAuth: boolean;
+    errorStackTracesEnabled: boolean;
   };
 }

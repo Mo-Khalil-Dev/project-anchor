@@ -27,6 +27,7 @@ services:
       STRIPE_WEBHOOK_SECRET: whsec_local
       FRONTEND_URL: http://localhost:5173
       REDIRECT_URL: http://localhost:3000/api/bank-connections/callback
+      ENABLE_ERROR_STACK_TRACES: false
     ports:
       - "3000:3000"
     volumes:

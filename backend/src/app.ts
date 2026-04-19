@@ -58,7 +58,7 @@ export function createApp(config: AppConfig, logger: ILogger): Express {
     });
   });
 
-  app.use(globalErrorHandler(logger));
+  app.use(globalErrorHandler(logger, config));
 
   return app;
 }

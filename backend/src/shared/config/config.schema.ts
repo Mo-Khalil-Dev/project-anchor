@@ -44,6 +44,7 @@ const rawEnvSchema = z.object({
   ENABLE_EMAIL: boolFlag,
   ENABLE_PAYMENT_PROCESSING: boolFlag,
   ENABLE_BANK_OAUTH: boolFlag,
+  ENABLE_ERROR_STACK_TRACES: boolFlag.default('false'),
 }).superRefine((env, ctx) => {
   const provider = env.DATABASE_PROVIDER ?? (env.RUNTIME === 'local' ? 'sqlite' : 'postgresql');
 
@@ -109,6 +110,7 @@ export const configSchema = rawEnvSchema.transform((env) => {
       emailEnabled: env.ENABLE_EMAIL,
       paymentProcessing: env.ENABLE_PAYMENT_PROCESSING,
       bankOAuth: env.ENABLE_BANK_OAUTH,
+      errorStackTracesEnabled: env.ENABLE_ERROR_STACK_TRACES,
     },
   };
 });
