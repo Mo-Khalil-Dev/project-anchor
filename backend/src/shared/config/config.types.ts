@@ -4,6 +4,7 @@ export interface AppConfig {
   server: {
     port: number;
     frontendUrl: string;
+    backendUrl: string;
   };
   database: {
     provider: 'sqlite' | 'postgresql';
@@ -29,6 +30,8 @@ export interface AppConfig {
     clientId: string;
     clientSecret: string;
     environment: 'sandbox' | 'production';
+    linkBaseUrl: string;
+    apiBaseUrl: string;
   };
   stripe: {
     secretKey: string;

@@ -10,7 +10,7 @@ export class HandleBankOAuthCallbackUseCase {
     private logger: ILogger,
   ) {}
 
-  async execute(code: string, state: string): Promise<Result<{ connectionId: string }, Error>> {
+  async execute(code: string, state: string): Promise<Result<{ connectionId: string; expenseData: any }, Error>> {
     try {
       const connResult = await this.repository.findByOAuthState(state);
       if (connResult.isFail) {
@@ -22,26 +22,36 @@ export class HandleBankOAuthCallbackUseCase {
         return Result.fail(new Error('Invalid OAuth state token'));
       }
 
-      const jobResult = await this.tinkService.exchangeCodeForReportJob(code);
-      if (jobResult.isFail) {
-        return Result.fail(jobResult.getError() || new Error('Unknown error'));
+      // Exchange code for access token
+      const tokenResult = await this.tinkService.exchangeCodeForAccessToken(code);
+      if (tokenResult.isFail) {
+        return Result.fail(tokenResult.getError() || new Error('Unknown error'));
       }
 
-      const jobId = jobResult.getOrThrow();
-      connection.markAuthorized(jobId);
+      const accessToken = tokenResult.getOrThrow();
+
+      // Fetch expense check data immediately
+      const expenseResult = await this.tinkService.getExpenseCheck(connection.customerId, accessToken);
+      if (expenseResult.isFail) {
+        return Result.fail(expenseResult.getError() || new Error('Unknown error'));
+      }
+
+      const expenseData = expenseResult.getOrThrow();
+
+      // Mark connection as data retrieved
+      connection.markDataRetrieved();
 
       const updateResult = await this.repository.update(connection);
       if (updateResult.isFail) {
         return Result.fail(updateResult.getError() || new Error('Unknown error'));
       }
 
-      this.logger.info('OAuth callback handled', {
+      this.logger.info('OAuth callback handled and data retrieved', {
         connectionId: connection.id,
         customerId: connection.customerId,
-        jobId,
       });
 
-      return Result.ok({ connectionId: connection.id });
+      return Result.ok({ connectionId: connection.id, expenseData });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       this.logger.error('OAuth callback failed', { error: message });

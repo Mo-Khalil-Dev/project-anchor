@@ -9,17 +9,6 @@ interface TinkTokenResponse {
   token_type: string;
 }
 
-interface TinkReportStatus {
-  jobId: string;
-  status: 'COMPLETED' | 'PENDING' | 'FAILED';
-  reportIds?: {
-    incomeReportId?: string;
-    expenseReportId?: string;
-    riskInsightsReportId?: string;
-  };
-  errorDetails?: string;
-}
-
 export class TinkOAuthService {
   private cachedToken: { token: string; expiresAt: number } | null = null;
   private readonly tinkBaseUrl: string;
@@ -50,7 +39,8 @@ export class TinkOAuthService {
           client_id: this.config.tink.clientId,
           client_secret: this.config.tink.clientSecret,
           grant_type: 'client_credentials',
-          scope: 'income-reports:read expense-reports:read risk-insights:read accounts:read',
+          scope:
+            'expense-checks:readonly',
         }).toString(),
       });
 
@@ -84,79 +74,46 @@ export class TinkOAuthService {
       client_id: this.config.tink.clientId,
       redirect_uri: `${this.backendUrl}/api/bank-connections/callback`,
       market: 'GB',
-      report_types: 'INCOME_CHECK_REPORT,RISK_INSIGHTS_REPORT,EXPENSE_CHECK_REPORT',
+      report_types: 'EXPENSE_CHECK_REPORT',
       async: 'true',
       state,
     });
 
-    return `https://link.tink.com/1.0/reports/create-report?${params.toString()}`;
+    return `https://link.tink.com/1.0/expense-check/create-report?${params.toString()}`;
   }
 
-  async exchangeCodeForReportJob(code: string): Promise<Result<string, Error>> {
+  async exchangeCodeForAccessToken(code: string): Promise<Result<string, Error>> {
     try {
-      const token = await this.getTokenForRequest();
-      if (!token) {
-        return Result.fail(new Error('Failed to get Tink access token'));
-      }
-
-      const response = await fetch(`${this.tinkBaseUrl}/report-generation-jobs`, {
+      const response = await fetch(`${this.config.tink.apiBaseUrl}/oauth/token`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: JSON.stringify({
+        body: new URLSearchParams({
+          client_id: this.config.tink.clientId,
+          client_secret: this.config.tink.clientSecret,
+          grant_type: 'authorization_code',
           code,
           redirect_uri: `${this.backendUrl}/api/bank-connections/callback`,
-        }),
+        }).toString(),
       });
 
       if (!response.ok) {
         const error = await response.text();
-        this.logger.error('Failed to create report job', { status: response.status, error });
-        return Result.fail(new Error(`Failed to create report job: ${error}`));
+        this.logger.error('Failed to exchange code for access token', { status: response.status, error });
+        return Result.fail(new Error(`Failed to exchange code: ${error}`));
       }
 
-      const data = (await response.json()) as any;
-      return Result.ok(data.jobId);
+      const data = (await response.json()) as TinkTokenResponse;
+      return Result.ok(data.access_token);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       return Result.fail(new Error(`Code exchange failed: ${message}`));
     }
   }
 
-  async checkReportStatus(jobId: string): Promise<Result<TinkReportStatus, Error>> {
-    try {
-      const token = await this.getTokenForRequest();
-      if (!token) {
-        return Result.fail(new Error('Failed to get Tink access token'));
-      }
-
-      const response = await fetch(
-        `${this.tinkBaseUrl}/report-generation-jobs/${jobId}`,
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        return Result.fail(new Error(`Failed to check report status: ${response.statusText}`));
-      }
-
-      const data = (await response.json()) as any;
-
-      return Result.ok({
-        jobId,
-        status: data.status,
-        reportIds: data.reportIds,
-        errorDetails: data.errorDetails,
-      });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      return Result.fail(new Error(`Status check failed: ${message}`));
-    }
+  async getExpenseCheck(customerId: string, accessToken: string): Promise<Result<any, Error>> {
+    return this.getCheckReport('expense-checks', customerId, accessToken);
   }
 
   async getIncomeReport(reportId: string): Promise<Result<any, Error>> {
@@ -179,10 +136,32 @@ export class TinkOAuthService {
       }
 
       const response = await fetch(
-        `${this.tinkBaseUrl}/${type}/${reportId}`,
+        `${this.config.tink.apiBaseUrl}/${type}/${reportId}`,
         {
           headers: {
             'Authorization': `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        return Result.fail(new Error(`Failed to fetch ${type}: ${response.statusText}`));
+      }
+
+      return Result.ok(await response.json());
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      return Result.fail(new Error(`Failed to fetch ${type}: ${message}`));
+    }
+  }
+
+  private async getCheckReport(type: string, customerId: string, accessToken: string): Promise<Result<any, Error>> {
+    try {
+      const response = await fetch(
+        `${this.config.tink.apiBaseUrl}/${type}/${customerId}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
           },
         }
       );

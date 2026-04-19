@@ -12,7 +12,6 @@ export class PrismaBankConnectionRepository implements IBankConnectionRepository
           customerId: connection.customerId,
           oauthState: connection.oauthState,
           status: connection.status,
-          reportJobId: connection.reportJobId,
           connectedAt: connection.connectedAt,
           dataRetrievedAt: connection.dataRetrievedAt,
         },
@@ -56,14 +55,9 @@ export class PrismaBankConnectionRepository implements IBankConnectionRepository
     }
   }
 
-  async findByJobId(jobId: string): Promise<Result<BankConnection | null, Error>> {
-    try {
-      const record = await prisma.bankConnection.findUnique({ where: { reportJobId: jobId } });
-      if (!record) return Result.ok(null);
-      return Result.ok(this.toDomain(record));
-    } catch (error) {
-      return Result.fail(error instanceof Error ? error : new Error(String(error)));
-    }
+  async findByJobId(_jobId: string): Promise<Result<BankConnection | null, Error>> {
+    // No longer used since we don't poll jobs, but kept for interface compliance
+    return Result.ok(null);
   }
 
   async update(connection: BankConnection): Promise<Result<BankConnection, Error>> {
@@ -72,7 +66,6 @@ export class PrismaBankConnectionRepository implements IBankConnectionRepository
         where: { id: connection.id },
         data: {
           status: connection.status,
-          reportJobId: connection.reportJobId,
           connectedAt: connection.connectedAt,
           dataRetrievedAt: connection.dataRetrievedAt,
         },
@@ -89,7 +82,6 @@ export class PrismaBankConnectionRepository implements IBankConnectionRepository
       record.customerId,
       record.oauthState,
       record.status,
-      record.reportJobId,
       record.connectedAt,
       record.dataRetrievedAt,
       record.createdAt,

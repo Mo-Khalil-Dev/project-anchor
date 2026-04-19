@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto';
 
-export type BankConnectionStatus = 'PENDING' | 'AUTHORIZED' | 'DATA_RETRIEVED' | 'DISCONNECTED';
+export type BankConnectionStatus = 'PENDING' | 'DATA_RETRIEVED' | 'DISCONNECTED';
 
 export class BankConnection {
   constructor(
@@ -8,7 +8,6 @@ export class BankConnection {
     public readonly customerId: string,
     public readonly oauthState: string,
     public status: BankConnectionStatus,
-    public reportJobId: string | null = null,
     public connectedAt: Date | null = null,
     public dataRetrievedAt: Date | null = null,
     public createdAt: Date = new Date(),
@@ -24,15 +23,9 @@ export class BankConnection {
     );
   }
 
-  markAuthorized(reportJobId: string): void {
-    this.status = 'AUTHORIZED';
-    this.reportJobId = reportJobId;
-    this.connectedAt = new Date();
-    this.updatedAt = new Date();
-  }
-
   markDataRetrieved(): void {
     this.status = 'DATA_RETRIEVED';
+    this.connectedAt = new Date();
     this.dataRetrievedAt = new Date();
     this.updatedAt = new Date();
   }

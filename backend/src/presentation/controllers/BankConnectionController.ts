@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import type { InitiateBankOAuthUseCase } from '../../application/bank-connection/InitiateBankOAuthUseCase';
 import type { HandleBankOAuthCallbackUseCase } from '../../application/bank-connection/HandleBankOAuthCallbackUseCase';
-import type { PollBankDataUseCase } from '../../application/bank-connection/PollBankDataUseCase';
 import type { AuthenticatedRequest } from '../middleware/auth.middleware';
 import { ApplicationError } from '../../shared/errors/ApplicationError';
 
@@ -9,7 +8,6 @@ export class BankConnectionController {
   constructor(
     private initiateOAuth: InitiateBankOAuthUseCase,
     private handleCallbackUseCase: HandleBankOAuthCallbackUseCase,
-    private pollData: PollBankDataUseCase,
   ) {}
 
   async initiateOAuthFlow(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
@@ -39,22 +37,6 @@ export class BankConnectionController {
     }
 
     const result = await this.handleCallbackUseCase.execute(code, state);
-    result.match(
-      (data) => {
-        res.json(data);
-        return res;
-      },
-      (error) => {
-        next(error);
-        return res;
-      }
-    );
-  }
-
-  async pollStatus(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
-    const { connectionId } = req.params;
-
-    const result = await this.pollData.execute(connectionId);
     result.match(
       (data) => {
         res.json(data);

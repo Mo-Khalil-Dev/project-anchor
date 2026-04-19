@@ -22,7 +22,6 @@ model BankConnection {
   customer        Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
 
   oauthState      String   @unique
-  reportJobId     String?  @unique
 
   status          String   @default("PENDING")
 
@@ -39,7 +38,6 @@ model BankConnection {
 
   @@index([customerId])
   @@index([oauthState])
-  @@index([reportJobId])
 }
 
 model BankAccount {

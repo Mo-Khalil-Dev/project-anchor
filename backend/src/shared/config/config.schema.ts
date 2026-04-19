@@ -29,6 +29,9 @@ const rawEnvSchema = z.object({
   TINK_CLIENT_ID: z.string().min(1, 'TINK_CLIENT_ID is required'),
   TINK_CLIENT_SECRET: z.string().min(1, 'TINK_CLIENT_SECRET is required'),
   TINK_ENVIRONMENT: z.enum(['sandbox', 'production']).default('sandbox'),
+  TINK_LINK_BASE_URL: z.string().default('https://link.tink.com'),
+  TINK_API_BASE_URL: z.string().default('https://api.tink.com'),
+  BACKEND_URL: z.string().optional(),
 
   SES_REGION: z.string().default('us-east-1'),
   SES_FROM_ADDRESS: z.string().email('SES_FROM_ADDRESS must be a valid email').default('noreply@bridge.local'),
@@ -61,6 +64,7 @@ export const configSchema = rawEnvSchema.transform((env) => {
     server: {
       port: env.PORT,
       frontendUrl: env.FRONTEND_URL,
+      backendUrl: env.BACKEND_URL || `http://localhost:${env.PORT}`,
     },
     database: {
       provider: provider as 'sqlite' | 'postgresql',
@@ -86,6 +90,8 @@ export const configSchema = rawEnvSchema.transform((env) => {
       clientId: env.TINK_CLIENT_ID,
       clientSecret: env.TINK_CLIENT_SECRET,
       environment: env.TINK_ENVIRONMENT,
+      linkBaseUrl: env.TINK_LINK_BASE_URL,
+      apiBaseUrl: env.TINK_API_BASE_URL,
     },
     stripe: {
       secretKey: env.STRIPE_SECRET_KEY,
