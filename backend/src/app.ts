@@ -2,7 +2,7 @@ import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import { logger } from './utils/logger';
-import { createAssessmentRoutes } from './presentation/routes/assessment.routes';
+import { globalErrorHandler } from './presentation/middleware';
 
 const app: Express = express();
 
@@ -44,8 +44,8 @@ app.get('/health', (req: Request, res: Response) => {
   res.json({ status: 'healthy', timestamp: new Date().toISOString() });
 });
 
-// API Routes
-app.use('/assessments', createAssessmentRoutes());
+// API Routes (to be implemented)
+// app.use('/assessments', createAssessmentRoutes());
 // app.use('/payment-plans', require('./routes/payment-plans'));
 // app.use('/admin/cases', require('./routes/cases'));
 // app.use('/auth', require('./routes/auth'));
@@ -55,6 +55,7 @@ app.use('/assessments', createAssessmentRoutes());
 // 404 handler
 app.use((req: Request, res: Response) => {
   res.status(404).json({
+    success: false,
     error: {
       code: 'NOT_FOUND',
       message: `Route ${req.method} ${req.path} not found`,
@@ -62,21 +63,7 @@ app.use((req: Request, res: Response) => {
   });
 });
 
-// Global error handler
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  logger.error({
-    message: err.message,
-    stack: err.stack,
-    path: req.path,
-  });
-
-  res.status(500).json({
-    error: {
-      code: 'INTERNAL_ERROR',
-      message: 'An unexpected error occurred',
-      traceId: Math.random().toString(36).substring(7),
-    },
-  });
-});
+// Global error handler (MUST be registered last)
+app.use(globalErrorHandler());
 
 export default app;
