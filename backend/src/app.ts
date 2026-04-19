@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import { logger } from './utils/logger';
 import { createAssessmentRoutes } from './presentation/routes/assessment.routes';
+import { globalErrorHandler } from './presentation/middleware';
 
 const app: Express = express();
 
@@ -55,6 +56,7 @@ app.use('/assessments', createAssessmentRoutes());
 // 404 handler
 app.use((req: Request, res: Response) => {
   res.status(404).json({
+    success: false,
     error: {
       code: 'NOT_FOUND',
       message: `Route ${req.method} ${req.path} not found`,
@@ -62,21 +64,7 @@ app.use((req: Request, res: Response) => {
   });
 });
 
-// Global error handler
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  logger.error({
-    message: err.message,
-    stack: err.stack,
-    path: req.path,
-  });
-
-  res.status(500).json({
-    error: {
-      code: 'INTERNAL_ERROR',
-      message: 'An unexpected error occurred',
-      traceId: Math.random().toString(36).substring(7),
-    },
-  });
-});
+// Global error handler (MUST be registered last)
+app.use(globalErrorHandler());
 
 export default app;
