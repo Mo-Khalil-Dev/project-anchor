@@ -83,12 +83,13 @@ export class TinkOAuthService {
     const params = new URLSearchParams({
       client_id: this.config.tink.clientId,
       redirect_uri: `${this.backendUrl}/api/bank-connections/callback`,
-      scope: 'authorization:read',
+      market: 'GB',
+      report_types: 'INCOME_CHECK_REPORT,RISK_INSIGHTS_REPORT,EXPENSE_CHECK_REPORT',
+      async: 'true',
       state,
-      response_type: 'code',
     });
 
-    return `https://console.tink.com/connect/oauth/authorize?${params.toString()}`;
+    return `https://link.tink.com/1.0/reports/create-report?${params.toString()}`;
   }
 
   async exchangeCodeForReportJob(code: string): Promise<Result<string, Error>> {
