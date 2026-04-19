@@ -2,6 +2,7 @@ import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import { globalErrorHandler } from './presentation/middleware';
+import { createBankConnectionRoutes } from './presentation/routes/bankConnection.routes';
 import type { AppConfig } from './shared/config';
 import type { ILogger } from './shared/logging';
 
@@ -42,8 +43,8 @@ export function createApp(config: AppConfig, logger: ILogger): Express {
     res.json({ status: 'healthy', timestamp: new Date().toISOString() });
   });
 
-  // API Routes (to be implemented per feature)
-  // app.use('/assessments', createAssessmentRoutes());
+  // API Routes
+  app.use('/api/bank-connections', createBankConnectionRoutes(config, logger));
 
   // ============ ERROR HANDLING ============
 

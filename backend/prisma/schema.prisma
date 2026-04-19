@@ -3,6 +3,103 @@ generator client {
 }
 
 datasource db {
-  provider = env("DATABASE_PROVIDER")
+  provider = "sqlite"
   url      = env("DATABASE_URL")
+}
+
+model Customer {
+  id              String   @id @default(cuid())
+  email           String   @unique
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  bankConnections BankConnection[]
+}
+
+model BankConnection {
+  id              String   @id @default(cuid())
+  customerId      String
+  customer        Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  oauthState      String   @unique
+  reportJobId     String?  @unique
+
+  status          String   @default("PENDING")
+
+  bankAccounts    BankAccount[]
+  incomeData      BankIncomeReport?
+  expenseData     BankExpenseReport?
+  riskInsights    BankRiskInsights?
+
+  connectedAt     DateTime?
+  dataRetrievedAt DateTime?
+  disconnectedAt  DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([customerId])
+  @@index([oauthState])
+  @@index([reportJobId])
+}
+
+model BankAccount {
+  id               String          @id @default(cuid())
+  bankConnectionId String
+  bankConnection   BankConnection  @relation(fields: [bankConnectionId], references: [id], onDelete: Cascade)
+
+  accountId        String
+  accountNumber    String
+  routingNumber    String?
+  accountType      String
+  institutionName  String
+  currency         String          @default("GBP")
+
+  createdAt        DateTime        @default(now())
+
+  @@index([bankConnectionId])
+}
+
+model BankIncomeReport {
+  id               String          @id @default(cuid())
+  bankConnectionId String          @unique
+  bankConnection   BankConnection  @relation(fields: [bankConnectionId], references: [id], onDelete: Cascade)
+
+  monthlyIncome    Float
+  salaryIncome     Float?
+  otherIncome      Float?
+
+  dataSource       String
+  analysisMonth    DateTime
+  createdAt        DateTime        @default(now())
+}
+
+model BankExpenseReport {
+  id               String          @id @default(cuid())
+  bankConnectionId String          @unique
+  bankConnection   BankConnection  @relation(fields: [bankConnectionId], references: [id], onDelete: Cascade)
+
+  monthlyExpenses  Float
+  utilities        Float?
+  housing          Float?
+  food             Float?
+  transport        Float?
+  other            Float?
+
+  dataSource       String
+  analysisMonth    DateTime
+  createdAt        DateTime        @default(now())
+}
+
+model BankRiskInsights {
+  id               String          @id @default(cuid())
+  bankConnectionId String          @unique
+  bankConnection   BankConnection  @relation(fields: [bankConnectionId], references: [id], onDelete: Cascade)
+
+  accountBalance   Float
+  transactionVolume Float
+  overdraftUsage   Boolean
+
+  dataSource       String
+  analysisDate     DateTime
+  createdAt        DateTime        @default(now())
 }
