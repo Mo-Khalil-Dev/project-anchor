@@ -1,0 +1,328 @@
+{
+  "info": {
+    "_postman_id": "bridge-tink-oauth",
+    "name": "Bridge - Tink OAuth Bank Connection",
+    "description": "API collection for testing Tink OAuth bank connection flow in PROJECT BRIDGE",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Generate Test JWT Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Parse response",
+                  "const token = pm.response.text();",
+                  "",
+                  "// Save token to environment",
+                  "pm.environment.set('jwt_token', token);",
+                  "",
+                  "// Log for debugging",
+                  "console.log('JWT Token generated:', token.substring(0, 20) + '...');",
+                  "",
+                  "pm.test('Token generated successfully', function() {",
+                  "  pm.expect(token).to.be.a('string');",
+                  "  pm.expect(token.split('.').length).to.equal(3);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://httpbin.org/delay/0",
+              "protocol": "https",
+              "host": [
+                "httpbin"
+              ],
+              "path": [
+                "delay",
+                "0"
+              ]
+            },
+            "description": "Generate a test JWT token using Node.js\n\nRun this in terminal first:\n```bash\nnode -e \"\nconst jwt = require('jsonwebtoken');\nconst token = jwt.sign(\n  { sub: 'test-customer-123', email: 'test@example.com' },\n  'dev_secret_key_change_in_production',\n  { expiresIn: '1h' }\n);\nconsole.log(token);\n\"\n```\n\nThen copy the output and set it as {{jwt_token}} in the Environment."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Bank Connection Flow",
+      "item": [
+        {
+          "name": "1. Initiate OAuth Flow",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has authUrl and state', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('authUrl');",
+                  "    pm.expect(jsonData).to.have.property('state');",
+                  "    pm.expect(jsonData.authUrl).to.include('console.tink.com');",
+                  "});",
+                  "",
+                  "// Save state and authUrl for next steps",
+                  "const jsonData = pm.response.json();",
+                  "pm.environment.set('oauth_state', jsonData.state);",
+                  "pm.environment.set('auth_url', jsonData.authUrl);",
+                  "",
+                  "console.log('OAuth initiated. State:', jsonData.state);",
+                  "console.log('Auth URL:', jsonData.authUrl);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/bank-connections/initiate",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "bank-connections",
+                "initiate"
+              ]
+            },
+            "description": "Start the OAuth flow with Tink. Returns authorization URL and CSRF state token.\n\n**Prerequisites:**\n- Set {{jwt_token}} in environment\n- Set {{base_url}} in environment (default: http://localhost:3000)\n\n**Response:**\n- `authUrl`: URL to redirect customer to Tink authorization\n- `state`: CSRF protection token (saved automatically)"
+          }
+        },
+        {
+          "name": "2. Handle OAuth Callback",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// You need to manually get 'code' from Tink after authorization",
+                  "// Replace {{auth_code}} with actual code from Tink redirect",
+                  "console.log('Use the authUrl from step 1 to authorize with Tink');",
+                  "console.log('Tink will redirect to: {{base_url}}/api/bank-connections/callback?code=XXX&state={{oauth_state}}');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has connectionId', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('connectionId');",
+                  "});",
+                  "",
+                  "// Save connectionId for polling",
+                  "const jsonData = pm.response.json();",
+                  "pm.environment.set('connection_id', jsonData.connectionId);",
+                  "",
+                  "console.log('OAuth callback handled. Connection ID:', jsonData.connectionId);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/bank-connections/callback?code={{auth_code}}&state={{oauth_state}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "bank-connections",
+                "callback"
+              ],
+              "query": [
+                {
+                  "key": "code",
+                  "value": "{{auth_code}}",
+                  "description": "Authorization code from Tink (visit {{auth_url}} to get this)"
+                },
+                {
+                  "key": "state",
+                  "value": "{{oauth_state}}",
+                  "description": "CSRF state token from step 1 (auto-saved)"
+                }
+              ]
+            },
+            "description": "Handle Tink OAuth callback. Exchanges authorization code for report job ID.\n\n**Steps:**\n1. Click the {{auth_url}} variable to open it in browser\n2. Complete Tink authorization\n3. You'll be redirected to the callback URL\n4. Extract the `code` parameter from redirect URL\n5. Paste it as {{auth_code}} in the query params above\n\n**Response:**\n- `connectionId`: Use this to poll for report status (saved automatically)"
+          }
+        },
+        {
+          "name": "3. Poll Bank Data Status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const jsonData = pm.response.json();",
+                  "pm.test('Response has status and isReady', function() {",
+                  "    pm.expect(jsonData).to.have.property('status');",
+                  "    pm.expect(jsonData).to.have.property('isReady');",
+                  "});",
+                  "",
+                  "// Log status",
+                  "console.log('Report status:', jsonData.status);",
+                  "console.log('Data ready:', jsonData.isReady);",
+                  "",
+                  "if (jsonData.isReady && jsonData.data) {",
+                  "    console.log('Bank data retrieved!');",
+                  "    console.log('Income:', jsonData.data.income);",
+                  "    console.log('Expense:', jsonData.data.expense);",
+                  "    console.log('Risk:', jsonData.data.risk);",
+                  "} else if (jsonData.status === 'PENDING') {",
+                  "    console.log('Report still processing... retry in a few seconds');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/bank-connections/{{connection_id}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "bank-connections",
+                "{{connection_id}}",
+                "status"
+              ]
+            },
+            "description": "Poll for bank data completion. Tink processing typically takes 5-30 seconds.\n\n**Prerequisites:**\n- Must complete steps 1 & 2 first\n- {{connection_id}} auto-saved from step 2\n\n**Response:**\n- `status`: PENDING | COMPLETED | FAILED\n- `isReady`: true/false\n- `data`: Bank financial reports (when isReady=true)\n  - `income`: Monthly income breakdown\n  - `expense`: Monthly expense breakdown\n  - `risk`: Account risk metrics"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Utilities",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "health"
+              ]
+            },
+            "description": "Check if backend is running"
+          }
+        },
+        {
+          "name": "Get All Bank Connections (Debug)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/bank-connections",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "bank-connections"
+              ]
+            },
+            "description": "Debug endpoint to list all bank connections (not in main flow)"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string",
+      "description": "Backend API base URL"
+    },
+    {
+      "key": "jwt_token",
+      "value": "",
+      "type": "string",
+      "description": "JWT token for authentication. Generate with: node -e \"const jwt = require('jsonwebtoken'); const token = jwt.sign({sub: 'test-customer-123', email: 'test@example.com'}, 'dev_secret_key_change_in_production', {expiresIn: '1h'}); console.log(token);\""
+    },
+    {
+      "key": "oauth_state",
+      "value": "",
+      "type": "string",
+      "description": "CSRF state token from step 1 (auto-populated)"
+    },
+    {
+      "key": "auth_url",
+      "value": "",
+      "type": "string",
+      "description": "Tink authorization URL from step 1 (auto-populated)"
+    },
+    {
+      "key": "auth_code",
+      "value": "",
+      "type": "string",
+      "description": "Authorization code from Tink callback (manual - extract from redirect)"
+    },
+    {
+      "key": "connection_id",
+      "value": "",
+      "type": "string",
+      "description": "Bank connection ID from step 2 (auto-populated)"
+    }
+  ]
+}
