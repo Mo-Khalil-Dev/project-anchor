@@ -97,40 +97,50 @@ export function Intro() {
           margin-top: 36px;
         }
 
-        .value-props {
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-          margin-bottom: 40px;
-        }
-
-        .value-prop {
+        .value-props-card {
           background: white;
           border: 1px solid #e0e0e0;
           border-radius: 12px;
-          padding: 20px;
+          padding: 28px;
+          margin-bottom: 40px;
+        }
+
+        .value-props-list {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+        }
+
+        .value-prop {
           display: flex;
           gap: 16px;
           align-items: flex-start;
         }
 
-        .value-prop-icon {
-          color: #1e7d3f;
-          font-size: 20px;
+        .value-prop-checkbox {
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          background: #5b5bd6;
+          color: white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 14px;
+          font-weight: 700;
           flex-shrink: 0;
           margin-top: 2px;
         }
 
         .value-prop-text {
           flex: 1;
-          text-align: left;
         }
 
         .value-prop-title {
           color: #0d0f14;
           font-size: 14px;
           font-weight: 700;
-          margin: 0 0 6px 0;
+          margin: 0 0 4px 0;
         }
 
         .value-prop-desc {
@@ -139,14 +149,6 @@ export function Intro() {
           font-weight: 400;
           line-height: 1.5;
           margin: 0;
-        }
-
-        .value-prop.highlighted .value-prop-desc {
-          background: #e8edff;
-          color: #4a5cc4;
-          padding: 8px 12px;
-          border-radius: 6px;
-          margin: 0 -8px;
         }
 
         .access-grid {
@@ -160,7 +162,7 @@ export function Intro() {
           background: white;
           border: 1px solid #e0e0e0;
           border-radius: 12px;
-          padding: 24px;
+          padding: 28px;
         }
 
         .access-card-title {
@@ -169,7 +171,7 @@ export function Intro() {
           font-weight: 600;
           text-transform: uppercase;
           letter-spacing: 0.08em;
-          margin: 0 0 16px 0;
+          margin: 0 0 20px 0;
         }
 
         .access-items {
@@ -180,7 +182,7 @@ export function Intro() {
 
         .access-item {
           display: flex;
-          gap: 10px;
+          gap: 12px;
           align-items: flex-start;
           color: #0d0f14;
           font-size: 13px;
@@ -205,11 +207,11 @@ export function Intro() {
           margin-bottom: 32px;
         }
 
-        .buttons-container > button:first-child {
+        .btn-continue {
           flex: 1;
         }
 
-        .buttons-container > button:last-child {
+        .btn-secondary {
           flex: 1;
         }
 
@@ -244,30 +246,32 @@ export function Intro() {
           </div>
         </div>
 
-        {/* Why Connect */}
+        {/* Why Connect - Single Card */}
         <div className="section-label">Why connect your bank?</div>
-        <div className="value-props">
-          <div className="value-prop">
-            <div className="value-prop-icon">✓</div>
-            <div className="value-prop-text">
-              <p className="value-prop-title">No forms to fill out</p>
-              <p className="value-prop-desc">We see your real spending patterns, not just what you tell us.</p>
+        <div className="value-props-card">
+          <div className="value-props-list">
+            <div className="value-prop">
+              <div className="value-prop-checkbox">✓</div>
+              <div className="value-prop-text">
+                <p className="value-prop-title">No forms to fill out</p>
+                <p className="value-prop-desc">We see your real spending patterns, not just what you tell us.</p>
+              </div>
             </div>
-          </div>
 
-          <div className="value-prop highlighted">
-            <div className="value-prop-icon">✓</div>
-            <div className="value-prop-text">
-              <p className="value-prop-title">Faster assessment</p>
-              <p className="value-prop-desc">Complete your assessment in minutes, not days.</p>
+            <div className="value-prop">
+              <div className="value-prop-checkbox">✓</div>
+              <div className="value-prop-text">
+                <p className="value-prop-title">Faster assessment</p>
+                <p className="value-prop-desc">Complete your assessment in minutes, not days.</p>
+              </div>
             </div>
-          </div>
 
-          <div className="value-prop">
-            <div className="value-prop-icon">✓</div>
-            <div className="value-prop-text">
-              <p className="value-prop-title">Better support options</p>
-              <p className="value-prop-desc">More tailored payment plans and support recommendations.</p>
+            <div className="value-prop">
+              <div className="value-prop-checkbox">✓</div>
+              <div className="value-prop-text">
+                <p className="value-prop-title">Better support options</p>
+                <p className="value-prop-desc">More tailored payment plans and support recommendations.</p>
+              </div>
             </div>
           </div>
         </div>
@@ -309,8 +313,10 @@ export function Intro() {
 
         {/* Buttons */}
         <div className="buttons-container">
-          <Button onClick={handleContinue}>Continue</Button>
-          <Button variant="secondary" onClick={handleProvideManually}>
+          <Button onClick={handleContinue} className="btn-continue">
+            Continue
+          </Button>
+          <Button variant="secondary" onClick={handleProvideManually} className="btn-secondary">
             Provide Statements Manually
           </Button>
         </div>
