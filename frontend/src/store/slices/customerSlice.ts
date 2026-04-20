@@ -5,6 +5,9 @@ import {
   CustomerJourneyStep,
   PaymentPlanType,
   HardshipLevel,
+  BankJourneyState,
+  BankConnectionData,
+  BankError,
 } from '@/types';
 
 export type { CustomerSliceState };
@@ -33,6 +36,20 @@ const customerSlice = createSlice({
     setHardshipLevel: (state, action: PayloadAction<HardshipLevel | undefined>) => {
       state.hardshipLevel = action.payload;
     },
+    setBankJourneyState: (state, action: PayloadAction<BankJourneyState>) => {
+      state.bankJourneyState = action.payload;
+    },
+    setBankConnectionData: (state, action: PayloadAction<BankConnectionData>) => {
+      state.bankConnectionData = action.payload;
+    },
+    setBankError: (state, action: PayloadAction<BankError | undefined>) => {
+      state.bankError = action.payload;
+    },
+    resetBankJourney: (state) => {
+      state.bankJourneyState = undefined;
+      state.bankConnectionData = undefined;
+      state.bankError = undefined;
+    },
     resetCustomer: () => initialState,
   },
 });
@@ -43,6 +60,10 @@ export const {
   setSelectedPlan,
   setAssessment,
   setHardshipLevel,
+  setBankJourneyState,
+  setBankConnectionData,
+  setBankError,
+  resetBankJourney,
   resetCustomer,
 } = customerSlice.actions;
 

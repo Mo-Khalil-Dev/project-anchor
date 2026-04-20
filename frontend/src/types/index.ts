@@ -17,6 +17,14 @@ export type CustomerJourneyStep =
   | 'confirmation'
   | 'payment-portal';
 
+export type BankJourneyState =
+  | 'intro'
+  | 'privacy'
+  | 'youAreBeingDirected'
+  | 'connecting'
+  | 'success'
+  | 'error';
+
 export interface AssessmentData {
   monthlyIncome: number;
   totalExpenses: number;
@@ -24,6 +32,23 @@ export interface AssessmentData {
   billBalance: number;
   billRatioPct: number;
   dataQuality: number;
+}
+
+export interface BankConnectionData {
+  bankName?: string;
+  transactions?: string;
+  monthlyIncome?: number;
+  avgMonthlySpend?: number;
+  expenseCheckReportId?: string;
+  connectionId?: string;
+  authUrl?: string;
+  state?: string;
+}
+
+export interface BankError {
+  code?: string;
+  message?: string;
+  timestamp?: string;
 }
 
 export interface PaymentPlan {
@@ -190,6 +215,9 @@ export interface CustomerSliceState {
   selectedPlan?: PaymentPlanType;
   assessment?: AssessmentData;
   hardshipLevel?: HardshipLevel;
+  bankJourneyState?: BankJourneyState;
+  bankConnectionData?: BankConnectionData;
+  bankError?: BankError;
 }
 
 export interface AdminSliceState {
