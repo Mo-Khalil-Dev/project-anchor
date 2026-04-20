@@ -2,7 +2,6 @@ import { useAppDispatch } from '@/store';
 import { setBankJourneyState } from '@/store/slices/customerSlice';
 import { Button } from '@/components/core/Button';
 import { CustomerLayout } from '@/components/layouts/CustomerLayout';
-import { TrustFooter } from '../components/TrustFooter';
 
 export function Intro() {
   const dispatch = useAppDispatch();
@@ -28,10 +27,10 @@ export function Intro() {
         }
 
         .gradient-hero {
-          background: linear-gradient(135deg, var(--accent), var(--accentDk));
+          background: linear-gradient(135deg, #5b5bd6 0%, #3d3aa8 100%);
           border-radius: 18px;
-          padding: 40px 32px;
-          margin-bottom: 32px;
+          padding: 52px 40px;
+          margin-bottom: 40px;
           position: relative;
           overflow: hidden;
         }
@@ -39,44 +38,46 @@ export function Intro() {
         .gradient-hero::before {
           content: '';
           position: absolute;
-          width: 200px;
-          height: 200px;
-          background: rgba(255, 255, 255, 0.1);
+          width: 280px;
+          height: 280px;
+          background: rgba(255, 255, 255, 0.12);
           border-radius: 50%;
-          top: -100px;
-          right: -100px;
+          top: -80px;
+          right: -60px;
         }
 
         .gradient-hero::after {
           content: '';
           position: absolute;
-          width: 150px;
-          height: 150px;
+          width: 200px;
+          height: 200px;
           background: rgba(255, 255, 255, 0.08);
           border-radius: 50%;
-          bottom: -80px;
-          left: -80px;
+          bottom: -60px;
+          left: -40px;
         }
 
         .hero-content {
           position: relative;
           z-index: 1;
           text-align: center;
-          color: white;
         }
 
         .hero-icon {
           width: 72px;
           height: 72px;
-          margin: 0 auto 20px;
-          opacity: 0.95;
+          margin: 0 auto 24px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
 
         .hero-title {
           font-size: 28px;
           font-weight: 800;
-          margin: 0 0 8px 0;
+          margin: 0 0 12px 0;
           letter-spacing: -0.7px;
+          color: white;
         }
 
         .hero-subtitle {
@@ -84,7 +85,7 @@ export function Intro() {
           font-weight: 400;
           line-height: 1.55;
           margin: 0;
-          opacity: 0.95;
+          color: rgba(255, 255, 255, 0.95);
         }
 
         .value-props {
@@ -100,15 +101,15 @@ export function Intro() {
         }
 
         .value-prop-icon {
-          font-size: 24px;
+          font-size: 28px;
           margin-bottom: 8px;
-          color: var(--green);
+          color: #1e7d3f;
         }
 
         .value-prop-text {
           font-size: 13px;
           font-weight: 400;
-          color: var(--text);
+          color: #0d0f14;
           line-height: 1.5;
         }
 
@@ -122,24 +123,25 @@ export function Intro() {
         .access-card {
           border-radius: 14px;
           padding: 20px;
-          background-color: var(--card);
-          border: 1px solid var(--border);
+          background-color: #ffffff;
+          border: 1px solid rgba(0, 0, 0, 0.08);
+          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
         }
 
         .access-title {
           font-size: 14px;
           font-weight: 600;
           margin: 0 0 12px 0;
-          color: var(--text);
+          color: #0d0f14;
         }
 
         .access-item {
           display: flex;
           align-items: flex-start;
           gap: 8px;
-          margin-bottom: 8px;
+          margin-bottom: 10px;
           font-size: 13px;
-          color: var(--text);
+          color: #0d0f14;
           line-height: 1.5;
         }
 
@@ -167,6 +169,14 @@ export function Intro() {
           .buttons > button {
             flex: 1;
           }
+        }
+
+        .trust-text {
+          text-align: center;
+          font-size: 13px;
+          color: #9197ab;
+          font-weight: 400;
+          line-height: 1.6;
         }
       `}</style>
 
@@ -243,7 +253,9 @@ export function Intro() {
         </div>
 
         {/* Trust Footer */}
-        <TrustFooter text="256-bit encryption · Read-only · FCA regulated · GDPR compliant" />
+        <div className="trust-text">
+          🔒 256-bit encryption · Read-only · FCA regulated · GDPR compliant
+        </div>
       </div>
     </CustomerLayout>
   );

@@ -46,13 +46,13 @@ export function Privacy() {
           font-weight: 800;
           margin: 0 0 8px 0;
           letter-spacing: -0.7px;
-          color: var(--text);
+          color: #0d0f14;
         }
 
         .page-subtitle {
           font-size: 14px;
           font-weight: 400;
-          color: var(--sub);
+          color: #5a5f72;
           line-height: 1.55;
           margin: 0;
         }
@@ -60,9 +60,10 @@ export function Privacy() {
         .info-card {
           border-radius: 14px;
           padding: 20px;
-          background-color: var(--card);
-          border: 1px solid var(--border);
+          background-color: #ffffff;
+          border: 1px solid rgba(0, 0, 0, 0.08);
           margin-bottom: 20px;
+          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
         }
 
         .info-card-header {
@@ -74,13 +75,13 @@ export function Privacy() {
 
         .info-card-icon {
           font-size: 24px;
-          color: var(--accent);
+          color: #5b5bd6;
         }
 
         .info-card-title {
           font-size: 14px;
           font-weight: 600;
-          color: var(--text);
+          color: #0d0f14;
           margin: 0;
         }
 
@@ -90,9 +91,9 @@ export function Privacy() {
           gap: 12px;
           padding: 8px 0;
           font-size: 13px;
-          color: var(--text);
+          color: #0d0f14;
           line-height: 1.5;
-          border-bottom: 1px solid var(--divider);
+          border-bottom: 1px solid rgba(0, 0, 0, 0.07);
         }
 
         .info-row:last-child {
@@ -108,12 +109,13 @@ export function Privacy() {
         .retention-card {
           border-radius: 14px;
           padding: 16px;
-          background-color: var(--card);
-          border: 1px solid var(--border);
+          background-color: #ffffff;
+          border: 1px solid rgba(0, 0, 0, 0.08);
           margin-bottom: 20px;
           font-size: 13px;
-          color: var(--text);
+          color: #0d0f14;
           line-height: 1.6;
+          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
         }
 
         .retention-label {
@@ -124,8 +126,8 @@ export function Privacy() {
         .consent-card {
           border-radius: 14px;
           padding: 20px;
-          background-color: var(--accentBg);
-          border: 2px solid var(--accent);
+          background-color: #f0f0ff;
+          border: 2px solid #5b5bd6;
           margin-bottom: 24px;
         }
 
@@ -142,11 +144,12 @@ export function Privacy() {
           margin-top: 2px;
           cursor: pointer;
           flex-shrink: 0;
+          accent-color: #5b5bd6;
         }
 
         .consent-text {
           font-size: 13px;
-          color: var(--text);
+          color: #0d0f14;
           font-weight: 400;
           line-height: 1.6;
           margin: 0;

@@ -48,13 +48,13 @@ export function StepProgress({ steps, currentStep, className = '' }: StepProgres
         }
 
         .step-indicator.completed {
-          background-color: var(--green);
+          background-color: #1e7d3f;
           color: white;
         }
 
         .step-indicator.active {
-          border: 2px solid var(--accent);
-          color: var(--accent);
+          border: 2px solid #5b5bd6;
+          color: #5b5bd6;
           animation: pulse 1s ease-in-out infinite;
           background-color: transparent;
         }
@@ -64,20 +64,20 @@ export function StepProgress({ steps, currentStep, className = '' }: StepProgres
           position: absolute;
           width: 6px;
           height: 6px;
-          background-color: var(--accent);
+          background-color: #5b5bd6;
           border-radius: 50%;
         }
 
         .step-indicator.pending {
-          border: 2px solid var(--muted);
-          color: var(--muted);
+          border: 2px solid #9197ab;
+          color: #9197ab;
           background-color: transparent;
         }
 
         .step-label {
           font-size: 13px;
           font-weight: 400;
-          color: var(--text);
+          color: #0d0f14;
         }
       `}</style>
 

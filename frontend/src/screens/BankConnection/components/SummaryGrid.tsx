@@ -23,20 +23,21 @@ export function SummaryGrid({ items, className = '' }: SummaryGridProps) {
         <div
           key={item.label}
           style={{
-            backgroundColor: 'var(--card)',
-            border: '1px solid var(--border)',
+            backgroundColor: '#ffffff',
+            border: '1px solid rgba(0, 0, 0, 0.08)',
             borderRadius: '14px',
             padding: '16px',
             display: 'flex',
             flexDirection: 'column',
             gap: '4px',
+            boxShadow: '0 1px 4px rgba(0, 0, 0, 0.06)',
           }}
         >
           <div
             style={{
               fontSize: '12px',
               fontWeight: 600,
-              color: 'var(--muted)',
+              color: '#9197ab',
               textTransform: 'uppercase',
               letterSpacing: '0.07em',
             }}
@@ -47,7 +48,7 @@ export function SummaryGrid({ items, className = '' }: SummaryGridProps) {
             style={{
               fontSize: '17px',
               fontWeight: 700,
-              color: 'var(--text)',
+              color: '#0d0f14',
             }}
           >
             {item.value}

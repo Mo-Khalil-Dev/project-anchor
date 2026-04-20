@@ -42,7 +42,7 @@ export function YouAreBeingDirected() {
           width: 72px;
           height: 72px;
           margin-bottom: 24px;
-          background-color: var(--accent);
+          background-color: #5b5bd6;
           border-radius: 50%;
           display: flex;
           align-items: center;
@@ -60,13 +60,13 @@ export function YouAreBeingDirected() {
           font-size: 22px;
           font-weight: 800;
           margin: 0 0 12px 0;
-          color: var(--text);
+          color: #0d0f14;
           letter-spacing: -0.5px;
         }
 
         .description {
           font-size: 14px;
-          color: var(--sub);
+          color: #5a5f72;
           line-height: 1.6;
           margin-bottom: 32px;
           max-width: 400px;
@@ -85,11 +85,11 @@ export function YouAreBeingDirected() {
           align-items: center;
           gap: 6px;
           padding: 8px 12px;
-          background-color: var(--accentBg);
-          border: 1px solid var(--border);
+          background-color: #f0f0ff;
+          border: 1px solid rgba(0, 0, 0, 0.08);
           border-radius: 20px;
           font-size: 12px;
-          color: var(--text);
+          color: #0d0f14;
           font-weight: 500;
         }
       `}</style>

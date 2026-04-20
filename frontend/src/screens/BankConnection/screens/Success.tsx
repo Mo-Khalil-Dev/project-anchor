@@ -60,13 +60,13 @@ export function Success() {
           font-size: 28px;
           font-weight: 800;
           margin: 0 0 8px 0;
-          color: var(--text);
+          color: #0d0f14;
           letter-spacing: -0.7px;
         }
 
         .subheading {
           font-size: 14px;
-          color: var(--sub);
+          color: #5a5f72;
           line-height: 1.6;
           margin: 0 0 28px 0;
           max-width: 400px;

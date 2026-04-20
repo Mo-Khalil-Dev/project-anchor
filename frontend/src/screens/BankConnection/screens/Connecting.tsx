@@ -61,7 +61,7 @@ export function Connecting() {
         .icon-container {
           width: 84px;
           height: 84px;
-          background-color: var(--accent);
+          background-color: #5b5bd6;
           border-radius: 50%;
           display: flex;
           align-items: center;
@@ -80,7 +80,7 @@ export function Connecting() {
           font-size: 24px;
           font-weight: 800;
           margin: 0 0 24px 0;
-          color: var(--text);
+          color: #0d0f14;
           letter-spacing: -0.6px;
         }
 
@@ -92,7 +92,7 @@ export function Connecting() {
 
         .description {
           font-size: 13px;
-          color: var(--sub);
+          color: #5a5f72;
           text-align: center;
           line-height: 1.6;
           margin-bottom: 32px;
@@ -101,7 +101,7 @@ export function Connecting() {
 
         .trust-footer {
           font-size: 13px;
-          color: var(--muted);
+          color: #9197ab;
           text-align: center;
         }
       `}</style>

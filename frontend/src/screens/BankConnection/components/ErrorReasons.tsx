@@ -15,7 +15,7 @@ export function ErrorReasons({ reasons = DEFAULT_REASONS, className = '' }: Erro
     <div
       className={className}
       style={{
-        backgroundColor: 'var(--redBg)',
+        backgroundColor: '#fdf0ef',
         border: '1px solid rgba(192, 57, 43, 0.2)',
         borderRadius: '14px',
         padding: '16px',
@@ -26,7 +26,7 @@ export function ErrorReasons({ reasons = DEFAULT_REASONS, className = '' }: Erro
         style={{
           fontSize: '12px',
           fontWeight: 600,
-          color: 'var(--red)',
+          color: '#c0392b',
           textTransform: 'uppercase',
           letterSpacing: '0.07em',
           marginBottom: '12px',
@@ -45,7 +45,7 @@ export function ErrorReasons({ reasons = DEFAULT_REASONS, className = '' }: Erro
           <li
             key={idx}
             style={{
-              color: 'var(--text)',
+              color: '#0d0f14',
               fontSize: '13px',
               fontWeight: 400,
               marginBottom: '6px',

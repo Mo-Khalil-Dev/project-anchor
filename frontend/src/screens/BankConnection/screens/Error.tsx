@@ -61,27 +61,27 @@ export function Error() {
           font-size: 26px;
           font-weight: 800;
           margin: 0 0 8px 0;
-          color: var(--text);
+          color: #0d0f14;
           letter-spacing: -0.6px;
         }
 
         .subheading {
           font-size: 14px;
-          color: var(--sub);
+          color: #5a5f72;
           line-height: 1.6;
           margin: 0 0 24px 0;
           max-width: 400px;
         }
 
         .error-code-box {
-          background-color: var(--bg);
-          border: 1px solid var(--border);
+          background-color: #f4f5f9;
+          border: 1px solid rgba(0, 0, 0, 0.08);
           border-radius: 10px;
           padding: 12px;
           margin: 24px 0;
           font-family: 'Courier New', monospace;
           font-size: 12px;
-          color: var(--muted);
+          color: #9197ab;
           line-height: 1.6;
           word-break: break-all;
         }
