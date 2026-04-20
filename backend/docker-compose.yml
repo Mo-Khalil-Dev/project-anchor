@@ -28,6 +28,7 @@ services:
       FRONTEND_URL: http://localhost:5173
       REDIRECT_URL: http://localhost:3000/api/bank-connections/callback
       ENABLE_ERROR_STACK_TRACES: false
+      DISABLE_AUTH: true
     ports:
       - "3000:3000"
     volumes:

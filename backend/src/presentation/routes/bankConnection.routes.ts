@@ -21,9 +21,13 @@ export function createBankConnectionRoutes(config: AppConfig, logger: ILogger) {
 
   const controller = new BankConnectionController(initiateOAuth, handleCallback);
 
+  // Bypass auth if DISABLE_AUTH=true (testing only)
+  const authMiddleware =
+    process.env.DISABLE_AUTH === 'true' ? (_req: any, _res: any, next: () => any) => next() : auth;
+
   router.post(
     '/initiate',
-    auth,
+    authMiddleware,
     asyncHandler(controller.initiateOAuthFlow.bind(controller))
   );
 
