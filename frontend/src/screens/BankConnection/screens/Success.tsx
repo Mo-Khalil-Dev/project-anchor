@@ -3,7 +3,6 @@ import { useAppSelector, useAppDispatch } from '@/store';
 import { setCurrentStep } from '@/store/slices/customerSlice';
 import { Button } from '@/components/core/Button';
 import { CustomerLayout } from '@/components/layouts/CustomerLayout';
-import { SummaryGrid } from '../components/SummaryGrid';
 
 export function Success() {
   const navigate = useNavigate();
@@ -15,8 +14,8 @@ export function Success() {
     navigate('/assessment');
   };
 
-  const summaryItems = [
-    { label: 'Bank', value: data?.bankName || 'Connected' },
+  const summaryData = [
+    { label: 'Bank', value: data?.bankName || 'Barclays' },
     { label: 'Transactions', value: data?.transactions || '6 months' },
     { label: 'Monthly Income', value: `£${data?.monthlyIncome || '1,850'}` },
     { label: 'Avg. Monthly Spend', value: `£${data?.avgMonthlySpend || '1,720'}` },
@@ -32,28 +31,32 @@ export function Success() {
 
         .page {
           animation: fadeUp 0.22s ease both;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
+        }
+
+        .card {
+          background: white;
+          border: 1px solid rgba(0, 0, 0, 0.08);
+          border-radius: 14px;
+          padding: 52px 40px;
+          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
           text-align: center;
         }
 
         .checkmark-icon {
           width: 84px;
           height: 84px;
-          background-color: #1e7d3f;
-          border: 3px solid #5b5bd6;
-          border-radius: 50%;
+          background-color: #e8f5e9;
+          border: 3px solid #1e7d3f;
+          border-radius: 24px;
           display: flex;
           align-items: center;
           justify-content: center;
-          margin-bottom: 24px;
+          margin: 0 auto 24px;
         }
 
         .checkmark-svg {
-          width: 48px;
-          height: 48px;
-          color: white;
+          width: 40px;
+          height: 30px;
         }
 
         .heading {
@@ -65,55 +68,82 @@ export function Success() {
         }
 
         .subheading {
-          font-size: 14px;
+          font-size: 14.5px;
           color: #5a5f72;
           line-height: 1.6;
-          margin: 0 0 28px 0;
+          margin: 0 0 32px 0;
           max-width: 400px;
+          margin-left: auto;
+          margin-right: auto;
         }
 
         .summary-grid {
-          width: 100%;
+          background: #f5f5f5;
+          border-radius: 16px;
+          padding: 20px;
           margin-bottom: 28px;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
         }
 
-        .button-container {
-          margin-bottom: 24px;
+        .summary-item {
+          background: white;
+          border-radius: 12px;
+          padding: 14px 16px;
+          border: 1px solid rgba(0, 0, 0, 0.08);
+          text-align: left;
+        }
+
+        .summary-label {
+          font-size: 12px;
+          color: #9197ab;
+          margin-bottom: 4px;
+          font-weight: 500;
+        }
+
+        .summary-value {
+          font-size: 17px;
+          font-weight: 700;
+          color: #0d0f14;
         }
 
         .footer {
-          font-size: 13px;
+          font-size: 12.5px;
           color: #9197ab;
-          line-height: 1.6;
+          margin-top: 12px;
+        }
+
+        @media (max-width: 640px) {
+          .summary-grid {
+            grid-template-columns: 1fr;
+          }
         }
       `}</style>
 
       <div className="page">
-        <div className="checkmark-icon">
-          <svg className="checkmark-svg" viewBox="0 0 24 24" fill="none">
-            <path
-              d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"
-              fill="white"
-            />
-          </svg>
-        </div>
-
-        <h1 className="heading">Bank Connected!</h1>
-        <p className="subheading">
-          Your {data?.bankName || 'bank account'} is connected. We're now analysing your
-          financial data.
-        </p>
-
-        <div className="summary-grid">
-          <SummaryGrid items={summaryItems} />
-        </div>
-
-        <div className="button-container">
+        <div className="card">
+          <div className="checkmark-icon">
+            <svg className="checkmark-svg" viewBox="0 0 40 30" fill="none">
+              <path d="M3 15l12 12L37 3" stroke="#1e7d3f" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+          <h2 className="heading">Bank Connected!</h2>
+          <p className="subheading">
+            Your {data?.bankName || 'Barclays'} account is connected. We're now analysing 6 months of transactions.
+          </p>
+          <div className="summary-grid">
+            {summaryData.map(({ label, value }) => (
+              <div key={label} className="summary-item">
+                <div className="summary-label">{label}</div>
+                <div className="summary-value">{value}</div>
+              </div>
+            ))}
+          </div>
           <Button onClick={handleViewAssessment}>View Full Assessment</Button>
-        </div>
-
-        <div className="footer">
-          🔒 Read-only connection · Manage in Settings · Revoke anytime
+          <div className="footer">
+            🔒 Read-only connection · Manage in Settings · Revoke anytime
+          </div>
         </div>
       </div>
     </CustomerLayout>

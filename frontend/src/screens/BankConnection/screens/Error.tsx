@@ -2,7 +2,6 @@ import { useAppDispatch, useAppSelector } from '@/store';
 import { setBankJourneyState, resetBankJourney } from '@/store/slices/customerSlice';
 import { Button } from '@/components/core/Button';
 import { CustomerLayout } from '@/components/layouts/CustomerLayout';
-import { ErrorReasons } from '../components/ErrorReasons';
 
 export function Error() {
   const dispatch = useAppDispatch();
@@ -21,7 +20,7 @@ export function Error() {
     // TODO: Open support chat or navigate to help page
   };
 
-  const errorCode = error?.code || 'UNKNOWN_ERROR';
+  const errorCode = error?.code || 'TINK_AUTH_FAILED_001';
   const timestamp = error?.timestamp || new Date().toISOString();
 
   return (
@@ -34,27 +33,31 @@ export function Error() {
 
         .page {
           animation: fadeUp 0.22s ease both;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
+        }
+
+        .card {
+          background: white;
+          border: 1px solid rgba(0, 0, 0, 0.08);
+          border-radius: 14px;
+          padding: 52px 40px;
+          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
           text-align: center;
         }
 
         .alert-icon {
           width: 84px;
           height: 84px;
-          background-color: #c0392b;
-          border-radius: 50%;
+          background-color: #fee;
+          border-radius: 24px;
           display: flex;
           align-items: center;
           justify-content: center;
-          margin-bottom: 24px;
+          margin: 0 auto 24px;
         }
 
         .alert-svg {
-          width: 48px;
-          height: 48px;
-          color: white;
+          width: 40px;
+          height: 40px;
         }
 
         .heading {
@@ -66,38 +69,60 @@ export function Error() {
         }
 
         .subheading {
-          font-size: 14px;
+          font-size: 14.5px;
           color: #5a5f72;
           line-height: 1.6;
-          margin: 0 0 24px 0;
-          max-width: 400px;
+          margin-bottom: 24px;
+        }
+
+        .error-reasons-card {
+          background: #fee;
+          border: 1px solid rgba(192, 57, 43, 0.15);
+          border-radius: 14px;
+          padding: 18px 20px;
+          margin-bottom: 20px;
+          text-align: left;
+        }
+
+        .error-reasons-title {
+          font-size: 13.5px;
+          font-weight: 700;
+          color: #c0392b;
+          margin-bottom: 10px;
+        }
+
+        .error-reason {
+          display: flex;
+          gap: 8px;
+          align-items: flex-start;
+          font-size: 13.5px;
+          color: #5a5f72;
+          padding: 5px 0;
+        }
+
+        .error-reason-bullet {
+          color: #c0392b;
+          font-weight: 700;
+          line-height: 1.4;
+          flex-shrink: 0;
         }
 
         .error-code-box {
-          background-color: #f4f5f9;
+          background: #f5f5f5;
           border: 1px solid rgba(0, 0, 0, 0.08);
-          border-radius: 10px;
-          padding: 12px;
-          margin: 24px 0;
-          font-family: 'Courier New', monospace;
-          font-size: 12px;
-          color: #9197ab;
-          line-height: 1.6;
-          word-break: break-all;
-        }
-
-        .error-reasons {
-          width: 100%;
-          max-width: 400px;
+          border-radius: 12px;
+          padding: 12px 16px;
           margin-bottom: 24px;
+          font-family: monospace;
+          font-size: 12px;
+          color: #5a5f72;
+          text-align: left;
         }
 
         .buttons {
           display: flex;
           flex-direction: column;
-          gap: 12px;
-          width: 100%;
-          max-width: 400px;
+          gap: 10px;
         }
 
         @media (min-width: 640px) {
@@ -109,57 +134,47 @@ export function Error() {
             flex: 1;
           }
         }
-
-        .button-secondary {
-          order: 2;
-        }
-
-        .button-tertiary {
-          order: 3;
-        }
-
-        @media (min-width: 640px) {
-          .button-secondary {
-            order: initial;
-          }
-
-          .button-tertiary {
-            order: initial;
-          }
-        }
       `}</style>
 
       <div className="page">
-        <div className="alert-icon">
-          <svg className="alert-svg" viewBox="0 0 24 24" fill="none">
-            <path
-              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
-              fill="white"
-            />
-          </svg>
-        </div>
-
-        <h1 className="heading">Connection Failed</h1>
-        <p className="subheading">
-          We couldn't connect to your bank. Don't worry — your data is safe.
-        </p>
-
-        <div className="error-reasons">
-          <ErrorReasons />
-        </div>
-
-        <div className="error-code-box">
-          Error: {errorCode} · {new Date(timestamp).toUTCString()}
-        </div>
-
-        <div className="buttons">
-          <Button onClick={handleTryAgain}>Try Again</Button>
-          <Button variant="secondary" onClick={handleProvideManually} className="button-secondary">
-            Provide Statements Manually
-          </Button>
-          <Button variant="ghost" onClick={handleGetHelp} className="button-tertiary">
-            Get Help
-          </Button>
+        <div className="card">
+          <div className="alert-icon">
+            <svg className="alert-svg" viewBox="0 0 40 40" fill="none">
+              <path d="M20 4L4 34h32L20 4z" fill="#fee" stroke="#c0392b" strokeWidth="2.5" strokeLinejoin="round"/>
+              <path d="M20 15v10" stroke="#c0392b" strokeWidth="2.5" strokeLinecap="round"/>
+              <circle cx="20" cy="29" r="1.8" fill="#c0392b"/>
+            </svg>
+          </div>
+          <h2 className="heading">Connection Failed</h2>
+          <p className="subheading">
+            We couldn't connect to your bank. Don't worry — your data is safe.
+          </p>
+          <div className="error-reasons-card">
+            <div className="error-reasons-title">Why this might happen:</div>
+            {[
+              'Your bank login details were incorrect',
+              'Your bank\'s service was temporarily unavailable',
+              'You cancelled the connection during login',
+              'Your bank may not yet support Open Banking',
+            ].map((reason) => (
+              <div key={reason} className="error-reason">
+                <span className="error-reason-bullet">·</span>
+                <span>{reason}</span>
+              </div>
+            ))}
+          </div>
+          <div className="error-code-box">
+            Error: {errorCode} · {new Date(timestamp).toISOString().replace('T', ' ').slice(0, 19)} UTC
+          </div>
+          <div className="buttons">
+            <Button onClick={handleTryAgain}>Try Again</Button>
+            <Button variant="secondary" onClick={handleProvideManually}>
+              Provide Statements Manually
+            </Button>
+            <Button variant="ghost" onClick={handleGetHelp}>
+              Get Help
+            </Button>
+          </div>
         </div>
       </div>
     </CustomerLayout>

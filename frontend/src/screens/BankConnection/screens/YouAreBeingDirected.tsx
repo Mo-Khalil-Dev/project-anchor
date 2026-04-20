@@ -10,7 +10,7 @@ export function YouAreBeingDirected() {
       if (authUrl) {
         window.location.href = authUrl;
       }
-    }, 4000);
+    }, 2200);
 
     return () => clearTimeout(timer);
   }, [authUrl]);
@@ -30,36 +30,39 @@ export function YouAreBeingDirected() {
 
         .page {
           animation: fadeUp 0.22s ease both;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          min-height: 60vh;
+        }
+
+        .card {
+          background: white;
+          border: 1px solid rgba(0, 0, 0, 0.08);
+          border-radius: 14px;
+          padding: 52px 40px;
+          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
           text-align: center;
         }
 
-        .hourglass-icon {
+        .spinner {
           width: 72px;
           height: 72px;
-          margin-bottom: 24px;
-          background-color: #5b5bd6;
-          border-radius: 50%;
+          background-color: #f0f0ff;
+          border: 2px solid rgba(91, 91, 214, 0.15);
+          border-radius: 22px;
           display: flex;
           align-items: center;
           justify-content: center;
-          animation: spinHG 3s linear infinite;
+          margin: 0 auto 24px;
         }
 
-        .hourglass-svg {
-          width: 40px;
-          height: 40px;
-          color: white;
+        .spinner-svg {
+          width: 36px;
+          height: 36px;
+          animation: spinHG 3s linear infinite;
         }
 
         .heading {
           font-size: 22px;
           font-weight: 800;
-          margin: 0 0 12px 0;
+          margin: 0 0 8px 0;
           color: #0d0f14;
           letter-spacing: -0.5px;
         }
@@ -68,62 +71,45 @@ export function YouAreBeingDirected() {
           font-size: 14px;
           color: #5a5f72;
           line-height: 1.6;
-          margin-bottom: 32px;
-          max-width: 400px;
+          margin-bottom: 28px;
+          max-width: 360px;
+          margin-left: auto;
+          margin-right: auto;
         }
 
         .trust-badges {
           display: flex;
-          gap: 12px;
+          gap: 10px;
           justify-content: center;
           flex-wrap: wrap;
-          margin-top: 24px;
         }
 
-        .badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          padding: 8px 12px;
-          background-color: #f0f0ff;
-          border: 1px solid rgba(0, 0, 0, 0.08);
-          border-radius: 20px;
-          font-size: 12px;
-          color: #0d0f14;
-          font-weight: 500;
+        .trust-badge {
+          font-size: 12.5px;
+          font-weight: 600;
+          color: #5b5bd6;
+          background: #f0f0ff;
+          border-radius: 100px;
+          padding: 5px 12px;
         }
       `}</style>
 
       <div className="page">
-        <div className="hourglass-icon">
-          <svg className="hourglass-svg" viewBox="0 0 24 24" fill="none">
-            <path
-              d="M6 2h12v7c0 2-1.5 3-3 3s-3 1-3 3 1.5 3 3 3 3 1 3 3v7H6v-7c0-2 1.5-3 3-3s3-1 3-3-1.5-3-3-3-3 1-3 3V2z"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              fill="none"
-            />
-          </svg>
-        </div>
-
-        <h1 className="heading">Opening Tink…</h1>
-
-        <p className="description">
-          You'll be securely redirected to Tink to connect your bank. You'll log in there directly
-          — Bridge never sees your credentials.
-        </p>
-
-        <div className="trust-badges">
-          <div className="badge">
-            <span>✓</span> FCA regulated
+        <div className="card">
+          <div className="spinner">
+            <svg className="spinner-svg" viewBox="0 0 36 36" fill="none">
+              <circle cx="18" cy="18" r="14" stroke="#5b5bd6" strokeWidth="2" strokeDasharray="6 4" style={{animation:'spinHG 3s linear infinite',transformOrigin:'18px 18px'}}/>
+              <path d="M18 10v8l5 5" stroke="#5b5bd6" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
           </div>
-          <div className="badge">
-            <span>🔒</span> 256-bit encryption
-          </div>
-          <div className="badge">
-            <span>👁️</span> Read-only access
+          <h2 className="heading">Opening Tink…</h2>
+          <p className="description">
+            You're being securely redirected to <strong style={{color:'#0d0f14'}}>Tink</strong>, our FCA-regulated Open Banking partner. Select your bank and log in there — we never see your credentials.
+          </p>
+          <div className="trust-badges">
+            <div className="trust-badge">FCA regulated</div>
+            <div className="trust-badge">256-bit encryption</div>
+            <div className="trust-badge">Read-only access</div>
           </div>
         </div>
       </div>

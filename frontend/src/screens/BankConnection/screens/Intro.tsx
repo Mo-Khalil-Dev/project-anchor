@@ -30,7 +30,7 @@ export function Intro() {
           background: linear-gradient(135deg, #5b5bd6 0%, #3d3aa8 100%);
           border-radius: 20px;
           padding: 52px 40px;
-          margin-bottom: 40px;
+          margin-bottom: 32px;
           text-align: center;
           position: relative;
           overflow: hidden;
@@ -63,20 +63,6 @@ export function Intro() {
           z-index: 1;
         }
 
-        .hero-icon {
-          width: 48px;
-          height: 48px;
-          margin: 0 auto 20px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .hero-icon svg {
-          width: 100%;
-          height: 100%;
-        }
-
         .hero-title {
           color: white;
           font-size: 28px;
@@ -102,43 +88,45 @@ export function Intro() {
           font-weight: 600;
           text-transform: uppercase;
           letter-spacing: 0.08em;
-          margin-bottom: 20px;
-          margin-top: 36px;
+          margin-bottom: 12px;
+          padding: 0 16px;
         }
 
         .value-props-card {
           background: white;
-          border: 1px solid #e0e0e0;
+          border: 1px solid rgba(0, 0, 0, 0.08);
           border-radius: 12px;
-          padding: 28px;
-          margin-bottom: 40px;
+          padding: 4px 16px;
+          margin-bottom: 12px;
+          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
         }
 
         .value-props-list {
           display: flex;
           flex-direction: column;
-          gap: 20px;
         }
 
         .value-prop {
           display: flex;
-          gap: 16px;
+          gap: 14px;
           align-items: flex-start;
+          padding: 12px 0;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.07);
         }
 
-        .value-prop-checkbox {
-          width: 24px;
-          height: 24px;
-          border-radius: 50%;
-          background: #5b5bd6;
-          color: white;
+        .value-prop:last-child {
+          border-bottom: none;
+        }
+
+        .value-prop-icon {
+          width: 34px;
+          height: 34px;
+          border-radius: 10px;
+          background: #f0f0ff;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 14px;
-          font-weight: 700;
           flex-shrink: 0;
-          margin-top: 2px;
         }
 
         .value-prop-text {
@@ -149,7 +137,7 @@ export function Intro() {
           color: #0d0f14;
           font-size: 14px;
           font-weight: 700;
-          margin: 0 0 4px 0;
+          margin: 0 0 3px 0;
         }
 
         .value-prop-desc {
@@ -163,15 +151,16 @@ export function Intro() {
         .access-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 20px;
-          margin-bottom: 40px;
+          gap: 12px;
+          margin-bottom: 12px;
         }
 
         .access-card {
           background: white;
-          border: 1px solid #e0e0e0;
+          border: 1px solid rgba(0, 0, 0, 0.08);
           border-radius: 12px;
-          padding: 28px;
+          padding: 18px 20px;
+          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
         }
 
         .access-card-title {
@@ -180,18 +169,18 @@ export function Intro() {
           font-weight: 600;
           text-transform: uppercase;
           letter-spacing: 0.08em;
-          margin: 0 0 20px 0;
+          margin: 0 0 12px 0;
         }
 
         .access-items {
           display: flex;
           flex-direction: column;
-          gap: 12px;
+          gap: 10px;
         }
 
         .access-item {
           display: flex;
-          gap: 12px;
+          gap: 10px;
           align-items: flex-start;
           color: #0d0f14;
           font-size: 13px;
@@ -201,9 +190,9 @@ export function Intro() {
 
         .access-item-icon {
           color: #1e7d3f;
-          font-size: 16px;
+          font-size: 14px;
           flex-shrink: 0;
-          margin-top: 2px;
+          margin-top: 1px;
         }
 
         .access-item-deny .access-item-icon {
@@ -211,17 +200,10 @@ export function Intro() {
         }
 
         .buttons-container {
-          display: flex;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
           gap: 12px;
-          margin-bottom: 32px;
-        }
-
-        .btn-continue {
-          flex: 1;
-        }
-
-        .btn-secondary {
-          flex: 1;
+          margin-bottom: 4px;
         }
 
         .trust-footer {
@@ -230,6 +212,10 @@ export function Intro() {
           font-size: 12px;
           font-weight: 400;
           line-height: 1.6;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
         }
 
         @media (max-width: 640px) {
@@ -238,7 +224,7 @@ export function Intro() {
           }
 
           .buttons-container {
-            flex-direction: column;
+            grid-template-columns: 1fr;
           }
         }
       `}</style>
@@ -247,13 +233,16 @@ export function Intro() {
         {/* Hero */}
         <div className="hero">
           <div className="hero-content">
-            <div className="hero-icon">
-              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M8 20V40H40V20" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M4 20H44L24 8L4 20Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M16 26V34" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-                <path d="M24 26V34" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-                <path d="M32 26V34" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+            <div style={{ marginBottom: '20px' }}>
+              <svg width="36" height="32" viewBox="0 0 48 44" fill="none">
+                <rect x="2" y="18" width="44" height="6" rx="3" fill="rgba(255,255,255,0.25)" />
+                <rect x="2" y="36" width="44" height="6" rx="3" fill="white" />
+                <rect x="6" y="24" width="6" height="12" rx="2" fill="white" />
+                <rect x="17" y="24" width="6" height="12" rx="2" fill="white" />
+                <rect x="28" y="24" width="6" height="12" rx="2" fill="white" />
+                <rect x="39" y="24" width="6" height="12" rx="2" fill="white" />
+                <path d="M2 18L24 4l22 14H2z" fill="white" />
+                <circle cx="24" cy="12" r="3" fill="rgba(255,255,255,0.5)" />
               </svg>
             </div>
             <h1 className="hero-title">Connect Your Bank Account</h1>
@@ -263,56 +252,48 @@ export function Intro() {
           </div>
         </div>
 
-        {/* Why Connect - Single Card */}
+        {/* Why Connect Card */}
         <div className="section-label">Why connect your bank?</div>
         <div className="value-props-card">
           <div className="value-props-list">
-            <div className="value-prop">
-              <div className="value-prop-checkbox">✓</div>
-              <div className="value-prop-text">
-                <p className="value-prop-title">No forms to fill out</p>
-                <p className="value-prop-desc">We see your real spending patterns, not just what you tell us.</p>
+            {[
+              { title: 'No forms to fill out', desc: 'We see your real spending patterns, not just what you tell us.' },
+              { title: 'Faster assessment', desc: 'Complete your assessment in minutes, not days.' },
+              { title: 'Better support options', desc: 'More tailored payment plans and support recommendations.' },
+            ].map(({ title, desc }) => (
+              <div key={title} className="value-prop">
+                <div className="value-prop-icon">
+                  <svg width="14" height="12" viewBox="0 0 14 12" fill="none">
+                    <path d="M1 6l4 4 8-8" stroke="#5b5bd6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </div>
+                <div className="value-prop-text">
+                  <div className="value-prop-title">{title}</div>
+                  <div className="value-prop-desc">{desc}</div>
+                </div>
               </div>
-            </div>
-
-            <div className="value-prop">
-              <div className="value-prop-checkbox">✓</div>
-              <div className="value-prop-text">
-                <p className="value-prop-title">Faster assessment</p>
-                <p className="value-prop-desc">Complete your assessment in minutes, not days.</p>
-              </div>
-            </div>
-
-            <div className="value-prop">
-              <div className="value-prop-checkbox">✓</div>
-              <div className="value-prop-text">
-                <p className="value-prop-title">Better support options</p>
-                <p className="value-prop-desc">More tailored payment plans and support recommendations.</p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
 
         {/* Access Cards */}
         <div className="access-grid">
           <div className="access-card">
-            <h3 className="access-card-title">What we'll access</h3>
+            <div className="access-card-title">What we'll access</div>
             <div className="access-items">
-              {[
-                'Last 6 months of transactions',
-                'Income & salary deposits',
-                'Spending patterns & categories',
-              ].map((item) => (
-                <div key={item} className="access-item">
-                  <div className="access-item-icon">✓</div>
-                  <div>{item}</div>
-                </div>
-              ))}
+              {['Last 6 months of transactions', 'Income & salary deposits', 'Spending patterns & categories'].map(
+                (item) => (
+                  <div key={item} className="access-item">
+                    <span className="access-item-icon">✓</span>
+                    <span>{item}</span>
+                  </div>
+                )
+              )}
             </div>
           </div>
 
           <div className="access-card">
-            <h3 className="access-card-title">What we won't access</h3>
+            <div className="access-card-title">What we won't access</div>
             <div className="access-items">
               {[
                 'Your login password or credentials',
@@ -320,8 +301,8 @@ export function Intro() {
                 'Ability to change account details',
               ].map((item) => (
                 <div key={item} className="access-item access-item-deny">
-                  <div className="access-item-icon">✕</div>
-                  <div>{item}</div>
+                  <span className="access-item-icon">✕</span>
+                  <span>{item}</span>
                 </div>
               ))}
             </div>
@@ -330,17 +311,22 @@ export function Intro() {
 
         {/* Buttons */}
         <div className="buttons-container">
-          <Button onClick={handleContinue} className="btn-continue">
-            Continue
-          </Button>
-          <Button variant="secondary" onClick={handleProvideManually} className="btn-secondary">
+          <Button onClick={handleContinue}>Continue</Button>
+          <Button variant="secondary" onClick={handleProvideManually}>
             Provide Statements Manually
           </Button>
         </div>
 
         {/* Trust Footer */}
         <div className="trust-footer">
-          🔒 256-bit encryption · Read-only · FCA regulated · GDPR compliant
+          <svg width="12" height="14" viewBox="0 0 12 14" fill="none">
+            <path
+              d="M6 1L1 3.5v4c0 2.76 2.24 5 5 5s5-2.24 5-5v-4L6 1z"
+              fill="#9197ab"
+              opacity="0.5"
+            />
+          </svg>
+          256-bit encryption · Read-only · FCA regulated · GDPR compliant
         </div>
       </div>
     </CustomerLayout>
