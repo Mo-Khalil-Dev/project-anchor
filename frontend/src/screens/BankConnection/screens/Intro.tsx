@@ -64,8 +64,17 @@ export function Intro() {
         }
 
         .hero-icon {
-          font-size: 48px;
-          margin-bottom: 20px;
+          width: 48px;
+          height: 48px;
+          margin: 0 auto 20px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .hero-icon svg {
+          width: 100%;
+          height: 100%;
         }
 
         .hero-title {
@@ -238,7 +247,15 @@ export function Intro() {
         {/* Hero */}
         <div className="hero">
           <div className="hero-content">
-            <div className="hero-icon">🏦</div>
+            <div className="hero-icon">
+              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 20V40H40V20" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M4 20H44L24 8L4 20Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M16 26V34" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                <path d="M24 26V34" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                <path d="M32 26V34" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+            </div>
             <h1 className="hero-title">Connect Your Bank Account</h1>
             <p className="hero-subtitle">
               We use a secure, read-only connection to verify your finances — no manual forms, no passwords stored.
