@@ -37,18 +37,19 @@ export function useBankConnection() {
     }
   }, [dispatch]);
 
-  const handleCallback = useCallback(async (expenseCheckReportId: string) => {
+  const handleCallback = useCallback(async (expenseCheckId: string, state: string) => {
     try {
       dispatch(setBankError(undefined));
-      const response = await bankConnectionApi.handleBankCallback(expenseCheckReportId);
+      const response = await bankConnectionApi.handleBankCallback(expenseCheckId, state);
       dispatch(
         setBankConnectionData({
           ...response.expenseData,
           connectionId: response.connectionId,
-          expenseCheckReportId,
+          expenseCheckReportId: expenseCheckId,
         })
       );
       dispatch(setBankJourneyState('success'));
+      console.log("Bank connection successful:", response);
       return response;
     } catch (err: any) {
       const errorData = {

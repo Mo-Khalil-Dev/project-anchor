@@ -22,12 +22,16 @@ export async function initiateBank(): Promise<InitiateBankResponse> {
 }
 
 export async function handleBankCallback(
-  expenseCheckReportId: string
+  expenseCheckId: string,
+  state: string
 ): Promise<HandleBankCallbackResponse> {
   const response = await axiosInstance.get<ApiResponse<HandleBankCallbackResponse>>(
     '/bank-connections/callback',
     {
-      params: { expense_check_report_id: expenseCheckReportId },
+      params: {
+        code: expenseCheckId,
+        state: state,
+      },
     }
   );
   if (!response.data.success || !response.data.data) {
