@@ -12,9 +12,13 @@ export function createApp(config: AppConfig, logger: ILogger): Express {
   // ============ MIDDLEWARE ============
 
   app.use(helmet());
+  // CORS configuration - allow all origins
   app.use(cors({
-    origin: config.server.frontendUrl,
-    credentials: true,
+    origin: '*',
+    credentials: false,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Trace-ID'],
+    maxAge: 86400,
   }));
 
   app.use(express.json());

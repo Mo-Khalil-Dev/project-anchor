@@ -68,7 +68,7 @@ export const configSchema = rawEnvSchema.transform((env) => {
       port: env.PORT,
       frontendUrl: env.FRONTEND_URL,
       backendUrl: env.BACKEND_URL || `http://localhost:${env.PORT}`,
-      redirectUrl: env.REDIRECT_URL || `${env.BACKEND_URL || `http://localhost:${env.PORT}`}/api/bank-connections/callback`,
+      redirectUrl: env.REDIRECT_URL || `${env.FRONTEND_URL}/bank-connection`,
     },
     database: {
       provider: provider as 'sqlite' | 'postgresql',

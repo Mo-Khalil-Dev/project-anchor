@@ -19,7 +19,11 @@ export class BankConnectionController {
     const result = await this.initiateOAuth.execute(customerId);
     result.match(
       (data) => {
-        res.json(data);
+        res.json({
+          success: true,
+          data,
+          timestamp: new Date().toISOString(),
+        });
         return res;
       },
       (error) => {
@@ -39,7 +43,11 @@ export class BankConnectionController {
     const result = await this.handleCallbackUseCase.execute(code, state);
     result.match(
       (data) => {
-        res.json(data);
+        res.json({
+          success: true,
+          data,
+          timestamp: new Date().toISOString(),
+        });
         return res;
       },
       (error) => {

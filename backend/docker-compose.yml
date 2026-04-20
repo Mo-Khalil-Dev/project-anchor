@@ -26,7 +26,7 @@ services:
       STRIPE_SECRET_KEY: sk_test_local
       STRIPE_WEBHOOK_SECRET: whsec_local
       FRONTEND_URL: http://localhost:5173
-      REDIRECT_URL: http://localhost:3000/api/bank-connections/callback
+      REDIRECT_URL: http://localhost:3000/bank-connection
       ENABLE_ERROR_STACK_TRACES: false
       DISABLE_AUTH: true
     ports:

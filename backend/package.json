@@ -4,7 +4,7 @@
   "description": "PROJECT BRIDGE - Hardship Assessment Platform Backend",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "DISABLE_AUTH=true ts-node src/index.ts",
+    "dev": "ts-node src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "test": "jest",

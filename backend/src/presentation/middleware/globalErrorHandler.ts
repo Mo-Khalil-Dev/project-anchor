@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import type { ILogger } from '../../shared/logging';
 import type { AppConfig } from '../../shared/config';
 
-export function globalErrorHandler(logger: ILogger, config: AppConfig) {
+export function globalErrorHandler(logger: ILogger, _: AppConfig) {
   return (err: unknown, req: Request, res: Response, _next: NextFunction): void => {
     const traceId = uuidv4();
     const timestamp = new Date().toISOString();
@@ -17,7 +17,8 @@ export function globalErrorHandler(logger: ILogger, config: AppConfig) {
 
       res.status(400).json({
         success: false,
-        error: { code: err.code, message: err.message, details: err.details, traceId, timestamp },
+        error: err.message,
+        timestamp,
       });
       return;
     }
@@ -27,14 +28,14 @@ export function globalErrorHandler(logger: ILogger, config: AppConfig) {
 
       res.status(400).json({
         success: false,
-        error: { code: err.code, message: err.message, details: err.details, traceId, timestamp },
+        error: err.message,
+        timestamp,
       });
       return;
     }
 
     if (err instanceof ApplicationError) {
       const statusCode = err.statusCode || 500;
-      const includeStack = config.features.errorStackTracesEnabled;
 
       if (statusCode < 500) {
         logger.warn('Application error', { ...requestContext, code: err.code, statusCode });
@@ -44,8 +45,7 @@ export function globalErrorHandler(logger: ILogger, config: AppConfig) {
 
       res.status(statusCode).json({
         success: false,
-        error: err.toJSON(includeStack),
-        traceId,
+        error: err.message,
         timestamp,
       });
       return;
@@ -56,7 +56,8 @@ export function globalErrorHandler(logger: ILogger, config: AppConfig) {
 
       res.status(500).json({
         success: false,
-        error: { code: 'INTERNAL_SERVER_ERROR', message: 'An unexpected error occurred', traceId, timestamp },
+        error: err.message || 'An unexpected error occurred',
+        timestamp,
       });
       return;
     }
@@ -65,7 +66,8 @@ export function globalErrorHandler(logger: ILogger, config: AppConfig) {
 
     res.status(500).json({
       success: false,
-      error: { code: 'INTERNAL_SERVER_ERROR', message: 'An unexpected error occurred', traceId, timestamp },
+      error: 'An unexpected error occurred',
+      timestamp,
     });
   };
 }
