@@ -24,35 +24,38 @@ export function Intro() {
 
         .page {
           animation: fadeUp 0.22s ease both;
+          max-width: 840px;
+          margin: 0 auto;
         }
 
-        .gradient-hero {
+        .hero {
           background: linear-gradient(135deg, #5b5bd6 0%, #3d3aa8 100%);
-          border-radius: 18px;
-          padding: 52px 40px;
+          border-radius: 20px;
+          padding: 48px 40px;
           margin-bottom: 40px;
+          text-align: center;
           position: relative;
           overflow: hidden;
         }
 
-        .gradient-hero::before {
+        .hero::before,
+        .hero::after {
           content: '';
           position: absolute;
-          width: 280px;
-          height: 280px;
-          background: rgba(255, 255, 255, 0.12);
           border-radius: 50%;
-          top: -80px;
-          right: -60px;
+          background: rgba(255, 255, 255, 0.1);
         }
 
-        .gradient-hero::after {
-          content: '';
-          position: absolute;
+        .hero::before {
+          width: 280px;
+          height: 280px;
+          top: -100px;
+          right: -80px;
+        }
+
+        .hero::after {
           width: 200px;
           height: 200px;
-          background: rgba(255, 255, 255, 0.08);
-          border-radius: 50%;
           bottom: -60px;
           left: -40px;
         }
@@ -60,160 +63,202 @@ export function Intro() {
         .hero-content {
           position: relative;
           z-index: 1;
-          text-align: center;
         }
 
         .hero-icon {
-          width: 72px;
-          height: 72px;
-          margin: 0 auto 24px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
+          font-size: 48px;
+          margin-bottom: 20px;
         }
 
         .hero-title {
+          color: white;
           font-size: 28px;
           font-weight: 800;
           margin: 0 0 12px 0;
           letter-spacing: -0.7px;
-          color: white;
         }
 
         .hero-subtitle {
+          color: rgba(255, 255, 255, 0.95);
           font-size: 14px;
           font-weight: 400;
-          line-height: 1.55;
+          line-height: 1.6;
           margin: 0;
-          color: rgba(255, 255, 255, 0.95);
+          max-width: 500px;
+          margin-left: auto;
+          margin-right: auto;
+        }
+
+        .section-label {
+          color: #9197ab;
+          font-size: 11px;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          margin-bottom: 20px;
+          margin-top: 36px;
         }
 
         .value-props {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 12px;
-          margin-bottom: 32px;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          margin-bottom: 40px;
         }
 
         .value-prop {
-          text-align: center;
-          padding: 16px;
+          background: white;
+          border: 1px solid #e0e0e0;
+          border-radius: 12px;
+          padding: 20px;
+          display: flex;
+          gap: 16px;
+          align-items: flex-start;
         }
 
         .value-prop-icon {
-          font-size: 28px;
-          margin-bottom: 8px;
           color: #1e7d3f;
+          font-size: 20px;
+          flex-shrink: 0;
+          margin-top: 2px;
         }
 
         .value-prop-text {
+          flex: 1;
+        }
+
+        .value-prop-title {
+          color: #0d0f14;
+          font-size: 14px;
+          font-weight: 700;
+          margin: 0 0 4px 0;
+        }
+
+        .value-prop-desc {
+          color: #5a5f72;
           font-size: 13px;
           font-weight: 400;
-          color: #0d0f14;
           line-height: 1.5;
+          margin: 0;
         }
 
         .access-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 16px;
-          margin-bottom: 32px;
+          gap: 20px;
+          margin-bottom: 40px;
         }
 
         .access-card {
-          border-radius: 14px;
-          padding: 20px;
-          background-color: #ffffff;
-          border: 1px solid rgba(0, 0, 0, 0.08);
-          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+          background: white;
+          border: 1px solid #e0e0e0;
+          border-radius: 12px;
+          padding: 24px;
         }
 
-        .access-title {
-          font-size: 14px;
+        .access-card-title {
+          color: #9197ab;
+          font-size: 11px;
           font-weight: 600;
-          margin: 0 0 12px 0;
-          color: #0d0f14;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          margin: 0 0 16px 0;
+        }
+
+        .access-items {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
         }
 
         .access-item {
           display: flex;
+          gap: 10px;
           align-items: flex-start;
-          gap: 8px;
-          margin-bottom: 10px;
-          font-size: 13px;
           color: #0d0f14;
+          font-size: 13px;
+          font-weight: 400;
           line-height: 1.5;
         }
 
-        .access-item:last-child {
-          margin-bottom: 0;
-        }
-
-        .access-icon {
-          margin-top: 2px;
+        .access-item-icon {
+          color: #1e7d3f;
+          font-size: 16px;
           flex-shrink: 0;
+          margin-top: 2px;
         }
 
-        .buttons {
+        .access-item-deny .access-item-icon {
+          color: #c0392b;
+        }
+
+        .buttons-container {
           display: flex;
-          flex-direction: column;
           gap: 12px;
           margin-bottom: 32px;
         }
 
-        @media (min-width: 640px) {
-          .buttons {
-            flex-direction: row;
-          }
-
-          .buttons > button {
-            flex: 1;
-          }
+        .buttons-container > button {
+          flex: 1;
         }
 
-        .trust-text {
+        .trust-footer {
           text-align: center;
-          font-size: 13px;
           color: #9197ab;
+          font-size: 12px;
           font-weight: 400;
           line-height: 1.6;
+        }
+
+        @media (max-width: 640px) {
+          .access-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .buttons-container {
+            flex-direction: column;
+          }
         }
       `}</style>
 
       <div className="page">
-        {/* Hero Section */}
-        <div className="gradient-hero">
+        {/* Hero */}
+        <div className="hero">
           <div className="hero-content">
-            <div className="hero-icon">
-              <svg viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="36" cy="36" r="32" stroke="white" strokeWidth="1.5" opacity="0.5" />
-                <path
-                  d="M28 42C28 42 32 38 36 40C40 42 44 30 48 36"
-                  stroke="white"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <rect x="26" y="50" width="20" height="8" rx="1" stroke="white" strokeWidth="1.5" />
-              </svg>
-            </div>
+            <div className="hero-icon">🏦</div>
             <h1 className="hero-title">Connect Your Bank Account</h1>
             <p className="hero-subtitle">
-              Securely link your bank for instant financial insights
+              We use a secure, read-only connection to verify your finances — no manual forms, no passwords stored.
             </p>
           </div>
         </div>
 
-        {/* Value Props */}
+        {/* Why Connect */}
+        <div className="section-label">Why connect your bank?</div>
         <div className="value-props">
           {[
-            'No forms to fill out',
-            'Faster assessment',
-            'Better support options',
+            {
+              icon: '✓',
+              title: 'No forms to fill out',
+              desc: 'We see your real spending patterns, not just what you tell us.',
+            },
+            {
+              icon: '✓',
+              title: 'Faster assessment',
+              desc: 'Complete your assessment in minutes, not days.',
+            },
+            {
+              icon: '✓',
+              title: 'Better support options',
+              desc: 'More tailored payment plans and support recommendations.',
+            },
           ].map((prop) => (
-            <div key={prop} className="value-prop">
-              <div className="value-prop-icon">✓</div>
-              <div className="value-prop-text">{prop}</div>
+            <div key={prop.title} className="value-prop">
+              <div className="value-prop-icon">{prop.icon}</div>
+              <div className="value-prop-text">
+                <p className="value-prop-title">{prop.title}</p>
+                <p className="value-prop-desc">{prop.desc}</p>
+              </div>
             </div>
           ))}
         </div>
@@ -221,31 +266,40 @@ export function Intro() {
         {/* Access Cards */}
         <div className="access-grid">
           <div className="access-card">
-            <h3 className="access-title">We'll access:</h3>
-            {['Last 6 months of transactions', 'Income & salary deposits', 'Spending patterns'].map(
-              (item) => (
+            <h3 className="access-card-title">What we'll access</h3>
+            <div className="access-items">
+              {[
+                'Last 6 months of transactions',
+                'Income & salary deposits',
+                'Spending patterns & categories',
+              ].map((item) => (
                 <div key={item} className="access-item">
-                  <span className="access-icon">✓</span>
-                  <span>{item}</span>
+                  <div className="access-item-icon">✓</div>
+                  <div>{item}</div>
                 </div>
-              )
-            )}
+              ))}
+            </div>
           </div>
+
           <div className="access-card">
-            <h3 className="access-title">We won't access:</h3>
-            {['Login credentials', 'Money movement ability', 'Account details changes'].map(
-              (item) => (
-                <div key={item} className="access-item">
-                  <span className="access-icon">✗</span>
-                  <span>{item}</span>
+            <h3 className="access-card-title">What we won't access</h3>
+            <div className="access-items">
+              {[
+                'Your login password or credentials',
+                'Ability to move or transfer money',
+                'Ability to change account details',
+              ].map((item) => (
+                <div key={item} className="access-item access-item-deny">
+                  <div className="access-item-icon">✕</div>
+                  <div>{item}</div>
                 </div>
-              )
-            )}
+              ))}
+            </div>
           </div>
         </div>
 
         {/* Buttons */}
-        <div className="buttons">
+        <div className="buttons-container">
           <Button onClick={handleContinue}>Continue</Button>
           <Button variant="secondary" onClick={handleProvideManually}>
             Provide Statements Manually
@@ -253,7 +307,7 @@ export function Intro() {
         </div>
 
         {/* Trust Footer */}
-        <div className="trust-text">
+        <div className="trust-footer">
           🔒 256-bit encryption · Read-only · FCA regulated · GDPR compliant
         </div>
       </div>
