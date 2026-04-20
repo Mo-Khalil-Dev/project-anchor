@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Bridge Admin — Policy Configuration</title>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;} input{font-family:'Plus Jakarta Sans',sans-serif;}</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" src="../bridge-ui.jsx"></script>
+<script type="text/babel">
+const { useState } = React;
+
+const DEFAULTS = {
+  severePct:200, moderateLow:100, moderateHigh:200, lowPct:100,
+  maxDuration:24, minPayment:10, maxPaymentPct:50,
+  pensionerBonus:25, loneParentBonus:20, medicalNoDisconnect:true, mentalHealthReview:true, blindReview:true,
+  flagDefault:true, flagBillRatio:200, flagDataQuality:75, flagConfidence:80, flagPrevArrears:true,
+};
+
+function Toggle({ value, onChange }) {
+  return (
+    <div onClick={()=>onChange(!value)} style={{width:44,height:24,borderRadius:100,background:value?Bridge.accent:Bridge.border,cursor:'pointer',position:'relative',transition:'background 0.2s',flexShrink:0}}>
+      <div style={{position:'absolute',top:3,left:value?20:3,width:18,height:18,borderRadius:'50%',background:'#fff',transition:'left 0.2s',boxShadow:'0 1px 3px rgba(0,0,0,0.15)'}}/>
+    </div>
+  );
+}
+
+function NumInput({ value, onChange, unit='%', min=0, max=100 }) {
+  const [f,setF]=useState(false);
+  return (
+    <div style={{display:'flex',alignItems:'center',gap:2}}>
+      <input type="number" value={value} min={min} max={max} onChange={e=>onChange(+e.target.value)} onFocus={()=>setF(true)} onBlur={()=>setF(false)}
+        style={{width:72,height:36,border:`1.5px solid ${f?Bridge.accent:Bridge.border}`,borderRadius:8,padding:'0 8px',fontSize:14,fontWeight:600,color:Bridge.text,outline:'none',textAlign:'center',boxShadow:f?`0 0 0 3px ${Bridge.accent}18`:'none',transition:'all 0.15s'}}/>
+      {unit && <span style={{fontSize:13,color:Bridge.muted,marginLeft:4}}>{unit}</span>}
+    </div>
+  );
+}
+
+function PolicySection({ title, desc, children, icon }) {
+  return (
+    <div style={{background:'#fff',borderRadius:16,padding:'22px 24px',boxShadow:'0 1px 4px rgba(0,0,0,0.06)',marginBottom:16}}>
+      <div style={{display:'flex',gap:12,alignItems:'flex-start',marginBottom:16,paddingBottom:14,borderBottom:`1px solid ${Bridge.divider}`}}>
+        <div style={{width:36,height:36,borderRadius:10,background:Bridge.accentBg,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>{icon}</div>
+        <div><div style={{fontSize:14,fontWeight:700,color:Bridge.text}}>{title}</div>{desc&&<div style={{fontSize:12.5,color:Bridge.muted,marginTop:2}}>{desc}</div>}</div>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function PolicyRow({ label, note, children }) {
+  return (
+    <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 0',borderBottom:`1px solid ${Bridge.divider}`}}>
+      <div>
+        <div style={{fontSize:13.5,color:Bridge.text,fontWeight:500}}>{label}</div>
+        {note&&<div style={{fontSize:12,color:Bridge.muted,marginTop:2}}>{note}</div>}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function ImpactModal({ policy, original, onConfirm, onCancel }) {
+  const changed = Object.keys(policy).filter(k=>policy[k]!==original[k]);
+  const getImpact = () => {
+    if (policy.severePct < original.severePct) return { customers: Math.round((original.severePct-policy.severePct)*0.8), direction:'more', color:Bridge.amber };
+    if (policy.severePct > original.severePct) return { customers: Math.round((policy.severePct-original.severePct)*0.8), direction:'fewer', color:Bridge.green };
+    return { customers: 0, direction:'no change', color:Bridge.muted };
+  };
+  const impact = getImpact();
+  return (
+    <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.45)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:1000}}>
+      <div style={{background:'#fff',borderRadius:20,padding:'32px',width:520,boxShadow:'0 20px 60px rgba(0,0,0,0.25)'}}>
+        <div style={{fontSize:20,fontWeight:800,color:Bridge.text,marginBottom:6,letterSpacing:-0.4}}>Review Policy Changes</div>
+        <div style={{fontSize:14,color:Bridge.sub,marginBottom:20}}>These changes will apply to all future assessments. Please review carefully.</div>
+
+        <div style={{background:Bridge.bg,borderRadius:12,padding:'16px',marginBottom:20}}>
+          <div style={{fontSize:12,fontWeight:600,color:Bridge.muted,textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:10}}>{changed.length} change{changed.length!==1?'s':''} detected</div>
+          {changed.map(k=>(
+            <div key={k} style={{display:'flex',justifyContent:'space-between',padding:'7px 0',borderBottom:`1px solid ${Bridge.divider}`,fontSize:13.5}}>
+              <span style={{color:Bridge.sub}}>{k}</span>
+              <div style={{display:'flex',gap:8}}>
+                <span style={{color:Bridge.muted,textDecoration:'line-through'}}>{String(original[k])}{typeof original[k]==='number'&&k.includes('Pct')?'%':typeof original[k]==='number'&&k.includes('Duration')?' mo':''}</span>
+                <span style={{fontWeight:700,color:Bridge.accent}}>→ {String(policy[k])}{typeof policy[k]==='number'&&k.includes('Pct')?'%':typeof policy[k]==='number'&&k.includes('Duration')?' mo':''}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {impact.customers > 0 && (
+          <div style={{background:`${impact.color}12`,border:`1.5px solid ${impact.color}30`,borderRadius:12,padding:'14px 16px',marginBottom:20,fontSize:13.5,color:impact.color,lineHeight:1.6}}>
+            <strong>Estimated impact:</strong> Approximately <strong>~{impact.customers} {impact.direction} customers</strong> will qualify as SEVERE hardship under the new threshold. This affects auto-approval and payment plan generation.
+          </div>
+        )}
+
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
+          <button onClick={onConfirm} style={{height:46,borderRadius:12,background:Bridge.accent,color:'#fff',border:'none',fontSize:14,fontWeight:700,cursor:'pointer',fontFamily:"'Plus Jakarta Sans',sans-serif"}}>Confirm Changes</button>
+          <button onClick={onCancel} style={{height:46,borderRadius:12,background:'transparent',color:Bridge.sub,border:`1.5px solid ${Bridge.border}`,fontSize:14,fontWeight:600,cursor:'pointer',fontFamily:"'Plus Jakarta Sans',sans-serif"}}>Cancel</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [p, setP] = useState({...DEFAULTS});
+  const [original] = useState({...DEFAULTS});
+  const [showModal, setShowModal] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const set = (k,v) => { setP(prev=>({...prev,[k]:v})); setSaved(false); };
+  const hasChanges = Object.keys(p).some(k=>p[k]!==original[k]);
+
+  return (
+    <AdminLayout active="policy" title="Hardship Policy Configuration" subtitle="Rules engine · Last updated 1 April 2026 by Richard Blake">
+      {showModal && <ImpactModal policy={p} original={original} onConfirm={()=>{setShowModal(false);setSaved(true);}} onCancel={()=>setShowModal(false)}/>}
+
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16}}>
+        {/* Affordability thresholds */}
+        <PolicySection title="Affordability Thresholds" desc="Bill as % of disposable income required to trigger each hardship level." icon={<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="10" width="4" height="6" rx="1" fill={Bridge.red}/><rect x="7" y="6" width="4" height="10" rx="1" fill={Bridge.amber}/><rect x="12" y="2" width="4" height="14" rx="1" fill={Bridge.green}/></svg>}>
+          <PolicyRow label="SEVERE hardship threshold" note="Bill ratio above this → SEVERE"><NumInput value={p.severePct} onChange={v=>set('severePct',v)} unit="%" min={100} max={500}/></PolicyRow>
+          <PolicyRow label="MODERATE hardship range" note={`Between ${p.moderateLow}% and ${p.moderateHigh}%`}>
+            <div style={{display:'flex',alignItems:'center',gap:6}}>
+              <NumInput value={p.moderateLow} onChange={v=>set('moderateLow',v)} unit="" min={0} max={200}/>
+              <span style={{color:Bridge.muted,fontSize:13}}>–</span>
+              <NumInput value={p.moderateHigh} onChange={v=>set('moderateHigh',v)} unit="%" min={100} max={300}/>
+            </div>
+          </PolicyRow>
+          <PolicyRow label="LOW hardship threshold" note="Bill ratio below this → LOW hardship"><NumInput value={p.lowPct} onChange={v=>set('lowPct',v)} unit="%" min={0} max={200}/></PolicyRow>
+        </PolicySection>
+
+        {/* Payment plan limits */}
+        <PolicySection title="Payment Plan Limits" desc="Constraints applied when generating payment plan options." icon={<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="4" width="14" height="11" rx="2" stroke={Bridge.accent} strokeWidth="1.5" fill={Bridge.accentBg}/><path d="M6 9h6M6 12h4" stroke={Bridge.accent} strokeWidth="1.3" strokeLinecap="round"/></svg>}>
+          <PolicyRow label="Maximum plan duration" note="Longest payment plan permitted"><NumInput value={p.maxDuration} onChange={v=>set('maxDuration',v)} unit="months" min={3} max={60}/></PolicyRow>
+          <PolicyRow label="Minimum monthly payment" note="Lowest acceptable payment amount"><NumInput value={p.minPayment} onChange={v=>set('minPayment',v)} unit="£" min={5} max={100}/></PolicyRow>
+          <PolicyRow label="Maximum payment (% of disposable)" note="Payment capped at this % of disposable income"><NumInput value={p.maxPaymentPct} onChange={v=>set('maxPaymentPct',v)} unit="%" min={10} max={100}/></PolicyRow>
+        </PolicySection>
+
+        {/* Vulnerability rules */}
+        <PolicySection title="Vulnerability Rules" desc="Additional protections applied to customers with specific vulnerabilities." icon={<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2L3 5v5c0 3.3 2.7 6.4 6 7 3.3-.6 6-3.7 6-7V5L9 2z" stroke={Bridge.green} strokeWidth="1.6" fill={Bridge.greenBg} strokeLinejoin="round"/></svg>}>
+          <PolicyRow label="Pensioner — plan duration bonus"><NumInput value={p.pensionerBonus} onChange={v=>set('pensionerBonus',v)} unit="% longer" min={0} max={100}/></PolicyRow>
+          <PolicyRow label="Lone parent — plan duration bonus"><NumInput value={p.loneParentBonus} onChange={v=>set('loneParentBonus',v)} unit="% longer" min={0} max={100}/></PolicyRow>
+          <PolicyRow label="Medical equipment — no disconnection" note="Guarantee applied automatically if PSR medical flag is set"><Toggle value={p.medicalNoDisconnect} onChange={v=>set('medicalNoDisconnect',v)}/></PolicyRow>
+          <PolicyRow label="Mental health flag → force manual review"><Toggle value={p.mentalHealthReview} onChange={v=>set('mentalHealthReview',v)}/></PolicyRow>
+          <PolicyRow label="Blind / vision impaired → manual review"><Toggle value={p.blindReview} onChange={v=>set('blindReview',v)}/></PolicyRow>
+        </PolicySection>
+
+        {/* Manual review triggers */}
+        <PolicySection title="Manual Review Triggers" desc="Conditions that automatically flag a case for officer review." icon={<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7" stroke={Bridge.amber} strokeWidth="1.5" fill={Bridge.amberBg}/><path d="M9 6v4M9 12v.5" stroke={Bridge.amber} strokeWidth="1.5" strokeLinecap="round"/></svg>}>
+          <PolicyRow label="Flag if previous plan default exists"><Toggle value={p.flagDefault} onChange={v=>set('flagDefault',v)}/></PolicyRow>
+          <PolicyRow label="Flag if previous arrears on record"><Toggle value={p.flagPrevArrears} onChange={v=>set('flagPrevArrears',v)}/></PolicyRow>
+          <PolicyRow label="Flag if bill ratio exceeds threshold"><NumInput value={p.flagBillRatio} onChange={v=>set('flagBillRatio',v)} unit="%" min={50} max={500}/></PolicyRow>
+          <PolicyRow label="Flag if data quality score is below"><NumInput value={p.flagDataQuality} onChange={v=>set('flagDataQuality',v)} unit="/100" min={0} max={100}/></PolicyRow>
+          <PolicyRow label="Flag if ML confidence score is below"><NumInput value={p.flagConfidence} onChange={v=>set('flagConfidence',v)} unit="%" min={50} max={100}/></PolicyRow>
+        </PolicySection>
+      </div>
+
+      {/* Save bar */}
+      <div style={{background:'#fff',borderRadius:14,padding:'16px 24px',marginTop:4,display:'flex',alignItems:'center',justifyContent:'space-between',boxShadow:'0 1px 4px rgba(0,0,0,0.06)'}}>
+        <div>
+          {saved ? <span style={{fontSize:13.5,color:Bridge.green,fontWeight:600}}>✓ Changes saved successfully</span>
+          : hasChanges ? <span style={{fontSize:13.5,color:Bridge.amber,fontWeight:600}}>You have unsaved changes</span>
+          : <span style={{fontSize:13.5,color:Bridge.muted}}>No changes made</span>}
+        </div>
+        <div style={{display:'flex',gap:10}}>
+          <button onClick={()=>setP({...original})} disabled={!hasChanges} style={{height:38,padding:'0 18px',borderRadius:10,border:`1.5px solid ${Bridge.border}`,background:'transparent',color:Bridge.sub,fontSize:13.5,fontWeight:600,cursor:hasChanges?'pointer':'not-allowed',opacity:hasChanges?1:0.4,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>Discard</button>
+          <button onClick={()=>setShowModal(true)} disabled={!hasChanges} style={{height:38,padding:'0 20px',borderRadius:10,border:'none',background:hasChanges?Bridge.accent:'#ccc',color:'#fff',fontSize:13.5,fontWeight:700,cursor:hasChanges?'pointer':'not-allowed',fontFamily:"'Plus Jakarta Sans',sans-serif"}}>Save Changes</button>
+        </div>
+      </div>
+    </AdminLayout>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

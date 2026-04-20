@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Bridge Admin — Modify Plan</title>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;} input,select,textarea{font-family:'Plus Jakarta Sans',sans-serif;}</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" src="../bridge-ui.jsx"></script>
+<script type="text/babel">
+const { useState } = React;
+
+const SUPPORT_MEASURES = [
+  'Warm Home Discount (£140 off bill)',
+  'Energy efficiency grant referral',
+  'Council Tax Reduction referral',
+  'Debt advice referral (StepChange)',
+  'Extended plan duration (PSR entitlement)',
+  'Waive late payment note',
+];
+
+const iStyle = (focused) => ({ width:'100%', height:46, border:`1.5px solid ${focused?Bridge.accent:Bridge.border}`, borderRadius:10, padding:'0 14px', fontSize:15, color:Bridge.text, outline:'none', fontFamily:"'Plus Jakarta Sans',sans-serif", background:'#fff', boxShadow:focused?`0 0 0 3px ${Bridge.accent}18`:'none', transition:'all 0.15s' });
+
+function App() {
+  const [payment, setPayment] = useState(35);
+  const [duration, setDuration] = useState(12);
+  const [measures, setMeasures] = useState([]);
+  const [notes, setNotes] = useState('');
+  const [focused, setFocused] = useState(null);
+
+  const disposable = 130;
+  const pctOfDisposable = Math.round((payment/disposable)*100);
+  const buffer = disposable - payment;
+  const total = payment * duration;
+  const warning = payment > disposable * 0.5;
+  const danger = payment > disposable;
+  const toggleMeasure = (m) => setMeasures(p => p.includes(m) ? p.filter(x=>x!==m) : [...p, m]);
+
+  return (
+    <AdminLayout active="cases" title="Modify Payment Plan" subtitle="Manual review queue › Sarah Mitchell › Modify Plan">
+      {/* Case strip */}
+      <Card style={{padding:'14px 20px',marginBottom:20,display:'flex',gap:16,alignItems:'center',justifyContent:'space-between'}}>
+        <div style={{display:'flex',gap:12,alignItems:'center'}}>
+          <div><div style={{fontSize:15,fontWeight:700,color:Bridge.text}}>Sarah Mitchell</div><div style={{fontSize:12,color:Bridge.muted}}>Account #BR-2847 · SEVERE hardship</div></div>
+          <HardshipBadge level="SEVERE"/>
+        </div>
+        <div style={{fontSize:13,color:Bridge.sub}}>Disposable income: <strong style={{color:Bridge.text}}>£{disposable}/mo</strong></div>
+      </Card>
+
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20}}>
+        {/* Left: edit fields */}
+        <div style={{display:'flex',flexDirection:'column',gap:16}}>
+          {/* System recommendation */}
+          <Card style={{padding:'18px 22px',background:Bridge.accentBg,border:`1px solid ${Bridge.accent}20`}}>
+            <SectionLabel>System recommendation (read-only)</SectionLabel>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginTop:4}}>
+              {[['Monthly payment','£35'],['Duration','12 months'],['Total','£420'],['Sustainability','HIGH']].map(([k,v])=>(
+                <div key={k}><div style={{fontSize:11,color:Bridge.accent,fontWeight:600,textTransform:'uppercase',marginBottom:2}}>{k}</div><div style={{fontSize:15,fontWeight:700,color:Bridge.text}}>{v}</div></div>
+              ))}
+            </div>
+          </Card>
+
+          {/* Edit */}
+          <Card style={{padding:'20px 22px'}}>
+            <SectionLabel>Your modification</SectionLabel>
+            <div style={{marginBottom:16}}>
+              <div style={{fontSize:13.5,fontWeight:600,color:Bridge.text,marginBottom:6}}>Monthly payment (£)</div>
+              <input type="number" value={payment} min={10} max={300} onChange={e=>setPayment(+e.target.value)} onFocus={()=>setFocused('pay')} onBlur={()=>setFocused(null)} style={iStyle(focused==='pay')}/>
+              <div style={{display:'flex',gap:8,marginTop:8}}>
+                {[25,35,50,70,100].map(v=>(
+                  <button key={v} onClick={()=>setPayment(v)} style={{padding:'4px 10px',borderRadius:8,border:`1.5px solid ${payment===v?Bridge.accent:Bridge.border}`,background:payment===v?Bridge.accentBg:'transparent',color:payment===v?Bridge.accent:Bridge.sub,fontSize:12.5,fontWeight:payment===v?700:400,cursor:'pointer',fontFamily:"'Plus Jakarta Sans',sans-serif"}}>£{v}</button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <div style={{fontSize:13.5,fontWeight:600,color:Bridge.text,marginBottom:6}}>Duration (months)</div>
+              <input type="number" value={duration} min={1} max={36} onChange={e=>setDuration(+e.target.value)} onFocus={()=>setFocused('dur')} onBlur={()=>setFocused(null)} style={iStyle(focused==='dur')}/>
+            </div>
+          </Card>
+
+          {/* Warning */}
+          {danger && (
+            <div style={{background:Bridge.redBg,border:`1.5px solid ${Bridge.red}40`,borderRadius:12,padding:'14px 16px',fontSize:13.5,color:Bridge.red,lineHeight:1.55}}>
+              <strong>⚠ Over-budget:</strong> £{payment}/mo exceeds the customer's entire disposable income of £{disposable}. This plan is not sustainable and will likely fail.
+            </div>
+          )}
+          {warning && !danger && (
+            <div style={{background:Bridge.amberBg,border:`1.5px solid ${Bridge.amber}40`,borderRadius:12,padding:'14px 16px',fontSize:13.5,color:'oklch(45% 0.16 76)',lineHeight:1.55}}>
+              <strong>⚠ High commitment:</strong> £{payment}/mo is {pctOfDisposable}% of disposable income, leaving only £{buffer}/mo buffer. Consider if this is appropriate given the customer's vulnerability flags.
+            </div>
+          )}
+
+          {/* Support measures */}
+          <Card style={{padding:'18px 22px'}}>
+            <SectionLabel>Additional support measures</SectionLabel>
+            {SUPPORT_MEASURES.map(m=>(
+              <label key={m} style={{display:'flex',gap:10,alignItems:'center',padding:'8px 0',borderBottom:`1px solid ${Bridge.divider}`,cursor:'pointer'}}>
+                <input type="checkbox" checked={measures.includes(m)} onChange={()=>toggleMeasure(m)} style={{width:16,height:16,accentColor:Bridge.accent,flexShrink:0}}/>
+                <span style={{fontSize:13.5,color:Bridge.sub}}>{m}</span>
+              </label>
+            ))}
+          </Card>
+        </div>
+
+        {/* Right: preview + notes */}
+        <div style={{display:'flex',flexDirection:'column',gap:16}}>
+          {/* Live preview */}
+          <Card style={{padding:'22px'}}>
+            <SectionLabel>Modified plan preview</SectionLabel>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginTop:4,marginBottom:16}}>
+              {[
+                {l:'Monthly payment',v:`£${payment}`,c: danger?Bridge.red:warning?Bridge.amber:Bridge.green},
+                {l:'Duration',v:`${duration} months`},
+                {l:'Total repaid',v:`£${total}`,c:total>420?Bridge.red:total<420?Bridge.amber:Bridge.text},
+                {l:'Monthly buffer',v:`£${buffer}`,c:buffer<0?Bridge.red:buffer<60?Bridge.amber:Bridge.green},
+                {l:'% of disposable',v:`${pctOfDisposable}%`,c:danger?Bridge.red:warning?Bridge.amber:Bridge.green},
+                {l:'Est. completion',v:`${new Date(2026,4+duration-1).toLocaleString('en-GB',{month:'short',year:'numeric'})}`},
+              ].map(s=>(
+                <div key={s.l} style={{background:Bridge.bg,borderRadius:10,padding:'10px 12px'}}>
+                  <div style={{fontSize:11,color:Bridge.muted,fontWeight:600,textTransform:'uppercase',marginBottom:3}}>{s.l}</div>
+                  <div style={{fontSize:16,fontWeight:700,color:s.c||Bridge.text}}>{s.v}</div>
+                </div>
+              ))}
+            </div>
+            {total !== 420 && <div style={{background:Bridge.amberBg,borderRadius:10,padding:'10px 12px',fontSize:12.5,color:'oklch(45% 0.16 76)'}}>Total repaid (£{total}) {total>420?'exceeds':'does not cover'} the £420 balance. Adjust duration to match.</div>}
+          </Card>
+
+          <Card style={{padding:'18px 22px'}}>
+            <SectionLabel>Justification notes (required for override)</SectionLabel>
+            <textarea value={notes} onChange={e=>setNotes(e.target.value)} placeholder="Explain why you are modifying the system recommendation..." style={{width:'100%',minHeight:120,border:`1.5px solid ${Bridge.border}`,borderRadius:10,padding:'10px 14px',fontSize:13.5,resize:'vertical',outline:'none',color:Bridge.text,marginTop:4}}/>
+          </Card>
+
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
+            <Btn variant="primary" full disabled={!notes.trim()}>Save Modified Plan</Btn>
+            <Btn variant="secondary" full>Cancel</Btn>
+          </div>
+          {!notes.trim() && <div style={{fontSize:12,color:Bridge.muted,textAlign:'center'}}>Justification notes are required to save a modification.</div>}
+        </div>
+      </div>
+    </AdminLayout>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Bridge — Aggressive Plan</title>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" src="../bridge-ui.jsx"></script>
+<script type="text/babel">
+const { useState } = React;
+function App() {
+  const [confirmed, setConfirmed] = useState(false);
+  return (
+    <CustomerLayout title="Aggressive Plan" subtitle="Fastest option — but our assessment shows this plan is high risk for your financial situation.">
+      {/* Warning banner */}
+      <div style={{background:Bridge.redBg,border:`1.5px solid ${Bridge.red}40`,borderRadius:14,padding:'16px 20px',marginBottom:20,display:'flex',gap:14,alignItems:'flex-start'}}>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style={{flexShrink:0,marginTop:1}}><path d="M12 2L2 20h20L12 2z" fill={Bridge.redBg} stroke={Bridge.red} strokeWidth="1.8" strokeLinejoin="round"/><path d="M12 9v5M12 16.5v.5" stroke={Bridge.red} strokeWidth="2" strokeLinecap="round"/></svg>
+        <div>
+          <div style={{fontSize:14,fontWeight:700,color:Bridge.red,marginBottom:4}}>High risk — not recommended for your situation</div>
+          <div style={{fontSize:13,color:'oklch(42% 0.18 25)',lineHeight:1.55}}>This plan requires £140/month — which exceeds your £130 disposable income. Any missed payment will add to your balance and make recovery harder.</div>
+        </div>
+      </div>
+
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20,marginBottom:20}}>
+        <div style={{display:'flex',flexDirection:'column',gap:12}}>
+          <div style={{background:`linear-gradient(135deg,${Bridge.red}12 0%,${Bridge.redBg} 100%)`,border:`1.5px solid ${Bridge.red}30`,borderRadius:18,padding:'28px 24px'}}>
+            <div style={{fontSize:13,fontWeight:600,color:Bridge.red,textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:8}}>Monthly Payment</div>
+            <div style={{display:'flex',alignItems:'baseline',gap:4}}><span style={{fontSize:52,fontWeight:800,color:Bridge.red,letterSpacing:-2}}>£140</span><span style={{fontSize:15,color:Bridge.sub}}>/month</span></div>
+            <div style={{marginTop:12}}><SustBadge level="LOW"/></div>
+          </div>
+          <Card style={{padding:'18px 20px'}}>
+            {[
+              ['Duration','3 months'],
+              ['Total paid','£420'],
+              ['Monthly buffer','–£10 (over budget)'],
+              ['Disposable remaining','–£10 / £130 (deficit)'],
+            ].map(([k,v])=>(
+              <Row key={k}><span style={{fontSize:13.5,color:Bridge.sub}}>{k}</span><span style={{fontSize:13.5,fontWeight:600,color:k.includes('buffer')?Bridge.red:Bridge.text}}>{v}</span></Row>
+            ))}
+          </Card>
+        </div>
+        <Card style={{padding:'20px 22px'}}>
+          <SectionLabel>Risk assessment</SectionLabel>
+          {[
+            {text:'Payment exceeds your disposable income by £10/month.',risk:true},
+            {text:'Any unexpected cost (transport, food) will cause a missed payment.',risk:true},
+            {text:'Missed payments may trigger late fees and worsen your credit record.',risk:true},
+            {text:'Clears your balance the fastest — 3 months.',risk:false},
+            {text:'Only recommended if you have confirmed additional income (e.g. bonus, second earner).',risk:false},
+          ].map(t=>(
+            <div key={t.text} style={{display:'flex',gap:10,alignItems:'flex-start',padding:'8px 0',borderBottom:`1px solid ${Bridge.divider}`}}>
+              <span style={{width:20,height:20,borderRadius:'50%',background:t.risk?Bridge.redBg:Bridge.greenBg,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                {t.risk
+                  ? <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1 1l6 6M7 1L1 7" stroke={Bridge.red} strokeWidth="1.6" strokeLinecap="round"/></svg>
+                  : <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke={Bridge.green} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                }
+              </span>
+              <span style={{fontSize:13,color:Bridge.sub,lineHeight:1.5}}>{t.text}</span>
+            </div>
+          ))}
+        </Card>
+      </div>
+
+      {/* Confirmation gate */}
+      {!confirmed ? (
+        <Card style={{padding:'22px 24px',marginBottom:20,border:`1.5px solid ${Bridge.red}30`}}>
+          <div style={{fontSize:14,fontWeight:600,color:Bridge.text,marginBottom:12}}>To proceed, please confirm you understand the risk:</div>
+          <label style={{display:'flex',gap:12,alignItems:'flex-start',cursor:'pointer'}}>
+            <input type="checkbox" onChange={e=>setConfirmed(e.target.checked)} style={{marginTop:3,width:16,height:16,accentColor:Bridge.red}}/>
+            <span style={{fontSize:13.5,color:Bridge.sub,lineHeight:1.55}}>I understand this plan exceeds my current disposable income and may be unsustainable. I confirm I have additional income or savings to cover the difference.</span>
+          </label>
+        </Card>
+      ) : (
+        <div style={{background:Bridge.redBg,border:`1.5px solid ${Bridge.red}40`,borderRadius:14,padding:'14px 20px',marginBottom:20,fontSize:13,color:Bridge.red}}>
+          ⚠ You have confirmed you understand the risk. We strongly suggest speaking with our team first.
+        </div>
+      )}
+
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+        <Btn variant="danger" full disabled={!confirmed}>Select Aggressive Plan</Btn>
+        <Btn variant="primary" full>Switch to Conservative (Recommended)</Btn>
+      </div>
+    </CustomerLayout>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

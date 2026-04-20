@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Bridge Admin — Executive Dashboard</title>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" src="../bridge-ui.jsx"></script>
+<script type="text/babel">
+const { useState } = React;
+
+const MONTHLY = [
+  {m:'Nov',cases:58,recovered:18200},{m:'Dec',cases:62,recovered:20100},
+  {m:'Jan',cases:71,recovered:22400},{m:'Feb',cases:65,recovered:21000},
+  {m:'Mar',cases:69,recovered:23800},{m:'Apr',cases:63,recovered:19500},
+];
+
+function BarChart({ data, valueKey, color, format='£', height=120 }) {
+  const max = Math.max(...data.map(d=>d[valueKey]));
+  return (
+    <div style={{display:'flex',gap:6,alignItems:'flex-end',height,paddingBottom:20,position:'relative'}}>
+      {data.map((d,i)=>{
+        const h = (d[valueKey]/max)*(height-24);
+        const isLast = i===data.length-1;
+        return (
+          <div key={d.m} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:4}}>
+            <div style={{width:'100%',height:h,borderRadius:'4px 4px 0 0',background:isLast?color:`${color}55`,transition:'height 0.4s',position:'relative'}}>
+              {isLast && <div style={{position:'absolute',top:-20,left:'50%',transform:'translateX(-50%)',fontSize:11,fontWeight:700,color,whiteSpace:'nowrap'}}>{format==='£'?`£${(d[valueKey]/1000).toFixed(1)}k`:d[valueKey]}</div>}
+            </div>
+            <div style={{fontSize:10.5,color:Bridge.muted,fontWeight:isLast?700:400}}>{d.m}</div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <AdminLayout active="executive" title="Executive Dashboard" subtitle="Business impact · YTD April 2026">
+      {/* Hero KPIs */}
+      <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:14,marginBottom:24}}>
+        {[
+          {label:'Customers helped',value:'847',sub:'Prevented disconnection',color:Bridge.green,delta:'+12% MoM'},
+          {label:'Arrears recovered',value:'£245k',sub:'Total payments collected',color:Bridge.accent,delta:'+8% MoM'},
+          {label:'Plan completion rate',value:'89%',sub:'Plans completed on time',color:Bridge.green,delta:'+3pp YoY'},
+          {label:'ROI',value:'1.69:1',sub:'Per £1 invested',color:Bridge.accent,delta:'Above target 1.5:1'},
+        ].map(s=>(
+          <div key={s.label} style={{background:'#fff',borderRadius:16,padding:'22px',boxShadow:'0 1px 4px rgba(0,0,0,0.06)',borderTop:`3px solid ${s.color}`}}>
+            <div style={{fontSize:32,fontWeight:800,color:s.color,letterSpacing:-1,marginBottom:4}}>{s.value}</div>
+            <div style={{fontSize:13.5,fontWeight:600,color:Bridge.text,marginBottom:4}}>{s.label}</div>
+            <div style={{fontSize:12,color:Bridge.muted,marginBottom:8}}>{s.sub}</div>
+            <div style={{fontSize:12,fontWeight:600,color:Bridge.green,background:Bridge.greenBg,borderRadius:100,padding:'2px 8px',display:'inline-block'}}>{s.delta}</div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20,marginBottom:20}}>
+        {/* Cases chart */}
+        <div style={{background:'#fff',borderRadius:14,padding:'20px',boxShadow:'0 1px 4px rgba(0,0,0,0.06)'}}>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:16}}>
+            <div>
+              <div style={{fontSize:14,fontWeight:700,color:Bridge.text}}>Monthly Cases</div>
+              <div style={{fontSize:12.5,color:Bridge.muted,marginTop:2}}>Hardship assessments per month</div>
+            </div>
+            <div style={{fontSize:24,fontWeight:800,color:Bridge.accent,letterSpacing:-0.8}}>63<span style={{fontSize:13,fontWeight:400,color:Bridge.muted}}>/month</span></div>
+          </div>
+          <BarChart data={MONTHLY} valueKey="cases" color={Bridge.accent} format="#"/>
+        </div>
+        {/* Recovery chart */}
+        <div style={{background:'#fff',borderRadius:14,padding:'20px',boxShadow:'0 1px 4px rgba(0,0,0,0.06)'}}>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:16}}>
+            <div>
+              <div style={{fontSize:14,fontWeight:700,color:Bridge.text}}>Monthly Arrears Recovered</div>
+              <div style={{fontSize:12.5,color:Bridge.muted,marginTop:2}}>Payments collected from active plans</div>
+            </div>
+            <div style={{fontSize:24,fontWeight:800,color:Bridge.green,letterSpacing:-0.8}}>£245k<span style={{fontSize:13,fontWeight:400,color:Bridge.muted}}> YTD</span></div>
+          </div>
+          <BarChart data={MONTHLY} valueKey="recovered" color={Bridge.green}/>
+        </div>
+      </div>
+
+      {/* ROI breakdown + industry comparison */}
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20,marginBottom:20}}>
+        <div style={{background:'#fff',borderRadius:14,padding:'20px',boxShadow:'0 1px 4px rgba(0,0,0,0.06)'}}>
+          <div style={{fontSize:14,fontWeight:700,color:Bridge.text,marginBottom:16}}>ROI Breakdown</div>
+          {[
+            {label:'Arrears recovered',value:'£245,000',color:Bridge.green},
+            {label:'Disconnection savings',value:'£38,000',color:Bridge.green,note:'Est. cost per disconnection × prevented cases'},
+            {label:'Support cost avoided',value:'£12,000',color:Bridge.green,note:'Reduced inbound contact volume'},
+            {label:'Total benefit',value:'£295,000',color:Bridge.green,bold:true},
+            {label:'Programme cost',value:'£145,000',color:Bridge.red},
+            {label:'Net ROI',value:'£150,000 (1.69:1)',color:Bridge.accent,bold:true},
+          ].map(r=>(
+            <div key={r.label} style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',padding:'9px 0',borderBottom:`1px solid ${Bridge.divider}`}}>
+              <div>
+                <div style={{fontSize:13.5,color:r.bold?Bridge.text:Bridge.sub,fontWeight:r.bold?700:400}}>{r.label}</div>
+                {r.note && <div style={{fontSize:11.5,color:Bridge.muted,marginTop:1}}>{r.note}</div>}
+              </div>
+              <div style={{fontSize:14,fontWeight:r.bold?800:600,color:r.color}}>{r.value}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{background:'#fff',borderRadius:14,padding:'20px',boxShadow:'0 1px 4px rgba(0,0,0,0.06)'}}>
+          <div style={{fontSize:14,fontWeight:700,color:Bridge.text,marginBottom:4}}>Industry Comparison</div>
+          <div style={{fontSize:12.5,color:Bridge.muted,marginBottom:16}}>Bridge vs. UK energy sector average</div>
+          {[
+            {metric:'Plan completion rate',bridge:'89%',industry:'71%',bridgeVal:89,industryVal:71},
+            {metric:'Avg days to resolution',bridge:'3.8d',industry:'12d',bridgeVal:32,industryVal:100},
+            {metric:'Customer satisfaction',bridge:'4.2/5',industry:'3.1/5',bridgeVal:84,industryVal:62},
+            {metric:'Re-default rate',bridge:'11%',industry:'24%',bridgeVal:11,industryVal:24},
+          ].map(r=>(
+            <div key={r.metric} style={{marginBottom:14}}>
+              <div style={{display:'flex',justifyContent:'space-between',marginBottom:6,fontSize:13.5}}>
+                <span style={{color:Bridge.sub}}>{r.metric}</span>
+                <div style={{display:'flex',gap:12}}>
+                  <span style={{fontWeight:700,color:Bridge.green}}>Bridge: {r.bridge}</span>
+                  <span style={{color:Bridge.muted}}>Avg: {r.industry}</span>
+                </div>
+              </div>
+              <div style={{height:6,borderRadius:100,background:'#eee',position:'relative',overflow:'hidden'}}>
+                <div style={{position:'absolute',height:'100%',width:`${r.industryVal}%`,background:`${Bridge.muted}50`,borderRadius:100}}/>
+                <div style={{position:'absolute',height:'100%',width:`${r.bridgeVal}%`,background:Bridge.green,borderRadius:100}}/>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Pipeline */}
+      <div style={{background:'#fff',borderRadius:14,padding:'20px',boxShadow:'0 1px 4px rgba(0,0,0,0.06)'}}>
+        <div style={{fontSize:14,fontWeight:700,color:Bridge.text,marginBottom:14}}>Current Pipeline</div>
+        <div style={{display:'flex',gap:0}}>
+          {[
+            {label:'Detected',value:63,color:Bridge.accent},
+            {label:'In assessment',value:23,color:'oklch(52% 0.18 200)'},
+            {label:'On active plan',value:451,color:Bridge.green},
+            {label:'Completed',value:310,color:Bridge.muted},
+          ].map((s,i,arr)=>{
+            const total=451+63+23+310;
+            const w=(s.value/total)*100;
+            return (
+              <div key={s.label} style={{width:`${w}%`,minWidth:60,height:40,background:s.color,display:'flex',alignItems:'center',justifyContent:'center',borderRadius:i===0?'10px 0 0 10px':i===arr.length-1?'0 10px 10px 0':'0',position:'relative'}}>
+                <span style={{fontSize:12,fontWeight:700,color:'#fff',textShadow:'0 1px 2px rgba(0,0,0,0.2)'}}>{s.value}</span>
+              </div>
+            );
+          })}
+        </div>
+        <div style={{display:'flex',gap:16,marginTop:10}}>
+          {[['Detected',Bridge.accent],['In assessment','oklch(52% 0.18 200)'],['On active plan',Bridge.green],['Completed',Bridge.muted]].map(([l,c])=>(
+            <div key={l} style={{display:'flex',alignItems:'center',gap:5,fontSize:12,color:Bridge.muted}}>
+              <div style={{width:8,height:8,borderRadius:'50%',background:c}}/>{l}
+            </div>
+          ))}
+        </div>
+      </div>
+    </AdminLayout>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Bridge — Confirmation</title>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" src="../bridge-ui.jsx"></script>
+<script type="text/babel">
+function App() {
+  return (
+    <CustomerLayout step={4} totalSteps={4}>
+      {/* Success hero */}
+      <div style={{textAlign:'center',padding:'40px 0 32px'}}>
+        <div style={{width:80,height:80,borderRadius:'50%',background:Bridge.greenBg,border:`3px solid ${Bridge.green}`,display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 20px'}}>
+          <svg width="36" height="28" viewBox="0 0 36 28" fill="none"><path d="M3 14l10 10L33 3" stroke={Bridge.green} strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        </div>
+        <h1 style={{fontSize:30,fontWeight:800,color:Bridge.text,letterSpacing:-0.8,marginBottom:10}}>You're all set, Sarah!</h1>
+        <p style={{fontSize:15,color:Bridge.sub,maxWidth:480,margin:'0 auto',lineHeight:1.6}}>Your Conservative payment plan is now active. A confirmation email has been sent to <strong>sarah.mitchell@email.com</strong></p>
+      </div>
+
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20,marginBottom:20}}>
+        {/* Plan summary */}
+        <Card style={{padding:'22px 24px'}}>
+          <SectionLabel>Your plan summary</SectionLabel>
+          {[
+            ['Plan','Conservative'],
+            ['Monthly payment','£35.00'],
+            ['Payment method','Direct Debit'],
+            ['First payment','15 May 2026'],
+            ['Final payment','15 April 2027'],
+            ['Total payments','12'],
+            ['Total amount','£420.00'],
+            ['Account','Barclays ····1234'],
+          ].map(([k,v])=>(
+            <Row key={k}><span style={{fontSize:13.5,color:Bridge.sub}}>{k}</span><span style={{fontSize:13.5,fontWeight:600,color:Bridge.text}}>{v}</span></Row>
+          ))}
+        </Card>
+
+        <div style={{display:'flex',flexDirection:'column',gap:14}}>
+          <Card style={{padding:'20px 22px'}}>
+            <SectionLabel>What happens next</SectionLabel>
+            {[
+              {icon:'📧',text:'Confirmation email sent to your inbox'},
+              {icon:'📅',text:'First payment taken 15 May 2026 via Direct Debit'},
+              {icon:'📊',text:'Track your progress in the payment portal'},
+              {icon:'🔔',text:'Reminders sent 7 days before each payment'},
+              {icon:'🔁',text:'Reassessment offered after 6 months'},
+            ].map(({icon,text})=>(
+              <div key={text} style={{display:'flex',gap:10,alignItems:'center',padding:'8px 0',borderBottom:`1px solid ${Bridge.divider}`}}>
+                <span style={{fontSize:16}}>{icon}</span>
+                <span style={{fontSize:13.5,color:Bridge.sub,lineHeight:1.5}}>{text}</span>
+              </div>
+            ))}
+          </Card>
+
+          <Card style={{padding:'18px 20px',background:Bridge.amberBg,border:`1px solid ${Bridge.amber}25`}}>
+            <div style={{fontSize:13.5,fontWeight:700,color:Bridge.text,marginBottom:6}}>Can't make a payment?</div>
+            <div style={{fontSize:13,color:Bridge.sub,lineHeight:1.55,marginBottom:10}}>Life happens. Call us <strong>before</strong> the payment date and we'll reschedule with no penalty.</div>
+            <div style={{fontSize:15,fontWeight:700,color:Bridge.accent}}>0800 000 0000</div>
+            <div style={{fontSize:12,color:Bridge.muted}}>Mon–Fri 8am–8pm · Sat 9am–5pm</div>
+          </Card>
+        </div>
+      </div>
+
+      <Btn variant="primary" full>Go to My Dashboard</Btn>
+    </CustomerLayout>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

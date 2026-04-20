@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Bridge — Payment Plan Options</title>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" src="../bridge-ui.jsx"></script>
+<script type="text/babel">
+const { useState } = React;
+
+const PLANS = [
+  {
+    id:'conservative', name:'Conservative', monthly:35, duration:12, sust:'HIGH', recommended:true,
+    buffer:95, color:Bridge.green,
+    pros:['Leaves £95/month buffer for emergencies','Lowest monthly commitment','Highest chance of completing the plan'],
+    warning:null,
+  },
+  {
+    id:'balanced', name:'Balanced', monthly:70, duration:6, sust:'MEDIUM', recommended:false,
+    buffer:60, color:Bridge.amber,
+    pros:['Clears debt 6 months sooner','Moderate risk if unexpected expense','Buffer of £60/month remains'],
+    warning:'If an unexpected expense arises, you may struggle to make a payment.',
+  },
+  {
+    id:'aggressive', name:'Aggressive', monthly:140, duration:3, sust:'LOW', recommended:false,
+    buffer:-10, color:Bridge.red,
+    pros:['Clears debt fastest — 3 months','Saves on any interest accumulation'],
+    warning:'Monthly payment exceeds your disposable income. High risk of missing payments.',
+  },
+];
+
+function PlanCard({ plan, selected, onSelect }) {
+  const isSelected = selected === plan.id;
+  return (
+    <div onClick={()=>onSelect(plan.id)} style={{
+      background:'#fff', borderRadius:20, padding:'24px',
+      border:`${isSelected?2:1.5}px solid ${isSelected?plan.color:Bridge.border}`,
+      cursor:'pointer', position:'relative', transition:'all 0.15s',
+      boxShadow: isSelected ? `0 4px 20px ${plan.color}22` : '0 1px 4px rgba(0,0,0,0.06)',
+    }}>
+      {plan.recommended && (
+        <div style={{position:'absolute',top:-12,left:'50%',transform:'translateX(-50%)',background:Bridge.green,color:'#fff',fontSize:11.5,fontWeight:700,padding:'4px 14px',borderRadius:100,whiteSpace:'nowrap'}}>
+          ★ Recommended
+        </div>
+      )}
+      <div style={{marginBottom:16}}>
+        <div style={{fontSize:13,fontWeight:600,color:Bridge.muted,textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:6}}>{plan.name}</div>
+        <div style={{display:'flex',alignItems:'baseline',gap:4}}>
+          <span style={{fontSize:40,fontWeight:800,color:plan.color,letterSpacing:-1.5}}>£{plan.monthly}</span>
+          <span style={{fontSize:14,color:Bridge.sub}}>/month</span>
+        </div>
+      </div>
+      <div style={{display:'flex',flexDirection:'column',gap:8,marginBottom:16,paddingBottom:16,borderBottom:`1px solid ${Bridge.divider}`}}>
+        {[['Duration',`${plan.duration} months`],['Total paid','£420'],['Monthly buffer',plan.buffer>=0?`£${plan.buffer}`:'Over budget']].map(([k,v])=>(
+          <div key={k} style={{display:'flex',justifyContent:'space-between',fontSize:13.5}}>
+            <span style={{color:Bridge.sub}}>{k}</span>
+            <span style={{fontWeight:600,color:k==='Monthly buffer'&&plan.buffer<0?Bridge.red:Bridge.text}}>{v}</span>
+          </div>
+        ))}
+      </div>
+      <SustBadge level={plan.sust}/>
+      <div style={{marginTop:14,display:'flex',flexDirection:'column',gap:6}}>
+        {plan.pros.map(p=>(
+          <div key={p} style={{display:'flex',gap:8,alignItems:'flex-start'}}>
+            <span style={{color:plan.color,fontWeight:700,fontSize:14,marginTop:1}}>·</span>
+            <span style={{fontSize:12.5,color:Bridge.sub,lineHeight:1.45}}>{p}</span>
+          </div>
+        ))}
+      </div>
+      {plan.warning && (
+        <div style={{marginTop:12,background:Bridge.redBg,borderRadius:10,padding:'10px 12px',fontSize:12.5,color:Bridge.red,lineHeight:1.45}}>
+          ⚠ {plan.warning}
+        </div>
+      )}
+      <div style={{marginTop:16}}>
+        <Btn variant={isSelected?'primary':'ghost'} full small>{isSelected?'✓ Selected — Continue':'Select This Plan'}</Btn>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [selected, setSelected] = useState('conservative');
+  return (
+    <CustomerLayout title="Choose a Payment Plan" subtitle="All plans clear your full £420 balance. We recommend Conservative — it leaves you a safety buffer each month.">
+      {/* Context strip */}
+      <Card style={{marginBottom:20,padding:'14px 20px'}}>
+        <div style={{display:'flex',gap:24,flexWrap:'wrap'}}>
+          {[['Balance to clear','£420'],['Your disposable income','£130/month'],['Hardship level','SEVERE']].map(([k,v])=>(
+            <div key={k}>
+              <div style={{fontSize:11.5,color:Bridge.muted,fontWeight:600,textTransform:'uppercase',letterSpacing:'0.05em',marginBottom:2}}>{k}</div>
+              <div style={{fontSize:15,fontWeight:700,color:Bridge.text}}>{v}</div>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:18,marginBottom:24,marginTop:20}}>
+        {PLANS.map(p=><PlanCard key={p.id} plan={p} selected={selected} onSelect={setSelected}/>)}
+      </div>
+
+      <div style={{display:'flex',justifyContent:'center',gap:12}}>
+        <Btn variant="primary">Continue with {PLANS.find(p=>p.id===selected)?.name} Plan</Btn>
+        <Btn variant="secondary">Compare in detail</Btn>
+      </div>
+      <p style={{textAlign:'center',fontSize:12.5,color:Bridge.muted,marginTop:12}}>
+        You can adjust or pause your plan at any time. <span style={{color:Bridge.accent,cursor:'pointer'}}>Need advice? Talk to us.</span>
+      </p>
+    </CustomerLayout>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

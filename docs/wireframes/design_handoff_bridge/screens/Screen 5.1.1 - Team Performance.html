@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Bridge Admin — Team Performance</title>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" src="../bridge-ui.jsx"></script>
+<script type="text/babel">
+const { useState } = React;
+
+const OFFICERS = [
+  { name:'Jane Williams',  initials:'JW', cases:127, approval:88, avgTime:'2.3h', escalations:3,  trend:[82,85,87,86,88,89,88,88] },
+  { name:'Tom Bennett',    initials:'TB', cases:118, approval:86, avgTime:'2.1h', escalations:5,  trend:[80,82,84,85,83,86,85,86] },
+  { name:'Sarah Ahmed',    initials:'SA', cases:94,  approval:89, avgTime:'2.0h', escalations:2,  trend:[86,87,88,88,90,89,89,89] },
+  { name:'Mike Johnson',   initials:'MJ', cases:112, approval:85, avgTime:'2.8h', escalations:7,  trend:[78,80,83,82,84,85,84,85] },
+];
+
+const QUEUE_TREND = [18,22,25,20,18,23,21,23];
+const WEEKS = ['4 Mar','11 Mar','18 Mar','25 Mar','1 Apr','8 Apr','15 Apr','20 Apr'];
+
+function MiniSparkline({ data, color }) {
+  const W=80, H=28, pad=2;
+  const min=Math.min(...data), max=Math.max(...data), range=max-min||1;
+  const pts = data.map((v,i)=>({
+    x: pad + (i/(data.length-1))*(W-pad*2),
+    y: pad + (1-(v-min)/range)*(H-pad*2),
+  }));
+  const d = pts.map((p,i)=>`${i===0?'M':'L'}${p.x},${p.y}`).join(' ');
+  return (
+    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`}>
+      <path d={d} stroke={color} strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+      <circle cx={pts[pts.length-1].x} cy={pts[pts.length-1].y} r="3" fill={color}/>
+    </svg>
+  );
+}
+
+function QueueChart() {
+  const W=520, H=100, padL=32, padB=20, padT=8;
+  const min=0, max=30;
+  const pts = QUEUE_TREND.map((v,i)=>({
+    x: padL + (i/(QUEUE_TREND.length-1))*(W-padL-8),
+    y: padT + (1-(v-min)/(max-min))*(H-padT-padB),
+    v,
+  }));
+  const d = pts.map((p,i)=>`${i===0?'M':'L'}${p.x},${p.y}`).join(' ');
+  const areaD = `${d} L${pts[pts.length-1].x},${H-padB} L${pts[0].x},${H-padB} Z`;
+  const targetY = padT + (1-5/(max-min))*(H-padT-padB);
+  return (
+    <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{overflow:'visible'}}>
+      <defs><linearGradient id="qg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={Bridge.accent} stopOpacity="0.15"/><stop offset="100%" stopColor={Bridge.accent} stopOpacity="0"/></linearGradient></defs>
+      {[10,20,30].map(v=>{ const y=padT+(1-v/(max-min))*(H-padT-padB); return <g key={v}><line x1={padL} y1={y} x2={W-4} y2={y} stroke={Bridge.divider} strokeWidth="1"/><text x={padL-6} y={y+4} fontSize="9" fill={Bridge.muted} textAnchor="end">{v}</text></g>; })}
+      <line x1={padL} y1={targetY} x2={W-4} y2={targetY} stroke={Bridge.green} strokeWidth="1.2" strokeDasharray="5,3"/>
+      <text x={W} y={targetY+4} fontSize="9" fill={Bridge.green} textAnchor="end">Target</text>
+      <path d={areaD} fill="url(#qg)"/>
+      <path d={d} stroke={Bridge.accent} strokeWidth="2.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+      {pts.map((p,i)=>(
+        <g key={i}>
+          <circle cx={p.x} cy={p.y} r="4" fill={Bridge.accent} stroke="#fff" strokeWidth="1.5"/>
+          <text x={p.x} y={H-2} fontSize="9" fill={Bridge.muted} textAnchor="middle">{WEEKS[i].split(' ')[0]}</text>
+        </g>
+      ))}
+    </svg>
+  );
+}
+
+function App() {
+  const [selected, setSelected] = useState(null);
+  return (
+    <AdminLayout active="performance" title="Team Performance" subtitle="Officer queue · Week of 20 April 2026">
+      {/* Queue health */}
+      <AdminSection title="Queue Health">
+        <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:12,marginBottom:0}}>
+          {[
+            {label:'Cases in queue',value:'23',sub:'Active hardship cases',color:Bridge.accent,ok:true},
+            {label:'Avg wait time',value:'4.2 days',sub:'Target: <5 days',color:Bridge.green,ok:true},
+            {label:'Cases >14 days',value:'2',sub:'Needs urgent attention',color:Bridge.amber,ok:false},
+            {label:'Target met',value:'✓ On track',sub:'Queue within SLA',color:Bridge.green,ok:true},
+          ].map(s=>(
+            <div key={s.label} style={{background:'#fff',borderRadius:14,padding:'18px 20px',boxShadow:'0 1px 4px rgba(0,0,0,0.06)',borderTop:`3px solid ${s.color}`}}>
+              <div style={{fontSize:22,fontWeight:800,color:s.color,letterSpacing:-0.5,marginBottom:4}}>{s.value}</div>
+              <div style={{fontSize:13,fontWeight:600,color:Bridge.text,marginBottom:3}}>{s.label}</div>
+              <div style={{fontSize:12,color:Bridge.muted}}>{s.sub}</div>
+            </div>
+          ))}
+        </div>
+      </AdminSection>
+
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20,marginBottom:20}}>
+        {/* Decision quality */}
+        <div style={{background:'#fff',borderRadius:14,padding:'20px',boxShadow:'0 1px 4px rgba(0,0,0,0.06)'}}>
+          <div style={{fontSize:14,fontWeight:700,color:Bridge.text,marginBottom:16}}>Decision Quality (this month)</div>
+          {[
+            {label:'Approved',pct:87,color:Bridge.green},
+            {label:'Modified by officer',pct:5,color:Bridge.accent},
+            {label:'Escalated',pct:8,color:Bridge.amber},
+            {label:'Awaiting info',pct:5,color:Bridge.muted},
+          ].map(d=>(
+            <div key={d.label} style={{marginBottom:12}}>
+              <div style={{display:'flex',justifyContent:'space-between',marginBottom:4}}>
+                <span style={{fontSize:13.5,color:Bridge.sub}}>{d.label}</span>
+                <span style={{fontSize:13.5,fontWeight:700,color:d.color}}>{d.pct}%</span>
+              </div>
+              <div style={{height:6,borderRadius:100,background:'#eee',overflow:'hidden'}}>
+                <div style={{height:'100%',width:`${d.pct}%`,background:d.color,borderRadius:100}}/>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Queue trend */}
+        <div style={{background:'#fff',borderRadius:14,padding:'20px',boxShadow:'0 1px 4px rgba(0,0,0,0.06)'}}>
+          <div style={{fontSize:14,fontWeight:700,color:Bridge.text,marginBottom:16}}>Queue Size — Last 8 Weeks</div>
+          <QueueChart/>
+          <div style={{display:'flex',gap:12,marginTop:12,fontSize:12,color:Bridge.muted}}>
+            <span style={{display:'flex',alignItems:'center',gap:4}}><span style={{width:12,height:2,background:Bridge.accent,display:'inline-block'}}/> Queue size</span>
+            <span style={{display:'flex',alignItems:'center',gap:4}}><span style={{width:12,height:2,background:Bridge.green,display:'inline-block',borderTop:'2px dashed',borderColor:Bridge.green}}/> SLA target (5 days)</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Officer table */}
+      <AdminSection title="Officer Breakdown" action={<span style={{fontSize:12.5,color:Bridge.muted}}>Click a row to view their cases</span>}>
+        <div style={{background:'#fff',borderRadius:14,overflow:'hidden',boxShadow:'0 1px 4px rgba(0,0,0,0.06)'}}>
+          {/* Header */}
+          <div style={{display:'grid',gridTemplateColumns:'2fr 1fr 1fr 1fr 1fr 80px',gap:12,padding:'11px 20px',background:Bridge.bg,borderBottom:`1px solid ${Bridge.border}`}}>
+            {['Officer','Cases handled','Approval rate','Avg time','Escalations','Trend'].map(h=>(
+              <div key={h} style={{fontSize:11.5,fontWeight:600,color:Bridge.muted,textTransform:'uppercase',letterSpacing:'0.05em'}}>{h}</div>
+            ))}
+          </div>
+          {OFFICERS.map((o,i)=>(
+            <div key={o.name} onClick={()=>setSelected(selected===i?null:i)} style={{display:'grid',gridTemplateColumns:'2fr 1fr 1fr 1fr 1fr 80px',gap:12,padding:'16px 20px',borderBottom:i<OFFICERS.length-1?`1px solid ${Bridge.divider}`:'none',alignItems:'center',cursor:'pointer',background:selected===i?Bridge.accentBg:'#fff',transition:'background 0.12s'}}>
+              <div style={{display:'flex',gap:10,alignItems:'center'}}>
+                <div style={{width:34,height:34,borderRadius:'50%',background:Bridge.accentBg,color:Bridge.accent,display:'flex',alignItems:'center',justifyContent:'center',fontSize:12,fontWeight:700,flexShrink:0}}>{o.initials}</div>
+                <div>
+                  <div style={{fontSize:13.5,fontWeight:600,color:Bridge.text}}>{o.name}</div>
+                  <div style={{fontSize:12,color:Bridge.muted}}>Case Officer</div>
+                </div>
+              </div>
+              <div style={{fontSize:14,fontWeight:700,color:Bridge.text}}>{o.cases}</div>
+              <div>
+                <div style={{fontSize:14,fontWeight:700,color:o.approval>=88?Bridge.green:o.approval>=86?Bridge.amber:Bridge.text}}>{o.approval}%</div>
+                <div style={{height:4,borderRadius:100,background:'#eee',marginTop:4,width:60,overflow:'hidden'}}>
+                  <div style={{height:'100%',width:`${o.approval}%`,background:o.approval>=88?Bridge.green:Bridge.amber,borderRadius:100}}/>
+                </div>
+              </div>
+              <div style={{fontSize:14,fontWeight:600,color:Bridge.text}}>{o.avgTime}</div>
+              <div>
+                <span style={{fontSize:13,fontWeight:600,padding:'3px 10px',borderRadius:100,background:o.escalations<=3?Bridge.greenBg:Bridge.amberBg,color:o.escalations<=3?Bridge.green:Bridge.amber}}>{o.escalations}</span>
+              </div>
+              <MiniSparkline data={o.trend} color={Bridge.accent}/>
+            </div>
+          ))}
+        </div>
+      </AdminSection>
+    </AdminLayout>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

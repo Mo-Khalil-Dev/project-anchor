@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Bridge — Home</title>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" src="../bridge-ui.jsx"></script>
+<script type="text/babel">
+const { useState } = React;
+
+function App() {
+  return (
+    <CustomerLayout>
+      <WebHero title="Hello, Sarah. Let's sort your account." subtitle="Your account has an outstanding balance. We're here to help you find a payment plan that genuinely works for your situation — no pressure, no jargon.">
+        <div style={{display:'flex',gap:10,marginTop:20,flexWrap:'wrap'}}>
+          {[['Account','#BR-2847'],['Outstanding','£420'],['Due','Overdue']].map(([k,v])=>(
+            <div key={k} style={{background:'rgba(255,255,255,0.15)',borderRadius:10,padding:'6px 14px',fontSize:12.5,color:'#fff',backdropFilter:'blur(4px)'}}>
+              <span style={{opacity:0.7}}>{k}: </span><strong>{v}</strong>
+            </div>
+          ))}
+        </div>
+      </WebHero>
+
+      {/* Steps */}
+      <Card style={{marginBottom:20,padding:'24px 28px'}}>
+        <SectionLabel>How Bridge works</SectionLabel>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:0,marginTop:12}}>
+          {[
+            {n:1,title:'Connect your bank',desc:'Securely link your account so we understand your finances. Takes 2 minutes.'},
+            {n:2,title:'Get your assessment',desc:'We analyse 6 months of data and calculate a hardship score and disposable income.'},
+            {n:3,title:'Choose your plan',desc:'Pick a payment plan that fits. We offer options from £35/month — no one-size-fits-all.'},
+          ].map((s,i)=>(
+            <div key={i} style={{display:'flex',gap:14,padding:'8px 20px 8px 0',borderRight:i<2?`1px solid ${Bridge.divider}`:'none',marginRight:i<2?20:0}}>
+              <div style={{width:34,height:34,borderRadius:'50%',background:Bridge.accentBg,color:Bridge.accent,display:'flex',alignItems:'center',justifyContent:'center',fontWeight:800,fontSize:14,flexShrink:0}}>{s.n}</div>
+              <div>
+                <div style={{fontSize:14,fontWeight:700,color:Bridge.text,marginBottom:4}}>{s.title}</div>
+                <div style={{fontSize:12.5,color:Bridge.sub,lineHeight:1.55}}>{s.desc}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      {/* CTA options */}
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14,marginBottom:20}}>
+        {[
+          {icon:<svg width="22" height="20" viewBox="0 0 24 22" fill="none"><rect x="2" y="5" width="20" height="15" rx="3" stroke={Bridge.accent} strokeWidth="1.8"/><path d="M2 9h20" stroke={Bridge.accent} strokeWidth="1.8"/><path d="M6 14h4M6 17h2" stroke={Bridge.accent} strokeWidth="1.5" strokeLinecap="round"/></svg>,
+           title:'Connect Your Bank Account', desc:'Fastest option — secure read-only access, no passwords stored. Verified by Tink and FCA regulated.', cta:'Get Started', primary:true},
+          {icon:<svg width="20" height="22" viewBox="0 0 22 24" fill="none"><rect x="3" y="3" width="16" height="18" rx="2.5" stroke={Bridge.sub} strokeWidth="1.7"/><path d="M7 9h8M7 13h5M7 17h3" stroke={Bridge.sub} strokeWidth="1.5" strokeLinecap="round"/></svg>,
+           title:'Upload Bank Statements', desc:'Upload PDF statements for the last 6 months. Takes a little longer to process but is equally secure.', cta:'Upload Files', primary:false},
+        ].map((opt,i)=>(
+          <div key={i} style={{background:'#fff',borderRadius:18,padding:'28px 24px',border:`${opt.primary?2:1.5}px solid ${opt.primary?Bridge.accent:Bridge.border}`,cursor:'pointer',transition:'box-shadow 0.15s'}}>
+            <div style={{width:46,height:46,background:opt.primary?Bridge.accentBg:'#f4f4f8',borderRadius:14,display:'flex',alignItems:'center',justifyContent:'center',marginBottom:16}}>
+              {opt.icon}
+            </div>
+            <div style={{fontSize:16,fontWeight:700,color:Bridge.text,marginBottom:8}}>{opt.title}</div>
+            <div style={{fontSize:13,color:Bridge.sub,lineHeight:1.55,marginBottom:22}}>{opt.desc}</div>
+            <Btn variant={opt.primary?'primary':'secondary'} full>{opt.cta}</Btn>
+          </div>
+        ))}
+      </div>
+
+      <div style={{textAlign:'center',fontSize:12.5,color:Bridge.muted,display:'flex',alignItems:'center',justifyContent:'center',gap:6}}>
+        <svg width="13" height="15" viewBox="0 0 13 15" fill="none"><path d="M6.5 1L1 3.5v5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5v-5L6.5 1z" fill={Bridge.muted} opacity="0.5"/></svg>
+        256-bit encryption · Read-only access · GDPR compliant · Data deleted after 3 years
+      </div>
+    </CustomerLayout>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

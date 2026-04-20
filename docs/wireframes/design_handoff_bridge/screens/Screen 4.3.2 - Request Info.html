@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Bridge Admin — Request Info</title>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;} textarea{font-family:'Plus Jakarta Sans',sans-serif;}</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" src="../bridge-ui.jsx"></script>
+<script type="text/babel">
+const { useState } = React;
+
+const PRESET_QUESTIONS = [
+  { id:'q1', text:'Are there other household members with income we should be aware of?' },
+  { id:'q2', text:'Do you have any savings, investments, or assets that could help with repayment?' },
+  { id:'q3', text:'Has anything significant changed in your financial situation recently?' },
+  { id:'q4', text:'Are you currently receiving all the benefits you may be entitled to?' },
+  { id:'q5', text:'Can you confirm the November income (£2,100) — was this a one-off payment?' },
+  { id:'q6', text:'Is there a second income earner in your household?' },
+];
+
+function App() {
+  const [selected, setSelected] = useState(['q1','q3']);
+  const [custom, setCustom] = useState('');
+  const [deadline, setDeadline] = useState(7);
+  const [sent, setSent] = useState(false);
+  const toggle = (id) => setSelected(p => p.includes(id) ? p.filter(x=>x!==id) : [...p,id]);
+  const totalQuestions = selected.length + (custom.trim() ? 1 : 0);
+
+  if (sent) return (
+    <AdminLayout active="cases" title="Request Sent" subtitle="Manual review queue › Sarah Mitchell">
+      <div style={{maxWidth:520,margin:'60px auto',textAlign:'center'}}>
+        <div style={{width:72,height:72,borderRadius:'50%',background:Bridge.greenBg,border:`3px solid ${Bridge.green}`,display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 20px'}}>
+          <svg width="32" height="24" viewBox="0 0 32 24" fill="none"><path d="M2 12l9 9L30 2" stroke={Bridge.green} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        </div>
+        <h2 style={{fontSize:22,fontWeight:800,color:Bridge.text,marginBottom:10}}>Questions sent to Sarah</h2>
+        <p style={{fontSize:14,color:Bridge.sub,lineHeight:1.6,marginBottom:24}}>{totalQuestions} question{totalQuestions!==1?'s':''} sent via email. Case is now paused pending response. Deadline: <strong>{deadline} days</strong>.</p>
+        <Btn variant="primary">Back to Case Queue</Btn>
+      </div>
+    </AdminLayout>
+  );
+
+  return (
+    <AdminLayout active="cases" title="Request Information from Customer" subtitle="Manual review queue › Sarah Mitchell">
+      <Card style={{padding:'14px 20px',marginBottom:20,display:'flex',gap:12,alignItems:'center'}}>
+        <div style={{fontSize:15,fontWeight:700,color:Bridge.text}}>Sarah Mitchell</div>
+        <HardshipBadge level="SEVERE"/>
+        <div style={{marginLeft:'auto',background:Bridge.amberBg,borderRadius:10,padding:'6px 12px',fontSize:12.5,color:'oklch(45% 0.16 76)',fontWeight:600}}>
+          ⏸ Case will be paused until customer responds
+        </div>
+      </Card>
+
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20}}>
+        <div>
+          <Card style={{padding:'20px 22px',marginBottom:16}}>
+            <SectionLabel>Preset questions</SectionLabel>
+            <div style={{fontSize:12.5,color:Bridge.muted,marginBottom:12}}>Select all that apply — these will be sent as a clear list to the customer.</div>
+            {PRESET_QUESTIONS.map(q=>(
+              <label key={q.id} onClick={()=>toggle(q.id)} style={{display:'flex',gap:12,alignItems:'flex-start',padding:'10px 0',borderBottom:`1px solid ${Bridge.divider}`,cursor:'pointer'}}>
+                <div style={{width:20,height:20,borderRadius:6,border:`2px solid ${selected.includes(q.id)?Bridge.accent:Bridge.border}`,background:selected.includes(q.id)?Bridge.accent:'#fff',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,marginTop:1,transition:'all 0.12s'}}>
+                  {selected.includes(q.id)&&<svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                </div>
+                <span style={{fontSize:13.5,color:Bridge.sub,lineHeight:1.5}}>{q.text}</span>
+              </label>
+            ))}
+          </Card>
+
+          <Card style={{padding:'18px 22px'}}>
+            <SectionLabel>Add a custom question</SectionLabel>
+            <textarea value={custom} onChange={e=>setCustom(e.target.value)} placeholder="Type an additional question for this specific case..." style={{width:'100%',minHeight:90,border:`1.5px solid ${Bridge.border}`,borderRadius:10,padding:'10px 14px',fontSize:13.5,resize:'vertical',outline:'none',color:Bridge.text,marginTop:4}}/>
+          </Card>
+        </div>
+
+        <div style={{display:'flex',flexDirection:'column',gap:16}}>
+          {/* Preview */}
+          <Card style={{padding:'20px 22px',background:Bridge.accentBg,border:`1px solid ${Bridge.accent}20`}}>
+            <SectionLabel>Message preview</SectionLabel>
+            <div style={{fontSize:13,color:Bridge.sub,lineHeight:1.65,marginTop:4}}>
+              <div style={{marginBottom:10}}>Dear Sarah,</div>
+              <div style={{marginBottom:10}}>To complete your assessment, we need a few more details. Please reply to the following:</div>
+              <div style={{display:'flex',flexDirection:'column',gap:6}}>
+                {PRESET_QUESTIONS.filter(q=>selected.includes(q.id)).map((q,i)=>(
+                  <div key={q.id} style={{display:'flex',gap:8}}><span style={{color:Bridge.accent,fontWeight:700,flexShrink:0}}>{i+1}.</span><span>{q.text}</span></div>
+                ))}
+                {custom.trim() && <div style={{display:'flex',gap:8}}><span style={{color:Bridge.accent,fontWeight:700,flexShrink:0}}>{selected.length+1}.</span><span>{custom}</span></div>}
+              </div>
+              <div style={{marginTop:12}}>Please respond within <strong>{deadline} days</strong>. Your case is on hold until we hear from you.</div>
+            </div>
+          </Card>
+
+          <Card style={{padding:'18px 22px'}}>
+            <SectionLabel>Response deadline</SectionLabel>
+            <div style={{display:'flex',gap:8,marginTop:4,flexWrap:'wrap'}}>
+              {[3,5,7,10,14].map(d=>(
+                <button key={d} onClick={()=>setDeadline(d)} style={{padding:'7px 16px',borderRadius:10,border:`1.5px solid ${deadline===d?Bridge.accent:Bridge.border}`,background:deadline===d?Bridge.accentBg:'#fff',color:deadline===d?Bridge.accent:Bridge.sub,fontSize:13.5,fontWeight:deadline===d?700:400,cursor:'pointer',fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
+                  {d} days
+                </button>
+              ))}
+            </div>
+            <div style={{fontSize:12.5,color:Bridge.muted,marginTop:8}}>Deadline: {new Date(Date.now()+deadline*86400000).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}</div>
+          </Card>
+
+          <div style={{background:Bridge.amberBg,borderRadius:12,padding:'14px 16px',fontSize:13,color:'oklch(45% 0.16 76)',lineHeight:1.55}}>
+            <strong>Note:</strong> Sending this request will pause this case. It will return to your queue when the customer responds or when the deadline passes.
+          </div>
+
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
+            <Btn variant="primary" full disabled={totalQuestions===0} onClick={()=>setSent(true)}>Send {totalQuestions} Question{totalQuestions!==1?'s':''}</Btn>
+            <Btn variant="secondary" full>Cancel</Btn>
+          </div>
+        </div>
+      </div>
+    </AdminLayout>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

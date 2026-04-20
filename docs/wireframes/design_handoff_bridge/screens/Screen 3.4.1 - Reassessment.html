@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Bridge — 6-Month Reassessment</title>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" src="../bridge-ui.jsx"></script>
+<script type="text/babel">
+const { useState } = React;
+
+const SCENARIOS = {
+  improved: {
+    label:'Income increased',color:Bridge.green,icon:'↑',
+    oldIncome:1850,newIncome:2050,change:+200,
+    headline:'Great news — your income has increased',
+    sub:'Your new assessment shows an extra £200/month. Here\'s what you could do:',
+    options:[
+      {title:'Accelerate your plan',desc:'Increase to £70/month and clear your balance 6 months sooner.',cta:'Switch to Accelerated Plan',variant:'primary'},
+      {title:'Keep current and save the extra',desc:'Continue paying £35/month and put the extra £165 into savings or an emergency fund.',cta:'Keep Current Plan',variant:'ghost'},
+    ],
+  },
+  declined: {
+    label:'Income decreased',color:Bridge.red,icon:'↓',
+    oldIncome:1850,newIncome:1650,change:-200,
+    headline:'Your income has decreased',
+    sub:'We\'ve noticed your income has fallen by £200/month. Don\'t worry — we can adjust your plan.',
+    options:[
+      {title:'Extend the plan',desc:'Reduce payments to £25/month and extend by 5 months. Less pressure each month.',cta:'Extend My Plan',variant:'primary'},
+      {title:'Apply for additional support',desc:'You may now qualify for additional benefits or grants. We\'ll check for you.',cta:'Check Support Services',variant:'ghost'},
+    ],
+  },
+  nochange: {
+    label:'No change',color:Bridge.accent,icon:'→',
+    oldIncome:1850,newIncome:1850,change:0,
+    headline:'You\'re on track',
+    sub:'Your income is stable and your plan is working. You\'ve paid £210 of your £420 balance.',
+    options:[
+      {title:'Keep going',desc:'Continue with £35/month payments. You\'re halfway there — on track to finish by April 2027.',cta:'Continue Plan',variant:'primary'},
+      {title:'Explore if anything has changed',desc:'Has your household or employment situation changed? Let us know to re-run your assessment.',cta:'Update My Details',variant:'ghost'},
+    ],
+  },
+};
+
+function App() {
+  const [scenario, setScenario] = useState('improved');
+  const s = SCENARIOS[scenario];
+  return (
+    <CustomerLayout title="Your 6-Month Check-In" subtitle="Six months into your plan — we've re-assessed your financial position using your latest bank data.">
+      {/* Scenario switcher (demo tool) */}
+      <div style={{background:'#fff',borderRadius:12,padding:'10px 14px',marginBottom:20,display:'flex',gap:8,alignItems:'center',border:`1px solid ${Bridge.border}`}}>
+        <span style={{fontSize:12,color:Bridge.muted,marginRight:4}}>Preview scenario:</span>
+        {Object.entries(SCENARIOS).map(([k,v])=>(
+          <button key={k} onClick={()=>setScenario(k)} style={{padding:'5px 12px',borderRadius:8,border:`1.5px solid ${scenario===k?v.color:Bridge.border}`,background:scenario===k?`${v.color}12`:'transparent',color:scenario===k?v.color:Bridge.sub,fontSize:12.5,fontWeight:scenario===k?700:400,cursor:'pointer',fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
+            {v.icon} {v.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Income comparison */}
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:14,marginBottom:20}}>
+        {[
+          {label:'Previous income (6mo avg)',value:`£${s.oldIncome}`,color:Bridge.sub},
+          {label:'New income (6mo avg)',value:`£${s.newIncome}`,color:s.color},
+          {label:'Change',value:`${s.change>0?'+':''}${s.change===0?'No change':'£'+Math.abs(s.change)+'/mo'}`,color:s.color},
+        ].map(m=>(
+          <Card key={m.label} style={{padding:'20px',borderTop:`3px solid ${m.color}`}}>
+            <div style={{fontSize:24,fontWeight:800,color:m.color,letterSpacing:-0.5,marginBottom:4}}>{m.value}</div>
+            <div style={{fontSize:12.5,color:Bridge.sub,lineHeight:1.4}}>{m.label}</div>
+          </Card>
+        ))}
+      </div>
+
+      {/* Result card */}
+      <div style={{background:`linear-gradient(135deg,${s.color}12 0%,${s.color}06 100%)`,border:`1.5px solid ${s.color}30`,borderRadius:18,padding:'24px',marginBottom:20}}>
+        <div style={{fontSize:11.5,fontWeight:700,color:s.color,textTransform:'uppercase',letterSpacing:'0.07em',marginBottom:8}}>Assessment result</div>
+        <div style={{fontSize:20,fontWeight:800,color:Bridge.text,marginBottom:8,letterSpacing:-0.4}}>{s.headline}</div>
+        <div style={{fontSize:14,color:Bridge.sub,lineHeight:1.6}}>{s.sub}</div>
+      </div>
+
+      {/* Options */}
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14,marginBottom:20}}>
+        {s.options.map(o=>(
+          <Card key={o.title} style={{padding:'22px'}}>
+            <div style={{fontSize:15,fontWeight:700,color:Bridge.text,marginBottom:8}}>{o.title}</div>
+            <div style={{fontSize:13.5,color:Bridge.sub,lineHeight:1.55,marginBottom:18,minHeight:56}}>{o.desc}</div>
+            <Btn variant={o.variant} full>{o.cta}</Btn>
+          </Card>
+        ))}
+      </div>
+
+      {/* Plan progress reminder */}
+      <Card style={{padding:'16px 20px'}}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+          <div>
+            <div style={{fontSize:13.5,fontWeight:600,color:Bridge.text}}>Plan progress: 6 of 12 payments made</div>
+            <div style={{fontSize:12.5,color:Bridge.muted,marginTop:3}}>£210 paid · £210 remaining · Estimated completion April 2027</div>
+          </div>
+          <div style={{width:160}}>
+            <ProgressBar value={6} max={12} color={Bridge.accent} height={8}/>
+          </div>
+        </div>
+      </Card>
+    </CustomerLayout>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

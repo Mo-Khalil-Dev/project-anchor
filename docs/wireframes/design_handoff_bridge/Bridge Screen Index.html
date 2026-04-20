@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Bridge — Screen Index</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#f4f5f9;color:#0d0f14;-webkit-font-smoothing:antialiased;}
+a{text-decoration:none;color:inherit;}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header style="background:#160f2e;padding:0 48px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;">
+  <div style="display:flex;align-items:center;gap:12px;">
+    <svg width="32" height="20" viewBox="0 0 60 37" fill="none">
+      <path d="M2 31h56" stroke="white" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M10 31V19" stroke="white" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M50 31V19" stroke="white" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M10 19C10 19 18 7 30 7C42 7 50 19 50 19" stroke="white" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+      <line x1="20" y1="31" x2="20" y2="21" stroke="rgba(255,255,255,0.6)" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="30" y1="31" x2="30" y2="15" stroke="rgba(255,255,255,0.6)" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="40" y1="31" x2="40" y2="21" stroke="rgba(255,255,255,0.6)" stroke-width="2.5" stroke-linecap="round"/>
+    </svg>
+    <span style="font-size:20px;font-weight:800;color:white;letter-spacing:-0.5px;">Bridge</span>
+    <span style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.45);margin-left:4px;text-transform:uppercase;letter-spacing:0.06em;">Screen Index</span>
+  </div>
+  <div style="display:flex;gap:16px;font-size:13px;color:rgba(255,255,255,0.45);">
+    <span id="total-count"></span>
+    <span>Project Bridge · April 2026</span>
+  </div>
+</header>
+
+<!-- Hero -->
+<div style="background:linear-gradient(135deg,oklch(52% 0.18 270) 0%,oklch(43% 0.22 285) 100%);padding:48px 48px 40px;">
+  <div style="max-width:1100px;margin:0 auto;">
+    <h1 style="font-size:34px;font-weight:800;color:white;letter-spacing:-1px;margin-bottom:10px;">UI Screen Mockups</h1>
+    <p style="font-size:16px;color:rgba(255,255,255,0.72);max-width:600px;line-height:1.6;">Complete mockup set for Bridge — the hardship management platform. Customer portal, officer tools, management dashboards, and policy configuration.</p>
+    <div style="display:flex;gap:12px;margin-top:24px;flex-wrap:wrap;">
+      <span style="background:rgba(255,255,255,0.18);color:white;font-size:13px;font-weight:600;padding:6px 14px;border-radius:100px;">25 screens</span>
+      <span style="background:rgba(255,255,255,0.18);color:white;font-size:13px;font-weight:600;padding:6px 14px;border-radius:100px;">7 epics</span>
+      <span style="background:rgba(255,255,255,0.18);color:white;font-size:13px;font-weight:600;padding:6px 14px;border-radius:100px;">Web Desktop</span>
+    </div>
+  </div>
+</div>
+
+<!-- Content -->
+<div style="max-width:1100px;margin:0 auto;padding:40px 48px 80px;" id="content">
+</div>
+
+<script>
+const EPICS = [
+  {
+    id:1, title:'Bank Connection & Detection', color:'oklch(52% 0.18 270)', audience:'Customer',
+    screens:[
+      { id:'1.1',   label:'Bank Connection Journey',     file:'screens/Screen 1.1 - Bank Connection Journey.html',   note:'All 9 steps — Intro → Success/Error', tag:'Journey' },
+      { id:'1.1.1', label:'Home / Dashboard',            file:'screens/Screen 1.1.1 - Home.html',                     note:'Entry point, connect or upload' },
+    ]
+  },
+  {
+    id:2, title:'Assessment & Recommendations', color:'oklch(52% 0.18 200)', audience:'Customer',
+    screens:[
+      { id:'2.1.1',   label:'Assessment Overview',         file:'screens/Screen 2.1.1 - Assessment Overview.html',      note:'SEVERE badge, income/expense cards, bill ratio' },
+      { id:'2.1.2–5', label:'Assessment Breakdown',        file:'screens/Screen 2.1.2-5 - Assessment Breakdown.html',   note:'4 tabs: Overview, Expenses, Income, Why', tag:'Tabbed' },
+      { id:'2.2.1',   label:'Payment Plan Options',        file:'screens/Screen 2.2.1 - Payment Plans.html',            note:'3 plan cards — Conservative, Balanced, Aggressive' },
+      { id:'2.2.2',   label:'Conservative Plan Detail',    file:'screens/Screen 2.2.2 - Conservative Plan.html',        note:'12 months · £35/mo · HIGH sustainability' },
+      { id:'2.2.3',   label:'Balanced Plan Detail',        file:'screens/Screen 2.2.3 - Balanced Plan.html',            note:'6 months · £70/mo · MEDIUM sustainability' },
+      { id:'2.2.4',   label:'Aggressive Plan Detail',      file:'screens/Screen 2.2.4 - Aggressive Plan.html',          note:'3 months · £140/mo · LOW — risk gate', tag:'Risk' },
+      { id:'2.3.1',   label:'Support Services',            file:'screens/Screen 2.3.1 - Support Services.html',         note:'Warm Home Discount, grants, debt advice' },
+    ]
+  },
+  {
+    id:3, title:'Payment Plan Management', color:'oklch(51% 0.17 145)', audience:'Customer',
+    screens:[
+      { id:'3.1.1', label:'Plan Terms & Conditions',     file:'screens/Screen 3.1.1 - Plan TCs.html',                note:'Plain English T&Cs + consent checkbox' },
+      { id:'3.1.2', label:'Payment Method Setup',        file:'screens/Screen 3.1.2 - Payment Setup.html',           note:'Direct Debit, card, or Post Office' },
+      { id:'3.1.3', label:'Direct Debit Setup',          file:'screens/Screen 3.1.3 - Direct Debit.html',            note:'Sort code, account number, payment date' },
+      { id:'3.1.4', label:'Plan Confirmation',           file:'screens/Screen 3.1.4 - Confirmation.html',            note:'Success state — you\'re all set!' },
+      { id:'3.2.2', label:'Payment Portal',              file:'screens/Screen 3.2.2 - Payment Portal.html',          note:'Progress tracker, history, next payment' },
+      { id:'3.3.2', label:'Missed Payment — Reschedule', file:'screens/Screen 3.3.2 - Missed Payment Reschedule.html', note:'Empathetic flow — reason + reschedule options' },
+      { id:'3.4.1', label:'Six Month Reassessment',      file:'screens/Screen 3.4.1 - Reassessment.html',            note:'3 scenarios: improved / declined / stable', tag:'Scenarios' },
+    ]
+  },
+  {
+    id:4, title:'Admin — Queue & Case Management', color:'oklch(62% 0.16 76)', audience:'Officer',
+    screens:[
+      { id:'4.2.1–4', label:'Case Review (Full)',          file:'screens/Screen 4.2.1 - Case Review.html',             note:'4 tabs: Overview, Customer, Financial, Bank Data', tag:'Tabbed' },
+      { id:'4.3.1',   label:'Modify Plan',                 file:'screens/Screen 4.3.1 - Modify Plan.html',             note:'Live preview, warning zones, support measures' },
+      { id:'4.3.2',   label:'Request Information',         file:'screens/Screen 4.3.2 - Request Info.html',            note:'Preset questions + custom + deadline picker' },
+      { id:'4.3.3',   label:'Escalate Case',               file:'screens/Screen 4.3.3 - Escalate.html',                note:'Officer picker, reason, priority, confirmation' },
+    ]
+  },
+  {
+    id:5, title:'Admin — Performance & Compliance', color:'oklch(52% 0.18 25)', audience:'Manager',
+    screens:[
+      { id:'5.1.1',   label:'Team Performance',            file:'screens/Screen 5.1.1 - Team Performance.html',        note:'Queue health, decision quality, officer KPIs' },
+      { id:'5.2.1–2', label:'Compliance Dashboard',        file:'screens/Screen 5.2.1 - Compliance Dashboard.html',    note:'FCA/Ofgem metrics + flag accuracy tabs', tag:'Tabbed' },
+      { id:'5.3.1',   label:'Executive Dashboard',         file:'screens/Screen 5.3.1 - Executive Dashboard.html',     note:'ROI, arrears recovered, industry comparison' },
+    ]
+  },
+  {
+    id:6, title:'Hardship Policy Configuration', color:'oklch(52% 0.18 310)', audience:'Policy Manager',
+    screens:[
+      { id:'6.1.1–2', label:'Policy Configuration',        file:'screens/Screen 6.1.1 - Policy Config.html',           note:'Thresholds, limits, vulnerability rules, triggers + impact preview', tag:'Interactive' },
+    ]
+  },
+  {
+    id:7, title:'Vulnerable Customer Protection', color:'oklch(51% 0.17 145)', audience:'All',
+    screens:[
+      { id:'7.1.1', label:'PSR Protection',                file:'screens/Screen 7.1.1 - PSR Protection.html',          note:'Medical/other PSR + not-registered states', tag:'Scenarios' },
+    ]
+  },
+];
+
+const AUDIENCE_COLOR = {
+  'Customer':       { bg:'oklch(96.5% 0.03 270)', color:'oklch(52% 0.18 270)' },
+  'Officer':        { bg:'oklch(96.5% 0.05 76)',  color:'oklch(52% 0.16 76)' },
+  'Manager':        { bg:'oklch(96.5% 0.05 25)',  color:'oklch(52% 0.18 25)' },
+  'Policy Manager': { bg:'oklch(96.5% 0.03 310)', color:'oklch(52% 0.18 310)' },
+  'All':            { bg:'oklch(96.5% 0.04 145)', color:'oklch(51% 0.17 145)' },
+};
+
+const TAG_COLOR = {
+  'Journey':     { bg:'oklch(96.5% 0.03 270)', color:'oklch(52% 0.18 270)' },
+  'Tabbed':      { bg:'oklch(96.5% 0.03 200)', color:'oklch(52% 0.18 200)' },
+  'Risk':        { bg:'oklch(97% 0.03 25)',    color:'oklch(52% 0.18 25)' },
+  'Scenarios':   { bg:'oklch(96.5% 0.05 76)',  color:'oklch(52% 0.16 76)' },
+  'Interactive': { bg:'oklch(96.5% 0.04 145)', color:'oklch(51% 0.17 145)' },
+};
+
+const content = document.getElementById('content');
+let totalScreens = 0;
+
+EPICS.forEach(epic => {
+  totalScreens += epic.screens.length;
+  const audienceStyle = AUDIENCE_COLOR[epic.audience] || AUDIENCE_COLOR['All'];
+  
+  const section = document.createElement('div');
+  section.style.cssText = 'margin-bottom:40px;';
+  
+  // Epic header
+  const header = document.createElement('div');
+  header.style.cssText = 'display:flex;align-items:center;gap:12px;margin-bottom:16px;';
+  header.innerHTML = `
+    <div style="width:32px;height:32px;border-radius:10px;background:${epic.color};display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:white;flex-shrink:0;">${epic.id}</div>
+    <h2 style="font-size:16px;font-weight:700;color:#0d0f14;letter-spacing:-0.3px;">${epic.title}</h2>
+    <span style="background:${audienceStyle.bg};color:${audienceStyle.color};font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:100px;">${epic.audience}</span>
+    <span style="font-size:12.5px;color:#9197ab;margin-left:auto;">${epic.screens.length} screen${epic.screens.length!==1?'s':''}</span>
+  `;
+  section.appendChild(header);
+  
+  // Screen grid
+  const grid = document.createElement('div');
+  grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;';
+  
+  epic.screens.forEach(screen => {
+    const card = document.createElement('a');
+    card.href = screen.file;
+    card.target = '_blank';
+    card.style.cssText = `background:white;border-radius:14px;padding:18px 20px;border:1.5px solid #e8ecf0;display:flex;flex-direction:column;gap:8px;transition:all 0.15s;cursor:pointer;`;
+    card.onmouseover = () => { card.style.borderColor = epic.color; card.style.boxShadow = `0 4px 16px ${epic.color}22`; card.style.transform = 'translateY(-1px)'; };
+    card.onmouseout  = () => { card.style.borderColor = '#e8ecf0'; card.style.boxShadow = ''; card.style.transform = ''; };
+    
+    const tagHtml = screen.tag ? `<span style="background:${TAG_COLOR[screen.tag]?.bg||'#f0f0f4'};color:${TAG_COLOR[screen.tag]?.color||'#777'};font-size:11px;font-weight:700;padding:2px 8px;border-radius:100px;">${screen.tag}</span>` : '';
+    
+    card.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div style="font-size:11.5px;font-weight:700;color:#9197ab;letter-spacing:0.04em;text-transform:uppercase;">${screen.id}</div>
+        ${tagHtml}
+      </div>
+      <div style="font-size:14px;font-weight:700;color:#0d0f14;line-height:1.3;">${screen.label}</div>
+      <div style="font-size:12.5px;color:#5a5f72;line-height:1.45;">${screen.note}</div>
+      <div style="margin-top:4px;display:flex;align-items:center;gap:5px;font-size:12.5px;font-weight:600;color:${epic.color};">
+        Open screen
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+  
+  section.appendChild(grid);
+  content.appendChild(section);
+});
+
+document.getElementById('total-count').textContent = `${totalScreens} screens`;
+</script>
+</body>
+</html>

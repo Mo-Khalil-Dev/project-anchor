@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Bridge — Connect Your Bank</title>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spinHG{0%,45%{transform:rotate(0deg)}55%,100%{transform:rotate(180deg)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.35}}
+@keyframes stepSlide{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+.page{animation:fadeUp 0.22s ease both}
+input,textarea{font-family:'Plus Jakarta Sans',sans-serif;}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" src="../bridge-ui.jsx"></script>
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+// ── Page → step mapping ───────────────────────────────────────
+const PAGE_STEP = {
+  intro:1, privacy:2, tink:3,
+  connecting:3, success:4, error:4,
+};
+const TOTAL_STEPS = 4;
+
+// ── 1.1.2 Intro ───────────────────────────────────────────────
+function IntroPage({ go }) {
+  return (
+    <div className="page">
+      <WebHero
+        title="Connect Your Bank Account"
+        subtitle="We use a secure, read-only connection to verify your finances — no manual forms, no passwords stored."
+        icon={
+          <svg width="36" height="32" viewBox="0 0 48 44" fill="none">
+            <rect x="2" y="18" width="44" height="6" rx="3" fill="rgba(255,255,255,0.25)"/>
+            <rect x="2" y="36" width="44" height="6" rx="3" fill="white"/>
+            <rect x="6"  y="24" width="6" height="12" rx="2" fill="white"/>
+            <rect x="17" y="24" width="6" height="12" rx="2" fill="white"/>
+            <rect x="28" y="24" width="6" height="12" rx="2" fill="white"/>
+            <rect x="39" y="24" width="6" height="12" rx="2" fill="white"/>
+            <path d="M2 18L24 4l22 14H2z" fill="white"/>
+            <circle cx="24" cy="12" r="3" fill="rgba(255,255,255,0.5)"/>
+          </svg>
+        }
+      />
+      <div style={{display:'flex',flexDirection:'column',gap:12,marginBottom:4}}>
+        <Card style={{padding:'4px 16px'}}>
+          <SectionLabel>Why connect your bank?</SectionLabel>
+          {[
+            {title:'No forms to fill out',   desc:'We see your real spending patterns, not just what you tell us.'},
+            {title:'Faster assessment',       desc:'Complete your assessment in minutes, not days.'},
+            {title:'Better support options', desc:'More tailored payment plans and support recommendations.'},
+          ].map(({title,desc}) => (
+            <div key={title} style={{display:'flex',gap:14,alignItems:'flex-start',padding:'12px 0',borderBottom:`1px solid ${Bridge.divider}`}}>
+              <div style={{width:34,height:34,borderRadius:10,background:Bridge.accentBg,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                <svg width="14" height="12" viewBox="0 0 14 12" fill="none"><path d="M1 6l4 4 8-8" stroke={Bridge.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </div>
+              <div><div style={{fontSize:14,fontWeight:700,color:Bridge.text,marginBottom:3}}>{title}</div><div style={{fontSize:13,color:Bridge.sub,lineHeight:1.5}}>{desc}</div></div>
+            </div>
+          ))}
+        </Card>
+
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+          <Card style={{padding:'18px 20px'}}>
+            <SectionLabel>What we'll access</SectionLabel>
+            <CheckRow text="Last 6 months of transactions"/>
+            <CheckRow text="Income & salary deposits"/>
+            <CheckRow text="Spending patterns & categories"/>
+          </Card>
+          <Card style={{padding:'18px 20px'}}>
+            <SectionLabel>What we won't access</SectionLabel>
+            <XRow text="Your login password or credentials"/>
+            <XRow text="Ability to move or transfer money"/>
+            <XRow text="Ability to change account details"/>
+          </Card>
+        </div>
+
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+          <Btn variant="primary" full onClick={()=>go('privacy')}>Continue</Btn>
+          <Btn variant="secondary" full onClick={()=>{}}>Provide Statements Manually</Btn>
+        </div>
+        <div style={{textAlign:'center',fontSize:12.5,color:Bridge.muted,display:'flex',alignItems:'center',justifyContent:'center',gap:6}}>
+          <svg width="12" height="14" viewBox="0 0 12 14" fill="none"><path d="M6 1L1 3.5v4c0 2.76 2.24 5 5 5s5-2.24 5-5v-4L6 1z" fill={Bridge.muted} opacity="0.5"/></svg>
+          256-bit encryption · Read-only · FCA regulated · GDPR compliant
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── 1.1.3 Privacy & Consent ────────────────────────────────────
+function PrivacyPage({ consent, setConsent, go }) {
+  return (
+    <div className="page">
+      <div style={{marginBottom:24}}>
+        <h1 style={{fontSize:26,fontWeight:800,color:Bridge.text,letterSpacing:-0.6,marginBottom:6}}>Your Privacy Matters</h1>
+        <p style={{fontSize:14.5,color:Bridge.sub,lineHeight:1.55}}>Before connecting, here's exactly how we handle your data.</p>
+      </div>
+      <div style={{display:'flex',flexDirection:'column',gap:12,marginBottom:4}}>
+        <Card style={{padding:'20px 22px'}}>
+          <div style={{display:'flex',gap:12,alignItems:'center',marginBottom:14}}>
+            <div style={{width:36,height:36,borderRadius:10,background:Bridge.accentBg,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2L3 5v5c0 3.3 2.7 6.4 6 7 3.3-.6 6-3.7 6-7V5L9 2z" stroke={Bridge.accent} strokeWidth="1.6" fill={Bridge.accentBg} strokeLinejoin="round"/><path d="M6 9l2 2 4-4" stroke={Bridge.accent} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </div>
+            <div style={{fontSize:14,fontWeight:700,color:Bridge.text}}>Your data is secure</div>
+          </div>
+          {[
+            ['Encrypted connection','All data is encrypted end-to-end using 256-bit TLS.'],
+            ['No passwords stored','We never see or store your bank login credentials.'],
+            ['Tink partnership','Powered by Tink — a regulated UK Open Banking provider.'],
+            ['FCA regulated','Bridge complies with all FCA and Ofgem financial regulations.'],
+          ].map(([k,v]) => (
+            <Row key={k}>
+              <span style={{fontSize:13.5,color:Bridge.sub,fontWeight:600}}>{k}</span>
+              <span style={{fontSize:13,color:Bridge.sub,maxWidth:340,textAlign:'right'}}>{v}</span>
+            </Row>
+          ))}
+        </Card>
+
+        <Card style={{padding:'20px 22px'}}>
+          <SectionLabel>How we use your data</SectionLabel>
+          <CheckRow text="Assess your affordability for a payment plan"/>
+          <CheckRow text="Detect if you're in financial hardship"/>
+          <CheckRow text="Recommend personalised support services"/>
+          <XRow text="We will never share your data with third parties without consent"/>
+          <XRow text="We will never use your data for marketing purposes"/>
+        </Card>
+
+        <Card style={{padding:'18px 20px'}}>
+          <SectionLabel>Data retention</SectionLabel>
+          <div style={{fontSize:13.5,color:Bridge.sub,lineHeight:1.6,marginTop:4}}>
+            We keep your transaction data for <strong style={{color:Bridge.text}}>3 years</strong> (required by FCA regulations). You can request deletion at any time under your GDPR right to be forgotten. Contact us at <span style={{color:Bridge.accent}}>privacy@bridge.co.uk</span>
+          </div>
+        </Card>
+
+        <Card style={{padding:'20px 22px',border:`1.5px solid ${Bridge.accent}25`,background:Bridge.accentBg}}>
+          <label style={{display:'flex',gap:14,alignItems:'flex-start',cursor:'pointer'}}>
+            <input type="checkbox" checked={consent} onChange={e=>setConsent(e.target.checked)} style={{width:18,height:18,marginTop:2,accentColor:Bridge.accent,flexShrink:0}}/>
+            <div>
+              <div style={{fontSize:14,fontWeight:600,color:Bridge.text,marginBottom:4}}>I consent to connecting my bank account</div>
+              <div style={{fontSize:13,color:Bridge.sub,lineHeight:1.55}}>I understand that Bridge will connect to my bank via Tink to assess my financial situation. I can revoke access at any time in Settings.</div>
+            </div>
+          </label>
+        </Card>
+
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+          <Btn variant="primary" full disabled={!consent} onClick={()=>go('tink')}>Connect with Tink</Btn>
+          <Btn variant="secondary" full onClick={()=>go('intro')}>Back</Btn>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Tink Redirect interstitial ────────────────────────────────
+function TinkRedirectPage({ go }) {
+  useEffect(() => { setTimeout(() => go('connecting'), 2200); }, []);
+  return (
+    <div className="page">
+      <Card style={{padding:'52px 40px',textAlign:'center'}}>
+        <div style={{width:72,height:72,borderRadius:22,background:Bridge.accentBg,border:`2px solid ${Bridge.accent}30`,display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 24px'}}>
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+            <circle cx="18" cy="18" r="14" stroke={Bridge.accent} strokeWidth="2" strokeDasharray="6 4" style={{animation:'spinHG 3s linear infinite',transformOrigin:'18px 18px'}}/>
+            <path d="M18 10v8l5 5" stroke={Bridge.accent} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+        <h2 style={{fontSize:22,fontWeight:800,color:Bridge.text,marginBottom:8,letterSpacing:-0.5}}>Opening Tink…</h2>
+        <p style={{fontSize:14,color:Bridge.sub,lineHeight:1.6,maxWidth:360,margin:'0 auto 28px'}}>
+          You're being securely redirected to <strong style={{color:Bridge.text}}>Tink</strong>, our FCA-regulated Open Banking partner. Select your bank and log in there — we never see your credentials.
+        </p>
+        <div style={{display:'flex',gap:10,justifyContent:'center',flexWrap:'wrap'}}>
+          {['FCA regulated','256-bit encryption','Read-only access'].map(t=>(
+            <span key={t} style={{fontSize:12.5,fontWeight:600,color:Bridge.accent,background:Bridge.accentBg,borderRadius:100,padding:'5px 12px'}}>{t}</span>
+          ))}
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+
+
+// ── 1.1.8 Processing ──────────────────────────────────────────
+function ConnectingPage({ go }) {
+  const [step, setStep] = useState(0);
+  const STEPS = ['Connecting to Barclays...','Fetching your transactions...','Running financial assessment...'];
+  useEffect(() => {
+    const t = [
+      setTimeout(()=>setStep(1), 1600),
+      setTimeout(()=>setStep(2), 3400),
+      setTimeout(()=>setStep(3), 5200),
+      setTimeout(()=>go('success'), 6200),
+    ];
+    return ()=>t.forEach(clearTimeout);
+  }, []);
+  return (
+    <div className="page">
+      <Card style={{padding:'52px 40px',textAlign:'center'}}>
+        <div style={{width:84,height:84,borderRadius:24,background:Bridge.accentBg,display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 28px',animation:'spinHG 2.2s ease-in-out infinite'}}>
+          <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+            <path d="M8 4h28l-9 16H17L8 4z" fill={Bridge.accentBg} stroke={Bridge.accent} strokeWidth="1.8" strokeLinejoin="round"/>
+            <path d="M8 40h28l-9-16H17L8 40z" fill={Bridge.accentBg} stroke={Bridge.accent} strokeWidth="1.8" strokeLinejoin="round"/>
+            <path d="M17 24s1.5 3 5 3 5-3 5-3" stroke={Bridge.accent} strokeWidth="1.4" strokeLinecap="round" fill="none"/>
+            <line x1="7" y1="4" x2="37" y2="4" stroke={Bridge.accent} strokeWidth="2.2" strokeLinecap="round"/>
+            <line x1="7" y1="40" x2="37" y2="40" stroke={Bridge.accent} strokeWidth="2.2" strokeLinecap="round"/>
+          </svg>
+        </div>
+        <h2 style={{fontSize:24,fontWeight:800,color:Bridge.text,marginBottom:8,letterSpacing:-0.5}}>Connecting to your bank...</h2>
+        <p style={{fontSize:14,color:Bridge.sub,marginBottom:36}}>This usually takes 30–60 seconds. Please don't close this window.</p>
+        <div style={{display:'flex',flexDirection:'column',gap:10,maxWidth:440,margin:'0 auto',textAlign:'left'}}>
+          {STEPS.map((s,i)=>(
+            <div key={i} style={{display:'flex',gap:14,alignItems:'center',padding:'14px 18px',borderRadius:14,background:i<step?Bridge.greenBg:Bridge.bg,border:`1px solid ${i<step?Bridge.green+'30':Bridge.border}`,animation:i===step-1?'stepSlide 0.3s ease':'none',transition:'all 0.3s ease'}}>
+              {i<step
+                ? <div style={{width:22,height:22,borderRadius:'50%',background:Bridge.green,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg></div>
+                : i===step
+                ? <div style={{width:22,height:22,borderRadius:'50%',border:`2.5px solid ${Bridge.accent}`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,animation:'pulse 1s ease-in-out infinite'}}><div style={{width:9,height:9,borderRadius:'50%',background:Bridge.accent}}/></div>
+                : <div style={{width:22,height:22,borderRadius:'50%',border:`1.5px solid ${Bridge.border}`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,fontSize:11.5,fontWeight:700,color:Bridge.muted}}>{i+1}</div>
+              }
+              <span style={{fontSize:14,fontWeight:i===step?600:400,color:i<step?Bridge.green:i===step?Bridge.text:Bridge.muted,transition:'all 0.3s'}}>{s}</span>
+            </div>
+          ))}
+        </div>
+        <p style={{fontSize:12.5,color:Bridge.muted,marginTop:28}}>
+          🔒 Secured by Tink · Open Banking · FCA regulated
+        </p>
+      </Card>
+    </div>
+  );
+}
+
+// ── 1.1.9 Success ─────────────────────────────────────────────
+function SuccessPage() {
+  return (
+    <div className="page">
+      <Card style={{padding:'52px 40px',textAlign:'center'}}>
+        <div style={{width:84,height:84,borderRadius:24,background:Bridge.greenBg,border:`3px solid ${Bridge.green}`,display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 24px'}}>
+          <svg width="40" height="30" viewBox="0 0 40 30" fill="none"><path d="M3 15l12 12L37 3" stroke={Bridge.green} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        </div>
+        <h2 style={{fontSize:28,fontWeight:800,color:Bridge.text,marginBottom:8,letterSpacing:-0.7}}>Bank Connected!</h2>
+        <p style={{fontSize:14.5,color:Bridge.sub,marginBottom:32,maxWidth:400,margin:'0 auto 32px'}}>Your Barclays account is connected. We're now analysing 6 months of transactions.</p>
+        <div style={{background:Bridge.bg,borderRadius:16,padding:'20px',textAlign:'left',marginBottom:28,display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
+          {[['Bank','Barclays'],['Transactions','6 months'],['Monthly Income','£1,850'],['Avg. Monthly Spend','£1,720']].map(([k,v])=>(
+            <div key={k} style={{background:'#fff',borderRadius:12,padding:'14px 16px',border:`1px solid ${Bridge.border}`}}>
+              <div style={{fontSize:12,color:Bridge.muted,marginBottom:4,fontWeight:500}}>{k}</div>
+              <div style={{fontSize:17,fontWeight:700,color:Bridge.text}}>{v}</div>
+            </div>
+          ))}
+        </div>
+        <Btn variant="primary" full onClick={()=>{}}>View Full Assessment</Btn>
+        <div style={{marginTop:12,fontSize:12.5,color:Bridge.muted}}>🔒 Read-only connection · Manage in Settings · Revoke anytime</div>
+      </Card>
+    </div>
+  );
+}
+
+// ── 1.1.10 Error ──────────────────────────────────────────────
+function ErrorPage({ go }) {
+  return (
+    <div className="page">
+      <Card style={{padding:'52px 40px',textAlign:'center'}}>
+        <div style={{width:84,height:84,borderRadius:24,background:Bridge.redBg,display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 24px'}}>
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><path d="M20 4L4 34h32L20 4z" fill={Bridge.redBg} stroke={Bridge.red} strokeWidth="2.5" strokeLinejoin="round"/><path d="M20 15v10" stroke={Bridge.red} strokeWidth="2.5" strokeLinecap="round"/><circle cx="20" cy="29" r="1.8" fill={Bridge.red}/></svg>
+        </div>
+        <h2 style={{fontSize:26,fontWeight:800,color:Bridge.text,marginBottom:8,letterSpacing:-0.6}}>Connection Failed</h2>
+        <p style={{fontSize:14.5,color:Bridge.sub,marginBottom:24}}>We couldn't connect to your bank. Don't worry — your data is safe.</p>
+        <Card style={{padding:'18px 20px',marginBottom:20,background:Bridge.redBg,border:`1px solid ${Bridge.red}25`,textAlign:'left'}}>
+          <div style={{fontSize:13.5,fontWeight:700,color:Bridge.red,marginBottom:10}}>Why this might happen:</div>
+          {['Your bank login details were incorrect','Your bank\'s service was temporarily unavailable','You cancelled the connection during login','Your bank may not yet support Open Banking'].map(r=>(
+            <div key={r} style={{display:'flex',gap:8,alignItems:'flex-start',fontSize:13.5,color:Bridge.sub,padding:'5px 0'}}>
+              <span style={{color:Bridge.red,fontWeight:700,lineHeight:1.4,flexShrink:0}}>·</span>{r}
+            </div>
+          ))}
+        </Card>
+        <div style={{background:Bridge.bg,border:`1px solid ${Bridge.border}`,borderRadius:12,padding:'12px 16px',marginBottom:24,fontFamily:'monospace',fontSize:12,color:Bridge.sub,textAlign:'left'}}>
+          Error: TINK_AUTH_FAILED_001 · {new Date().toISOString().replace('T',' ').slice(0,19)} UTC
+        </div>
+        <div style={{display:'flex',flexDirection:'column',gap:10}}>
+          <Btn variant="primary" full onClick={()=>go('selectbank')}>Try Again</Btn>
+          <Btn variant="secondary" full onClick={()=>{}}>Provide Statements Manually</Btn>
+          <Btn variant="ghost" full onClick={()=>{}}>Get Help</Btn>
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+// ── App ───────────────────────────────────────────────────────
+function App() {
+  const saved = localStorage.getItem('bridge_bank_journey') || 'intro';
+  const [page, setPage] = useState(saved);
+  const [consent, setConsent] = useState(false);
+  const go = (p) => { setPage(p); localStorage.setItem('bridge_bank_journey', p); };
+
+  const step = PAGE_STEP[page];
+  const stepLabels = ['Intro','Privacy','Your Bank','Processing','Done'];
+
+  const titleMap = {
+    intro: null, privacy: null, tink: null,
+    connecting: null, success: null, error: null,
+  };
+
+  return (
+    <CustomerLayout step={step} totalSteps={TOTAL_STEPS} title={titleMap[page]||undefined}>
+      {page==='intro'       && <IntroPage go={go}/>}
+      {page==='privacy'     && <PrivacyPage consent={consent} setConsent={setConsent} go={go}/>}
+      {page==='tink'        && <TinkRedirectPage go={go}/>}
+      {page==='connecting'  && <ConnectingPage go={go}/>}
+      {page==='success'     && <SuccessPage/>}
+      {page==='error'       && <ErrorPage go={go}/>}
+
+      {/* Jump panel */}
+      <div style={{position:'fixed',bottom:20,right:20,background:'#fff',borderRadius:14,padding:'14px 16px',boxShadow:'0 6px 24px rgba(0,0,0,0.12)',border:`1px solid ${Bridge.border}`,display:'flex',flexDirection:'column',gap:3,zIndex:999}}>
+        <div style={{fontSize:10.5,fontWeight:700,color:Bridge.muted,textTransform:'uppercase',letterSpacing:'0.07em',marginBottom:5}}>Jump to step</div>
+        {[['Intro','intro'],['Privacy','privacy'],['Tink →','tink'],['Connecting','connecting'],['Success','success'],['Error','error']].map(([label,p])=>(
+          <button key={p} onClick={()=>go(p)} style={{padding:'5px 12px',borderRadius:8,border:'none',background:page===p?Bridge.accent:'transparent',color:page===p?'#fff':Bridge.sub,fontSize:12.5,fontWeight:page===p?700:400,cursor:'pointer',textAlign:'left',fontFamily:"'Plus Jakarta Sans',sans-serif",transition:'all 0.1s'}}>
+            {label}
+          </button>
+        ))}
+      </div>
+    </CustomerLayout>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

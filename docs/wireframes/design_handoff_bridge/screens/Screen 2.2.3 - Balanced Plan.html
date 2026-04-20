@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Bridge — Balanced Plan</title>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" src="../bridge-ui.jsx"></script>
+<script type="text/babel">
+const { useState } = React;
+function App() {
+  const months = Array.from({length:6},(_,i)=>i+1);
+  return (
+    <CustomerLayout title="Balanced Plan" subtitle="A middle-ground option — clears your debt in half the time with moderate risk.">
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20,marginBottom:20}}>
+        <div style={{display:'flex',flexDirection:'column',gap:12}}>
+          <div style={{background:`linear-gradient(135deg,${Bridge.amber}18 0%,${Bridge.amberBg} 100%)`,border:`1.5px solid ${Bridge.amber}30`,borderRadius:18,padding:'28px 24px'}}>
+            <div style={{fontSize:13,fontWeight:600,color:Bridge.amber,textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:8}}>Monthly Payment</div>
+            <div style={{display:'flex',alignItems:'baseline',gap:4}}><span style={{fontSize:52,fontWeight:800,color:Bridge.amber,letterSpacing:-2}}>£70</span><span style={{fontSize:15,color:Bridge.sub}}>/month</span></div>
+            <div style={{marginTop:12}}><SustBadge level="MEDIUM"/></div>
+          </div>
+          <Card style={{padding:'18px 20px'}}>
+            {[['Duration','6 months'],['Total paid','£420'],['Monthly buffer','£60'],['Disposable remaining','£60 / £130 (46%)']].map(([k,v])=>(
+              <Row key={k}><span style={{fontSize:13.5,color:Bridge.sub}}>{k}</span><span style={{fontSize:13.5,fontWeight:600,color:Bridge.text}}>{v}</span></Row>
+            ))}
+          </Card>
+        </div>
+        <div style={{display:'flex',flexDirection:'column',gap:12}}>
+          <Card style={{padding:'20px 22px'}}>
+            <SectionLabel>Pros & considerations</SectionLabel>
+            {[
+              {text:'Clears your balance 6 months sooner than Conservative.',ok:true},
+              {text:'Leaves £60/month buffer — enough for minor unexpected costs.',ok:true},
+              {text:'If an unexpected expense exceeds £60, you may miss a payment.',ok:false},
+              {text:'Medium confidence level based on your income stability score.',ok:false},
+            ].map(t=>(
+              <div key={t.text} style={{display:'flex',gap:10,alignItems:'flex-start',padding:'8px 0',borderBottom:`1px solid ${Bridge.divider}`}}>
+                <span style={{width:20,height:20,borderRadius:'50%',background:t.ok?Bridge.greenBg:Bridge.amberBg,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                  {t.ok
+                    ? <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke={Bridge.green} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    : <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M4 1v3.5" stroke={Bridge.amber} strokeWidth="1.6" strokeLinecap="round"/><circle cx="4" cy="7" r="0.8" fill={Bridge.amber}/></svg>
+                  }
+                </span>
+                <span style={{fontSize:13.5,color:Bridge.sub,lineHeight:1.5}}>{t.text}</span>
+              </div>
+            ))}
+          </Card>
+          <Card style={{padding:'16px 20px',background:Bridge.amberBg,border:`1px solid ${Bridge.amber}25`}}>
+            <div style={{fontSize:13,color:'oklch(45% 0.16 76)',lineHeight:1.6}}>
+              <strong>Stress test:</strong> An unexpected £200 expense would exceed your £60 buffer and put you £140 short. You'd likely need to pause a payment. This is manageable, but not ideal given your current hardship level.
+            </div>
+          </Card>
+        </div>
+      </div>
+
+      <Card style={{padding:'20px 24px',marginBottom:20}}>
+        <SectionLabel>Your 6-month timeline</SectionLabel>
+        <div style={{display:'flex',gap:10,marginTop:12}}>
+          {months.map(m=>(
+            <div key={m} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:5}}>
+              <div style={{width:44,height:44,borderRadius:'50%',background:m===1?Bridge.amber:Bridge.amberBg,color:m===1?'#fff':Bridge.amber,display:'flex',alignItems:'center',justifyContent:'center',fontSize:13,fontWeight:600,border:`1.5px solid ${Bridge.amber}40`}}>
+                {m}
+              </div>
+              <div style={{fontSize:11,color:Bridge.muted}}>£70</div>
+            </div>
+          ))}
+        </div>
+        <div style={{marginTop:14,fontSize:12.5,color:Bridge.muted}}>First payment: 15 May 2026 · Final payment: 15 Oct 2026</div>
+      </Card>
+
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+        <Btn variant="primary" full>Select Balanced Plan</Btn>
+        <Btn variant="secondary" full>Back to all plans</Btn>
+      </div>
+    </CustomerLayout>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

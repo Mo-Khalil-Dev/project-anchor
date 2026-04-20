@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Bridge Admin — Escalate Case</title>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;} select,textarea{font-family:'Plus Jakarta Sans',sans-serif;}</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" src="../bridge-ui.jsx"></script>
+<script type="text/babel">
+const { useState } = React;
+
+const SENIOR_OFFICERS = [
+  { id:'margaret', name:'Margaret Chen', role:'Senior Case Officer', speciality:'Vulnerable customers' },
+  { id:'david', name:'David Okafor', role:'Senior Case Officer', speciality:'Complex arrears' },
+  { id:'priya', name:'Priya Sharma', role:'Team Lead', speciality:'PSR & medical cases' },
+  { id:'richard', name:'Richard Blake', role:'Head of Hardship', speciality:'Policy edge cases' },
+];
+
+const REASONS = [
+  { id:'complexity', label:'Case complexity', desc:'The financial picture is too complex for standard assessment.' },
+  { id:'vulnerability', label:'Vulnerability concerns', desc:'Customer has multiple vulnerability flags requiring specialist review.' },
+  { id:'uncertainty', label:'Assessment uncertainty', desc:'Low confidence score or conflicting data signals.' },
+  { id:'data', label:'Data quality issue', desc:'Bank data is incomplete, suspicious, or cannot be verified.' },
+  { id:'policy', label:'Policy edge case', desc:'This case falls outside standard policy parameters.' },
+  { id:'other', label:'Other', desc:'Another reason not listed above.' },
+];
+
+const sStyle = { width:'100%', height:46, border:`1.5px solid ${Bridge.border}`, borderRadius:10, padding:'0 14px', fontSize:13.5, color:Bridge.text, outline:'none', background:'#fff' };
+
+function App() {
+  const [officer, setOfficer] = useState('margaret');
+  const [reason, setReason] = useState('vulnerability');
+  const [priority, setPriority] = useState('high');
+  const [notes, setNotes] = useState('');
+  const [escalated, setEscalated] = useState(false);
+  const selectedOfficer = SENIOR_OFFICERS.find(o=>o.id===officer);
+
+  if (escalated) return (
+    <AdminLayout active="cases" title="Case Escalated" subtitle="Manual review queue › Sarah Mitchell">
+      <div style={{maxWidth:520,margin:'60px auto',textAlign:'center'}}>
+        <div style={{width:72,height:72,borderRadius:'50%',background:Bridge.accentBg,border:`3px solid ${Bridge.accent}`,display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 20px'}}>
+          <svg width="30" height="30" viewBox="0 0 30 30" fill="none"><path d="M15 5l8 16H7L15 5z" fill={Bridge.accentBg} stroke={Bridge.accent} strokeWidth="2" strokeLinejoin="round"/><path d="M15 13v5" stroke={Bridge.accent} strokeWidth="2" strokeLinecap="round"/><circle cx="15" cy="21" r="1.2" fill={Bridge.accent}/></svg>
+        </div>
+        <h2 style={{fontSize:22,fontWeight:800,color:Bridge.text,marginBottom:10}}>Case escalated to {selectedOfficer.name}</h2>
+        <p style={{fontSize:14,color:Bridge.sub,lineHeight:1.6,marginBottom:24}}>The case has been assigned with <strong>{priority} priority</strong>. {selectedOfficer.name} will be notified immediately.</p>
+        <Btn variant="primary">Back to Case Queue</Btn>
+      </div>
+    </AdminLayout>
+  );
+
+  return (
+    <AdminLayout active="cases" title="Escalate Case" subtitle="Manual review queue › Sarah Mitchell">
+      <Card style={{padding:'14px 20px',marginBottom:20,display:'flex',gap:12,alignItems:'center'}}>
+        <div style={{fontSize:15,fontWeight:700,color:Bridge.text}}>Sarah Mitchell</div>
+        <HardshipBadge level="SEVERE"/>
+        <span style={{background:Bridge.redBg,color:Bridge.red,fontSize:11.5,fontWeight:700,padding:'3px 10px',borderRadius:100}}>High Priority</span>
+      </Card>
+
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20}}>
+        <div style={{display:'flex',flexDirection:'column',gap:16}}>
+          {/* Escalate to */}
+          <Card style={{padding:'20px 22px'}}>
+            <SectionLabel>Escalate to</SectionLabel>
+            <div style={{display:'flex',flexDirection:'column',gap:8,marginTop:4}}>
+              {SENIOR_OFFICERS.map(o=>(
+                <div key={o.id} onClick={()=>setOfficer(o.id)} style={{display:'flex',gap:12,alignItems:'center',padding:'12px 14px',borderRadius:12,border:`${officer===o.id?2:1.5}px solid ${officer===o.id?Bridge.accent:Bridge.border}`,cursor:'pointer',background:officer===o.id?Bridge.accentBg:'#fff',transition:'all 0.12s'}}>
+                  <div style={{width:36,height:36,borderRadius:'50%',background:officer===o.id?Bridge.accent:Bridge.bg,display:'flex',alignItems:'center',justifyContent:'center',fontSize:13,fontWeight:700,color:officer===o.id?'#fff':Bridge.sub,flexShrink:0}}>
+                    {o.name.split(' ').map(n=>n[0]).join('')}
+                  </div>
+                  <div>
+                    <div style={{fontSize:13.5,fontWeight:600,color:Bridge.text}}>{o.name}</div>
+                    <div style={{fontSize:12,color:Bridge.muted}}>{o.role} · {o.speciality}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          {/* Reason */}
+          <Card style={{padding:'20px 22px'}}>
+            <SectionLabel>Reason for escalation</SectionLabel>
+            <div style={{display:'flex',flexDirection:'column',gap:6,marginTop:4}}>
+              {REASONS.map(r=>(
+                <label key={r.id} onClick={()=>setReason(r.id)} style={{display:'flex',gap:12,alignItems:'flex-start',padding:'8px 10px',borderRadius:10,border:`1px solid ${reason===r.id?Bridge.accent:Bridge.border}`,background:reason===r.id?Bridge.accentBg:'transparent',cursor:'pointer'}}>
+                  <div style={{width:18,height:18,borderRadius:'50%',border:`2px solid ${reason===r.id?Bridge.accent:Bridge.border}`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,marginTop:1}}>
+                    {reason===r.id&&<div style={{width:8,height:8,borderRadius:'50%',background:Bridge.accent}}/>}
+                  </div>
+                  <div>
+                    <div style={{fontSize:13.5,fontWeight:600,color:Bridge.text}}>{r.label}</div>
+                    <div style={{fontSize:12,color:Bridge.muted}}>{r.desc}</div>
+                  </div>
+                </label>
+              ))}
+            </div>
+          </Card>
+        </div>
+
+        <div style={{display:'flex',flexDirection:'column',gap:16}}>
+          {/* Priority */}
+          <Card style={{padding:'20px 22px'}}>
+            <SectionLabel>Priority level</SectionLabel>
+            <div style={{display:'flex',gap:10,marginTop:8}}>
+              {[{id:'high',label:'High',color:Bridge.red},{id:'medium',label:'Medium',color:Bridge.amber},{id:'low',label:'Low',color:Bridge.green}].map(p=>(
+                <button key={p.id} onClick={()=>setPriority(p.id)} style={{flex:1,padding:'12px',borderRadius:12,border:`${priority===p.id?2:1.5}px solid ${priority===p.id?p.color:Bridge.border}`,background:priority===p.id?`${p.color}12`:'#fff',color:priority===p.id?p.color:Bridge.sub,fontSize:14,fontWeight:priority===p.id?700:400,cursor:'pointer',fontFamily:"'Plus Jakarta Sans',sans-serif",transition:'all 0.12s'}}>
+                  {p.label}
+                </button>
+              ))}
+            </div>
+          </Card>
+
+          {/* Notes */}
+          <Card style={{padding:'18px 22px',flex:1}}>
+            <SectionLabel>Escalation notes</SectionLabel>
+            <textarea value={notes} onChange={e=>setNotes(e.target.value)} placeholder="Describe why you're escalating and any context the senior officer needs to know..." style={{width:'100%',minHeight:160,border:`1.5px solid ${Bridge.border}`,borderRadius:10,padding:'10px 14px',fontSize:13.5,resize:'vertical',outline:'none',color:Bridge.text,marginTop:4}}/>
+          </Card>
+
+          {/* Summary */}
+          {(officer && reason) && (
+            <Card style={{padding:'16px 20px',background:Bridge.accentBg,border:`1px solid ${Bridge.accent}20`}}>
+              <div style={{fontSize:12.5,color:Bridge.sub,lineHeight:1.65}}>
+                <strong>Escalating to:</strong> {selectedOfficer?.name} ({selectedOfficer?.role})<br/>
+                <strong>Reason:</strong> {REASONS.find(r=>r.id===reason)?.label}<br/>
+                <strong>Priority:</strong> {priority.charAt(0).toUpperCase()+priority.slice(1)}<br/>
+                <strong>Case will:</strong> Be removed from your queue and assigned to {selectedOfficer?.name.split(' ')[0]}.
+              </div>
+            </Card>
+          )}
+
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
+            <Btn variant="primary" full disabled={!notes.trim()} onClick={()=>setEscalated(true)}>Escalate Case</Btn>
+            <Btn variant="secondary" full>Cancel</Btn>
+          </div>
+        </div>
+      </div>
+    </AdminLayout>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

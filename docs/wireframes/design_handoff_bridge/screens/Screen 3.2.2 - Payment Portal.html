@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Bridge — Payment Portal</title>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" src="../bridge-ui.jsx"></script>
+<script type="text/babel">
+const { useState } = React;
+
+const HISTORY = [
+  { date:'15 Feb 2026', amount:'£35.00', method:'Direct Debit', status:'Paid', ref:'BR-2847-001' },
+  { date:'15 Mar 2026', amount:'£35.00', method:'Direct Debit', status:'Paid', ref:'BR-2847-002' },
+  { date:'15 Apr 2026', amount:'£35.00', method:'Direct Debit', status:'Paid', ref:'BR-2847-003' },
+];
+const UPCOMING = [
+  { date:'15 May 2026', amount:'£35.00', status:'Next payment' },
+  { date:'15 Jun 2026', amount:'£35.00', status:'Scheduled' },
+  { date:'15 Jul 2026', amount:'£35.00', status:'Scheduled' },
+];
+
+function App() {
+  const paid = 3, total = 12, pct = (paid/total)*100;
+  const remaining = total - paid;
+  return (
+    <CustomerLayout title="Payment Plan Progress" subtitle="Conservative Plan · Account #BR-2847">
+      {/* Progress hero */}
+      <Card style={{padding:'28px 28px',marginBottom:20,background:`linear-gradient(135deg,${Bridge.accentBg} 0%,#fff 100%)`,border:`1px solid ${Bridge.accent}20`}}>
+        <div style={{display:'grid',gridTemplateColumns:'1fr auto',gap:20,alignItems:'center',marginBottom:20}}>
+          <div>
+            <div style={{fontSize:13,fontWeight:600,color:Bridge.accent,textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:6}}>Payments made</div>
+            <div style={{display:'flex',alignItems:'baseline',gap:6}}>
+              <span style={{fontSize:48,fontWeight:800,color:Bridge.text,letterSpacing:-1.5}}>{paid}</span>
+              <span style={{fontSize:18,color:Bridge.muted}}>of {total}</span>
+            </div>
+            <div style={{fontSize:13,color:Bridge.sub,marginTop:4}}>£{paid*35} paid of £420 total</div>
+          </div>
+          <div style={{textAlign:'right'}}>
+            <div style={{fontSize:13,fontWeight:600,color:Bridge.muted,marginBottom:4}}>Balance remaining</div>
+            <div style={{fontSize:28,fontWeight:800,color:Bridge.text,letterSpacing:-0.8}}>£{420-paid*35}</div>
+            <div style={{fontSize:12.5,color:Bridge.sub}}>{remaining} payments left</div>
+          </div>
+        </div>
+        {/* Month bubbles */}
+        <div style={{display:'flex',gap:6,marginBottom:14}}>
+          {Array.from({length:total},(_,i)=>(
+            <div key={i} style={{flex:1,height:8,borderRadius:100,background:i<paid?Bridge.accent:Bridge.border,transition:'background 0.3s'}}/>
+          ))}
+        </div>
+        <div style={{display:'flex',gap:8,alignItems:'center',fontSize:12.5,color:Bridge.muted}}>
+          <div style={{width:8,height:8,borderRadius:'50%',background:Bridge.accent}}/> Paid ({paid})
+          <div style={{width:8,height:8,borderRadius:'50%',background:Bridge.border,marginLeft:8}}/> Remaining ({remaining})
+        </div>
+      </Card>
+
+      {/* Next payment highlight */}
+      <div style={{background:`linear-gradient(135deg,oklch(52% 0.18 270) 0%,oklch(43% 0.22 285) 100%)`,borderRadius:16,padding:'18px 22px',marginBottom:20,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+        <div>
+          <div style={{fontSize:12.5,color:'rgba(255,255,255,0.7)',fontWeight:600,marginBottom:4}}>NEXT PAYMENT</div>
+          <div style={{fontSize:22,fontWeight:800,color:'#fff'}}>£35.00 on 15 May 2026</div>
+          <div style={{fontSize:13,color:'rgba(255,255,255,0.7)',marginTop:3}}>Via Direct Debit · Barclays ····1234</div>
+        </div>
+        <Btn variant="secondary">Make Early Payment</Btn>
+      </div>
+
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20}}>
+        {/* Payment history */}
+        <div>
+          <div style={{fontSize:15,fontWeight:700,color:Bridge.text,marginBottom:12}}>Payment history</div>
+          <div style={{background:'#fff',borderRadius:14,overflow:'hidden',boxShadow:'0 1px 4px rgba(0,0,0,0.06)'}}>
+            {HISTORY.map((p,i)=>(
+              <div key={i} style={{display:'grid',gridTemplateColumns:'1fr auto',gap:12,padding:'14px 18px',borderBottom:i<HISTORY.length-1?`1px solid ${Bridge.divider}`:'none',alignItems:'center'}}>
+                <div>
+                  <div style={{fontSize:13.5,fontWeight:600,color:Bridge.text}}>{p.date}</div>
+                  <div style={{fontSize:12,color:Bridge.muted,marginTop:2}}>{p.method} · {p.ref}</div>
+                </div>
+                <div style={{textAlign:'right'}}>
+                  <div style={{fontSize:14,fontWeight:700,color:Bridge.green}}>{p.amount}</div>
+                  <div style={{fontSize:11.5,fontWeight:600,color:Bridge.green,background:Bridge.greenBg,borderRadius:100,padding:'2px 8px',marginTop:3}}>{p.status}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Upcoming */}
+        <div>
+          <div style={{fontSize:15,fontWeight:700,color:Bridge.text,marginBottom:12}}>Upcoming payments</div>
+          <div style={{background:'#fff',borderRadius:14,overflow:'hidden',boxShadow:'0 1px 4px rgba(0,0,0,0.06)',marginBottom:14}}>
+            {UPCOMING.map((p,i)=>(
+              <div key={i} style={{display:'grid',gridTemplateColumns:'1fr auto',gap:12,padding:'14px 18px',borderBottom:i<UPCOMING.length-1?`1px solid ${Bridge.divider}`:'none',alignItems:'center',background:i===0?Bridge.accentBg:'#fff'}}>
+                <div>
+                  <div style={{fontSize:13.5,fontWeight:600,color:i===0?Bridge.accent:Bridge.text}}>{p.date}</div>
+                  <div style={{fontSize:11.5,fontWeight:600,color:i===0?Bridge.accent:Bridge.muted,marginTop:2}}>{p.status}</div>
+                </div>
+                <div style={{fontSize:14,fontWeight:700,color:i===0?Bridge.accent:Bridge.sub}}>{p.amount}</div>
+              </div>
+            ))}
+          </div>
+          <Btn variant="ghost" full small>Can't make a payment? Let us know</Btn>
+        </div>
+      </div>
+    </CustomerLayout>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

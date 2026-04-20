@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Bridge — Direct Debit Setup</title>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;} input,select{font-family:'Plus Jakarta Sans',sans-serif;}</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" src="../bridge-ui.jsx"></script>
+<script type="text/babel">
+const { useState } = React;
+
+const inputStyle = (focused) => ({
+  width:'100%', height:48, border:`1.5px solid ${focused?Bridge.accent:Bridge.border}`,
+  borderRadius:12, padding:'0 16px', fontSize:15, color:Bridge.text,
+  outline:'none', fontFamily:"'Plus Jakarta Sans',sans-serif", background:'#fff',
+  boxShadow: focused ? `0 0 0 3px ${Bridge.accent}18` : 'none', transition:'all 0.15s',
+});
+const labelStyle = { fontSize:13.5, fontWeight:600, color:Bridge.text, marginBottom:6, display:'block' };
+
+function FormField({ label, hint, children }) {
+  return (
+    <div style={{marginBottom:18}}>
+      <label style={labelStyle}>{label}</label>
+      {hint && <div style={{fontSize:12,color:Bridge.muted,marginBottom:6}}>{hint}</div>}
+      {children}
+    </div>
+  );
+}
+
+function App() {
+  const [f, setF] = useState({});
+  const [focused, setFocused] = useState(null);
+  const set = (k,v) => setF(p=>({...p,[k]:v}));
+  const payDates = [1,5,8,10,12,15,17,20,22,25,28];
+  const [date, setDate] = useState(15);
+  const complete = f.sortcode?.replace(/\D/g,'').length===6 && f.account?.replace(/\D/g,'').length===8 && f.name?.length>2;
+
+  return (
+    <CustomerLayout title="Set Up Direct Debit" subtitle="Your bank details are encrypted and only used to set up your payment plan." step={3} totalSteps={4}>
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20}}>
+        <div>
+          <Card style={{padding:'24px 24px',marginBottom:16}}>
+            <FormField label="Account holder name" hint="As it appears on your bank account">
+              <input value={f.name||''} onChange={e=>set('name',e.target.value)} onFocus={()=>setFocused('name')} onBlur={()=>setFocused(null)} style={inputStyle(focused==='name')} placeholder="Sarah Mitchell"/>
+            </FormField>
+            <FormField label="Sort code" hint="6 digits, e.g. 12-34-56">
+              <input value={f.sortcode||''} onChange={e=>set('sortcode',e.target.value.replace(/\D/g,'').slice(0,6).replace(/(\d{2})(?=\d)/g,'$1-'))} onFocus={()=>setFocused('sort')} onBlur={()=>setFocused(null)} style={inputStyle(focused==='sort')} placeholder="20-00-00" maxLength={8}/>
+            </FormField>
+            <FormField label="Account number" hint="8 digits">
+              <input value={f.account||''} onChange={e=>set('account',e.target.value.replace(/\D/g,'').slice(0,8))} onFocus={()=>setFocused('acc')} onBlur={()=>setFocused(null)} style={inputStyle(focused==='acc')} placeholder="12345678" maxLength={8}/>
+            </FormField>
+          </Card>
+
+          <Card style={{padding:'20px 24px'}}>
+            <div style={{fontSize:13.5,fontWeight:700,color:Bridge.text,marginBottom:12}}>Preferred payment date</div>
+            <div style={{display:'flex',flexWrap:'wrap',gap:8}}>
+              {payDates.map(d=>(
+                <button key={d} onClick={()=>setDate(d)} style={{
+                  width:48, height:40, borderRadius:10, border:`1.5px solid ${date===d?Bridge.accent:Bridge.border}`,
+                  background: date===d ? Bridge.accentBg : '#fff',
+                  color: date===d ? Bridge.accent : Bridge.sub,
+                  fontWeight: date===d ? 700 : 400,
+                  fontSize:14, cursor:'pointer', fontFamily:"'Plus Jakarta Sans',sans-serif",
+                }}>
+                  {d}
+                </button>
+              ))}
+            </div>
+            <div style={{fontSize:12.5,color:Bridge.muted,marginTop:10}}>Payment will be taken on the {date}{['st','nd','rd'][((date%10)-1)]||'th'} of each month</div>
+          </Card>
+        </div>
+
+        <div style={{display:'flex',flexDirection:'column',gap:14}}>
+          {/* Preview */}
+          <Card style={{padding:'20px 22px',background:Bridge.accentBg,border:`1px solid ${Bridge.accent}20`}}>
+            <SectionLabel>Payment summary</SectionLabel>
+            {[
+              ['Account name', f.name||'—'],
+              ['Sort code', f.sortcode||'—'],
+              ['Account number', f.account||'—'],
+              ['First payment', `15 May 2026`],
+              ['Amount', '£35.00'],
+              ['Frequency', 'Monthly'],
+              ['Duration', '12 payments'],
+            ].map(([k,v])=>(
+              <div key={k} style={{display:'flex',justifyContent:'space-between',padding:'7px 0',borderBottom:`1px solid ${Bridge.accent}15`,fontSize:13.5}}>
+                <span style={{color:Bridge.sub}}>{k}</span>
+                <span style={{fontWeight:600,color:Bridge.text}}>{v}</span>
+              </div>
+            ))}
+          </Card>
+
+          <div style={{background:Bridge.greenBg,borderRadius:12,padding:'14px 16px',fontSize:13,color:'oklch(38% 0.17 145)',lineHeight:1.55}}>
+            🔒 Protected by the <strong>Direct Debit Guarantee</strong>. You have the right to cancel at any time and claim an immediate refund for any incorrect payment.
+          </div>
+        </div>
+      </div>
+
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginTop:20}}>
+        <Btn variant="primary" full disabled={!complete}>Confirm Direct Debit</Btn>
+        <Btn variant="secondary" full>Back</Btn>
+      </div>
+    </CustomerLayout>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

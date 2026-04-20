@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Bridge — Conservative Plan</title>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" src="../bridge-ui.jsx"></script>
+<script type="text/babel">
+const { useState } = React;
+function App() {
+  const months = Array.from({length:12},(_,i)=>i+1);
+  return (
+    <CustomerLayout title="Conservative Plan" subtitle="Our recommended option — lowest monthly commitment, highest chance of success.">
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20,marginBottom:20}}>
+        {/* Left: key numbers */}
+        <div style={{display:'flex',flexDirection:'column',gap:12}}>
+          <div style={{background:`linear-gradient(135deg,${Bridge.green}18 0%,${Bridge.greenBg} 100%)`,border:`1.5px solid ${Bridge.green}30`,borderRadius:18,padding:'28px 24px'}}>
+            <div style={{fontSize:13,fontWeight:600,color:Bridge.green,textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:8}}>Monthly Payment</div>
+            <div style={{display:'flex',alignItems:'baseline',gap:4}}><span style={{fontSize:52,fontWeight:800,color:Bridge.green,letterSpacing:-2}}>£35</span><span style={{fontSize:15,color:Bridge.sub}}>/month</span></div>
+            <div style={{marginTop:12}}><SustBadge level="HIGH"/></div>
+          </div>
+          <Card style={{padding:'18px 20px'}}>
+            {[['Duration','12 months'],['Total paid','£420'],['Monthly buffer','£95'],['Disposable remaining','£95 / £130 (73%)']].map(([k,v])=>(
+              <Row key={k}><span style={{fontSize:13.5,color:Bridge.sub}}>{k}</span><span style={{fontSize:13.5,fontWeight:600,color:Bridge.text}}>{v}</span></Row>
+            ))}
+          </Card>
+        </div>
+        {/* Right: why it works */}
+        <div style={{display:'flex',flexDirection:'column',gap:12}}>
+          <Card style={{padding:'20px 22px'}}>
+            <SectionLabel>Why this plan works for you</SectionLabel>
+            {[
+              'Leaves £95/month for unexpected expenses — car repairs, medical costs, etc.',
+              'Your income is moderate — a smaller commitment means fewer missed payments.',
+              'Takes longer, but a plan you can keep beats a fast plan you can\'t.',
+              'If your situation improves, you can pay more at any time.',
+            ].map(t=>(
+              <div key={t} style={{display:'flex',gap:10,alignItems:'flex-start',padding:'8px 0',borderBottom:`1px solid ${Bridge.divider}`}}>
+                <span style={{width:20,height:20,borderRadius:'50%',background:Bridge.greenBg,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                  <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke={Bridge.green} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                </span>
+                <span style={{fontSize:13.5,color:Bridge.sub,lineHeight:1.5}}>{t}</span>
+              </div>
+            ))}
+          </Card>
+          <Card style={{padding:'16px 20px',background:Bridge.greenBg,border:`1px solid ${Bridge.green}25`}}>
+            <div style={{fontSize:13,color:'oklch(38% 0.17 145)',lineHeight:1.6}}>
+              <strong>Stress test:</strong> If your car broke down next month and cost £200, you'd still have £95 – £200 = –£105 deficit. With the Conservative plan, you only lose £35 that month — manageable with one month's adjustment.
+            </div>
+          </Card>
+        </div>
+      </div>
+
+      {/* Timeline */}
+      <Card style={{padding:'20px 24px',marginBottom:20}}>
+        <SectionLabel>Your 12-month timeline</SectionLabel>
+        <div style={{display:'flex',gap:6,flexWrap:'wrap',marginTop:12}}>
+          {months.map(m=>(
+            <div key={m} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:5}}>
+              <div style={{width:36,height:36,borderRadius:'50%',background:m===1?Bridge.green:Bridge.greenBg,color:m===1?'#fff':Bridge.green,display:'flex',alignItems:'center',justifyContent:'center',fontSize:12,fontWeight:600,border:`1.5px solid ${Bridge.green}40`}}>
+                {m}
+              </div>
+              <div style={{fontSize:10,color:Bridge.muted}}>£35</div>
+            </div>
+          ))}
+        </div>
+        <div style={{marginTop:14,display:'flex',gap:8,fontSize:12.5,color:Bridge.muted,alignItems:'center'}}>
+          <div style={{width:10,height:10,borderRadius:'50%',background:Bridge.green}}/> First payment · 15 May 2026
+          <span style={{marginLeft:8}}>Final payment · 15 Apr 2027</span>
+        </div>
+      </Card>
+
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+        <Btn variant="success" full>Select Conservative Plan</Btn>
+        <Btn variant="secondary" full>Back to all plans</Btn>
+      </div>
+    </CustomerLayout>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

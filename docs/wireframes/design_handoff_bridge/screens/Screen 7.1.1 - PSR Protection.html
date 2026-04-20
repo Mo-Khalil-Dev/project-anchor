@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Bridge — PSR Protection</title>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" src="../bridge-ui.jsx"></script>
+<script type="text/babel">
+const { useState } = React;
+
+const CASES = {
+  medical: {
+    label:'PSR + Medical Equipment',
+    badge:'No Disconnection',badgeColor:Bridge.green,
+    headline:'You have a No Disconnection Guarantee',
+    headlineColor:Bridge.green,
+    bg:`linear-gradient(135deg,${Bridge.green}15 0%,${Bridge.greenBg} 100%)`,
+    border:`${Bridge.green}35`,
+    protections:[
+      {icon:'🔒',title:'No disconnection guarantee',desc:'Your supply cannot be disconnected under any circumstances while you are on the PSR medical register.'},
+      {icon:'⚡',title:'Auto-approved — no review needed',desc:'Your case has been automatically resolved. No officer review required.'},
+      {icon:'📞',title:'24/7 emergency support assigned',desc:'You have priority access to our emergency support line at all times: 0800 000 0001.'},
+      {icon:'💳',title:'Payment plan auto-generated',desc:'A Conservative plan of £35/month has been created and is active from today.'},
+    ],
+    cta:'View My Plan',
+  },
+  other: {
+    label:'PSR + Other Vulnerability',
+    badge:'Priority Support',badgeColor:Bridge.amber,
+    headline:'Priority support has been assigned',
+    headlineColor:Bridge.amber,
+    bg:`linear-gradient(135deg,${Bridge.amber}12 0%,${Bridge.amberBg} 100%)`,
+    border:`${Bridge.amber}35`,
+    protections:[
+      {icon:'⭐',title:'Priority support assigned',desc:'Your case is flagged for priority handling. A dedicated officer has been assigned to your account.'},
+      {icon:'📅',title:'Extended plan (50% longer)',desc:'Your payment plan duration has been extended by 50% to reduce monthly pressure.'},
+      {icon:'🤝',title:'Support services recommended',desc:'We have identified additional support services that may help your situation.'},
+      {icon:'📋',title:'Regular welfare check-ins',desc:'Your case officer will contact you every 3 months to ensure your plan is still working.'},
+    ],
+    cta:'View Support Services',
+  },
+  notregistered: {
+    label:'Vulnerable but not registered',
+    badge:'Action Recommended',badgeColor:Bridge.accent,
+    headline:'We recommend registering for the PSR',
+    headlineColor:Bridge.accent,
+    bg:`linear-gradient(135deg,${Bridge.accentBg} 0%,#fff 100%)`,
+    border:`${Bridge.accent}25`,
+    protections:[
+      {icon:'ℹ️',title:'What is the Priority Services Register?',desc:'The PSR is a free scheme run by energy companies to provide extra support to vulnerable customers — including elderly, disabled, and those with medical equipment.'},
+      {icon:'✅',title:'Benefits of registering',desc:'Password-protected service visits, priority reconnection after emergencies, accessible communications, and additional financial protections.'},
+      {icon:'⏱️',title:'Takes 5 minutes to register',desc:'You can register online, by phone (0800 000 0002) or by post. Registration is free and confidential.'},
+    ],
+    cta:'Register for PSR',ctaSecondary:'Learn More',
+  },
+};
+
+function App() {
+  const [caseType, setCaseType] = useState('medical');
+  const c = CASES[caseType];
+  return (
+    <CustomerLayout title="Priority Services Register" subtitle="PSR provides additional protections for vulnerable customers.">
+      {/* Case switcher */}
+      <div style={{background:'#fff',borderRadius:12,padding:'10px 14px',marginBottom:20,display:'flex',gap:8,alignItems:'center',border:`1px solid ${Bridge.border}`,flexWrap:'wrap'}}>
+        <span style={{fontSize:12,color:Bridge.muted,marginRight:4}}>Preview:</span>
+        {Object.entries(CASES).map(([k,v])=>(
+          <button key={k} onClick={()=>setCaseType(k)} style={{padding:'5px 12px',borderRadius:8,border:`1.5px solid ${caseType===k?v.badgeColor:Bridge.border}`,background:caseType===k?`${v.badgeColor}12`:'transparent',color:caseType===k?v.badgeColor:Bridge.sub,fontSize:12.5,fontWeight:caseType===k?700:400,cursor:'pointer',fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
+            {v.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Status card */}
+      <div style={{background:c.bg,border:`1.5px solid ${c.border}`,borderRadius:20,padding:'28px 28px',marginBottom:20}}>
+        <div style={{display:'flex',gap:16,alignItems:'flex-start',marginBottom:16}}>
+          <div style={{width:52,height:52,borderRadius:16,background:`${c.badgeColor}20`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+            <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><path d="M13 2L3 7v7c0 5.52 4.47 10.69 10 12 5.53-1.31 10-6.48 10-12V7L13 2z" fill={`${c.badgeColor}25`} stroke={c.badgeColor} strokeWidth="1.8" strokeLinejoin="round"/><path d="M9 13l3 3 6-6" stroke={c.badgeColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </div>
+          <div>
+            <span style={{display:'inline-flex',alignItems:'center',gap:6,background:`${c.badgeColor}18`,color:c.badgeColor,borderRadius:100,padding:'4px 12px',fontSize:12,fontWeight:700,marginBottom:8}}>
+              <span style={{width:6,height:6,borderRadius:'50%',background:c.badgeColor}}/>
+              {c.badge}
+            </span>
+            <div style={{fontSize:22,fontWeight:800,color:c.headlineColor,letterSpacing:-0.5}}>{c.headline}</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Protections */}
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:20}}>
+        {c.protections.map(p=>(
+          <Card key={p.title} style={{padding:'18px 20px'}}>
+            <div style={{fontSize:22,marginBottom:10}}>{p.icon}</div>
+            <div style={{fontSize:14,fontWeight:700,color:Bridge.text,marginBottom:6}}>{p.title}</div>
+            <div style={{fontSize:13,color:Bridge.sub,lineHeight:1.55}}>{p.desc}</div>
+          </Card>
+        ))}
+      </div>
+
+      <div style={{display:'grid',gridTemplateColumns: c.ctaSecondary?'1fr 1fr':'1fr',gap:12}}>
+        <Btn variant="primary" full>{c.cta}</Btn>
+        {c.ctaSecondary && <Btn variant="ghost" full>{c.ctaSecondary}</Btn>}
+      </div>
+    </CustomerLayout>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

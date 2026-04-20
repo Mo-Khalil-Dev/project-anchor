@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Bridge — Assessment Overview</title>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" src="../bridge-ui.jsx"></script>
+<script type="text/babel">
+const { useState } = React;
+
+function App() {
+  return (
+    <CustomerLayout title="Your Financial Assessment" subtitle="Based on 6 months of transaction data from Barclays, assessed on 20 April 2026.">
+
+      {/* Badge row */}
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:20}}>
+        <HardshipBadge level="SEVERE" large />
+        <span style={{fontSize:12.5,color:Bridge.muted}}>Account #BR-2847 · Barclays connected</span>
+      </div>
+
+      {/* 3 stat cards */}
+      <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:14,marginBottom:20}}>
+        {[
+          {label:'Monthly Income',value:'£1,850',sub:'Average over 6 months',color:Bridge.green,icon:'↑'},
+          {label:'Total Expenses',value:'£1,720',sub:'Essential spending',color:Bridge.amber,icon:'→'},
+          {label:'Disposable Income',value:'£130',sub:'After essentials',color:Bridge.red,icon:'↓'},
+        ].map(s=>(
+          <div key={s.label} style={{background:'#fff',borderRadius:14,padding:'20px',boxShadow:'0 1px 4px rgba(0,0,0,0.06)',borderTop:`3px solid ${s.color}`}}>
+            <div style={{fontSize:28,fontWeight:800,color:s.color,letterSpacing:-0.8,marginBottom:4}}>{s.value}</div>
+            <div style={{fontSize:13.5,fontWeight:600,color:Bridge.text,marginBottom:3}}>{s.label}</div>
+            <div style={{fontSize:12,color:Bridge.muted}}>{s.sub}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Bill ratio */}
+      <Card style={{marginBottom:16,padding:'22px 24px'}}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:16}}>
+          <div>
+            <div style={{fontSize:13,fontWeight:600,color:Bridge.muted,textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:4}}>Bill as % of Disposable Income</div>
+            <div style={{display:'flex',alignItems:'baseline',gap:8}}>
+              <span style={{fontSize:36,fontWeight:800,color:Bridge.red,letterSpacing:-1}}>323%</span>
+              <span style={{fontSize:13,color:Bridge.sub}}>of your disposable income</span>
+            </div>
+          </div>
+          <div style={{textAlign:'right'}}>
+            <div style={{fontSize:12,color:Bridge.muted,marginBottom:3}}>Your balance</div>
+            <div style={{fontSize:18,fontWeight:700,color:Bridge.text}}>£420</div>
+          </div>
+        </div>
+
+        {/* Benchmark visual */}
+        <div style={{marginBottom:14}}>
+          <div style={{display:'flex',justifyContent:'space-between',fontSize:12,color:Bridge.muted,marginBottom:6}}>
+            <span>0%</span><span>Benchmark: 5–8%</span><span>Your ratio: 323%</span>
+          </div>
+          <div style={{height:10,borderRadius:100,background:'#eee',position:'relative',overflow:'hidden'}}>
+            <div style={{position:'absolute',left:0,top:0,height:'100%',width:'100%',background:`linear-gradient(90deg, ${Bridge.green} 0%, ${Bridge.green} 8%, ${Bridge.amber} 20%, ${Bridge.red} 45%)`}}/>
+            {/* benchmark marker */}
+            <div style={{position:'absolute',left:'8%',top:-3,height:16,width:2,background:'#fff',borderRadius:1}}/>
+            {/* your marker - capped at 100% visual */}
+            <div style={{position:'absolute',right:4,top:-4,fontSize:11,color:'#fff',fontWeight:700,background:Bridge.red,borderRadius:100,padding:'2px 6px'}}>You</div>
+          </div>
+        </div>
+
+        <div style={{background:Bridge.redBg,borderRadius:12,padding:'14px 16px',fontSize:13,color:Bridge.red,lineHeight:1.5}}>
+          <strong>What this means:</strong> The average household spends 5–8% of disposable income on energy bills. Your outstanding balance represents 323% of your monthly disposable income — this qualifies as <strong>severe financial hardship</strong> under Ofgem guidelines.
+        </div>
+      </Card>
+
+      {/* Formula */}
+      <Card style={{marginBottom:20,padding:'18px 24px'}}>
+        <SectionLabel>How we calculated this</SectionLabel>
+        <div style={{display:'flex',alignItems:'center',gap:10,flexWrap:'wrap',marginTop:4}}>
+          {[['Income','£1,850/mo',Bridge.green],['−','Essentials',''],['£1,720/mo',Bridge.amber,''],['=','Disposable',''],['£130/mo',Bridge.red,'']].map((item,i)=>{
+            if(item[0]==='−'||item[0]==='=') return <span key={i} style={{fontSize:22,color:Bridge.muted,fontWeight:300}}>{item[0]}</span>;
+            return (
+              <div key={i} style={{background:item[2]?`${item[2]}18`:Bridge.bg,borderRadius:10,padding:'8px 14px',border:`1px solid ${item[2]||Bridge.border}30`}}>
+                <div style={{fontSize:11,color:item[2]||Bridge.muted,fontWeight:600,textTransform:'uppercase',letterSpacing:'0.05em'}}>{item[0]}</div>
+                <div style={{fontSize:16,fontWeight:700,color:item[2]||Bridge.text}}>{item[1]}</div>
+              </div>
+            );
+          })}
+        </div>
+      </Card>
+
+      {/* CTAs */}
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+        <Btn variant="primary" full>View Detailed Breakdown</Btn>
+        <Btn variant="ghost" full>Explore Payment Plans</Btn>
+      </div>
+    </CustomerLayout>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
