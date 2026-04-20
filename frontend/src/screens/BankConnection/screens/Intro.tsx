@@ -24,14 +24,12 @@ export function Intro() {
 
         .page {
           animation: fadeUp 0.22s ease both;
-          max-width: 840px;
-          margin: 0 auto;
         }
 
         .hero {
           background: linear-gradient(135deg, #5b5bd6 0%, #3d3aa8 100%);
           border-radius: 20px;
-          padding: 48px 40px;
+          padding: 52px 40px;
           margin-bottom: 40px;
           text-align: center;
           position: relative;
@@ -125,13 +123,14 @@ export function Intro() {
 
         .value-prop-text {
           flex: 1;
+          text-align: left;
         }
 
         .value-prop-title {
           color: #0d0f14;
           font-size: 14px;
           font-weight: 700;
-          margin: 0 0 4px 0;
+          margin: 0 0 6px 0;
         }
 
         .value-prop-desc {
@@ -140,6 +139,14 @@ export function Intro() {
           font-weight: 400;
           line-height: 1.5;
           margin: 0;
+        }
+
+        .value-prop.highlighted .value-prop-desc {
+          background: #e8edff;
+          color: #4a5cc4;
+          padding: 8px 12px;
+          border-radius: 6px;
+          margin: 0 -8px;
         }
 
         .access-grid {
@@ -198,7 +205,11 @@ export function Intro() {
           margin-bottom: 32px;
         }
 
-        .buttons-container > button {
+        .buttons-container > button:first-child {
+          flex: 1;
+        }
+
+        .buttons-container > button:last-child {
           flex: 1;
         }
 
@@ -236,31 +247,29 @@ export function Intro() {
         {/* Why Connect */}
         <div className="section-label">Why connect your bank?</div>
         <div className="value-props">
-          {[
-            {
-              icon: '✓',
-              title: 'No forms to fill out',
-              desc: 'We see your real spending patterns, not just what you tell us.',
-            },
-            {
-              icon: '✓',
-              title: 'Faster assessment',
-              desc: 'Complete your assessment in minutes, not days.',
-            },
-            {
-              icon: '✓',
-              title: 'Better support options',
-              desc: 'More tailored payment plans and support recommendations.',
-            },
-          ].map((prop) => (
-            <div key={prop.title} className="value-prop">
-              <div className="value-prop-icon">{prop.icon}</div>
-              <div className="value-prop-text">
-                <p className="value-prop-title">{prop.title}</p>
-                <p className="value-prop-desc">{prop.desc}</p>
-              </div>
+          <div className="value-prop">
+            <div className="value-prop-icon">✓</div>
+            <div className="value-prop-text">
+              <p className="value-prop-title">No forms to fill out</p>
+              <p className="value-prop-desc">We see your real spending patterns, not just what you tell us.</p>
             </div>
-          ))}
+          </div>
+
+          <div className="value-prop highlighted">
+            <div className="value-prop-icon">✓</div>
+            <div className="value-prop-text">
+              <p className="value-prop-title">Faster assessment</p>
+              <p className="value-prop-desc">Complete your assessment in minutes, not days.</p>
+            </div>
+          </div>
+
+          <div className="value-prop">
+            <div className="value-prop-icon">✓</div>
+            <div className="value-prop-text">
+              <p className="value-prop-title">Better support options</p>
+              <p className="value-prop-desc">More tailored payment plans and support recommendations.</p>
+            </div>
+          </div>
         </div>
 
         {/* Access Cards */}
