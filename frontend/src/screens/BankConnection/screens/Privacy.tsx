@@ -221,9 +221,9 @@ export function Privacy() {
         <div className="retention-card">
           <div className="retention-label">Data Retention (FCA Requirement)</div>
           <div>We keep your financial data for 3 years for regulatory compliance.</div>
-          <div style={{ marginTop: '8px', fontSize: '12px', color: 'var(--muted)' }}>
+          <div style={{ marginTop: '8px', fontSize: '12px', color: '#9197ab' }}>
             Want to delete your data?{' '}
-            <a href="mailto:privacy@bridge.com" style={{ color: 'var(--accent)' }}>
+            <a href="mailto:privacy@bridge.com" style={{ color: '#5b5bd6' }}>
               Contact us
             </a>
           </div>

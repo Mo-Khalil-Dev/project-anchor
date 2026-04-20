@@ -43,7 +43,7 @@ export function Error() {
         .alert-icon {
           width: 84px;
           height: 84px;
-          background-color: var(--red);
+          background-color: #c0392b;
           border-radius: 50%;
           display: flex;
           align-items: center;

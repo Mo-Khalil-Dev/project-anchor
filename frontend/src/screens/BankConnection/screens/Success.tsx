@@ -41,8 +41,8 @@ export function Success() {
         .checkmark-icon {
           width: 84px;
           height: 84px;
-          background-color: var(--green);
-          border: 3px solid var(--accent);
+          background-color: #1e7d3f;
+          border: 3px solid #5b5bd6;
           border-radius: 50%;
           display: flex;
           align-items: center;
@@ -83,7 +83,7 @@ export function Success() {
 
         .footer {
           font-size: 13px;
-          color: var(--muted);
+          color: #9197ab;
           line-height: 1.6;
         }
       `}</style>

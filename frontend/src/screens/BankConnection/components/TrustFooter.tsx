@@ -9,7 +9,7 @@ export function TrustFooter({ className = '', icon = '🔒', text }: TrustFooter
     <div
       className={`text-center text-sm leading-relaxed ${className}`}
       style={{
-        color: 'var(--muted)',
+        color: '#9197ab',
         fontSize: '13px',
         fontWeight: 400,
       }}
