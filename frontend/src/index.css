@@ -1,0 +1,79 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  @apply box-border;
+}
+
+body {
+  @apply bg-bg text-text font-sans antialiased;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+@layer components {
+  .card {
+    @apply rounded-card border border-border bg-card shadow-card;
+  }
+
+  .stat-card {
+    @apply rounded-stat border border-border bg-card shadow-card;
+  }
+
+  .label {
+    @apply text-section-label text-muted;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-button bg-accent px-6 py-3 font-semibold text-white transition-all hover:bg-accent-dark disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-button border border-border bg-transparent px-6 py-3 font-semibold text-text transition-all hover:bg-accent-bg disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center justify-center rounded-button bg-red px-6 py-3 font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-success {
+    @apply inline-flex items-center justify-center rounded-button bg-green px-6 py-3 font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+}
+
+/* Animations */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-fadeUp {
+  animation: fadeUp 220ms ease;
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
