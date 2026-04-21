@@ -1,608 +1,19 @@
 import { Result } from '../../shared/result';
 
-const MOCK_TINK_RESPONSE = {
-  id: '7bfec36cf31847fa8826f67902736e14',
-  externalReference: '',
-  engineVersion: '1.0.0',
-  createdTime: '2026-04-18T23:47:16.238129409Z',
-  identity: {
-    name: 'John Doe',
-    ssn: '4502029992',
-  },
-  accounts: [
-    {
-      id: '063c3cb6ff7c4fcfa248329a3d7c6326',
-      accountNumber: 'GB93RQWW92388002979602',
-      name: 'Account 1',
-      financialInstitutionName: 'Tink Demo Bank',
-      holderNames: ['John Doe'],
-      iban: 'GB93RQWW92388002979602',
-      users: [
-        {
-          name: 'John Doe',
-          role: 'HOLDER',
-        },
-      ],
-    },
-  ],
-  income: {
-    summary: {
-      summaryByMonths: {
-        lastThreeMonths: {
-          total: {
-            unscaledValue: '24774370000000003',
-            scale: '12',
-          },
-          mean: {
-            unscaledValue: '8258123333333333',
-            scale: '12',
-          },
-          median: {
-            unscaledValue: '819419',
-            scale: '2',
-          },
-          min: {
-            unscaledValue: '814296',
-            scale: '2',
-          },
-          max: {
-            unscaledValue: '843722',
-            scale: '2',
-          },
-        },
-        lastSixMonths: {
-          total: {
-            unscaledValue: '4943726000000001',
-            scale: '11',
-          },
-          mean: {
-            unscaledValue: '8239543333333333',
-            scale: '12',
-          },
-          median: {
-            unscaledValue: '8218945',
-            scale: '3',
-          },
-          min: {
-            unscaledValue: '795676',
-            scale: '2',
-          },
-          max: {
-            unscaledValue: '846243',
-            scale: '2',
-          },
-        },
-      },
-      summaryByTransactions: {
-        lastThreeMonths: {
-          total: {
-            unscaledValue: '2477437',
-            scale: '2',
-          },
-          mean: {
-            unscaledValue: '8258123333333333',
-            scale: '12',
-          },
-          median: {
-            unscaledValue: '819419',
-            scale: '2',
-          },
-          min: {
-            unscaledValue: '814296',
-            scale: '2',
-          },
-          max: {
-            unscaledValue: '843722',
-            scale: '2',
-          },
-        },
-        lastSixMonths: {
-          total: {
-            unscaledValue: '4943726',
-            scale: '2',
-          },
-          mean: {
-            unscaledValue: '8239543333333333',
-            scale: '12',
-          },
-          median: {
-            unscaledValue: '8218945',
-            scale: '3',
-          },
-          min: {
-            unscaledValue: '795676',
-            scale: '2',
-          },
-          max: {
-            unscaledValue: '846243',
-            scale: '2',
-          },
-        },
-      },
-      summaryByTypes: {
-        salary: {
-          accountIds: ['063c3cb6ff7c4fcfa248329a3d7c6326'],
-          currencyCode: 'GBP',
-          summaryByMonths: {
-            lastThreeMonths: {
-              total: {
-                unscaledValue: '24774370000000003',
-                scale: '12',
-              },
-              mean: {
-                unscaledValue: '8258123333333333',
-                scale: '12',
-              },
-              median: {
-                unscaledValue: '819419',
-                scale: '2',
-              },
-              min: {
-                unscaledValue: '814296',
-                scale: '2',
-              },
-              max: {
-                unscaledValue: '843722',
-                scale: '2',
-              },
-            },
-            lastSixMonths: {
-              total: {
-                unscaledValue: '4943726000000001',
-                scale: '11',
-              },
-              mean: {
-                unscaledValue: '8239543333333333',
-                scale: '12',
-              },
-              median: {
-                unscaledValue: '8218945',
-                scale: '3',
-              },
-              min: {
-                unscaledValue: '795676',
-                scale: '2',
-              },
-              max: {
-                unscaledValue: '846243',
-                scale: '2',
-              },
-            },
-          },
-          summaryByTransactions: {
-            lastThreeMonths: {
-              total: {
-                unscaledValue: '2477437',
-                scale: '2',
-              },
-              mean: {
-                unscaledValue: '8258123333333333',
-                scale: '12',
-              },
-              median: {
-                unscaledValue: '819419',
-                scale: '2',
-              },
-              min: {
-                unscaledValue: '814296',
-                scale: '2',
-              },
-              max: {
-                unscaledValue: '843722',
-                scale: '2',
-              },
-            },
-            lastSixMonths: {
-              total: {
-                unscaledValue: '4943726',
-                scale: '2',
-              },
-              mean: {
-                unscaledValue: '8258123333333333',
-                scale: '12',
-              },
-              median: {
-                unscaledValue: '819419',
-                scale: '2',
-              },
-              min: {
-                unscaledValue: '814296',
-                scale: '2',
-              },
-              max: {
-                unscaledValue: '843722',
-                scale: '2',
-              },
-            },
-          },
-          occurrences: {
-            count: 12,
-            first: '2025-05-18',
-            last: '2026-04-18',
-          },
-          streamIds: ['32ab49258a9843778a7c5ed166b42b25'],
-          summaryBySubTypes: {
-            salarySubTypeSalary: {
-              accountIds: ['063c3cb6ff7c4fcfa248329a3d7c6326'],
-              currencyCode: 'GBP',
-              summaryByMonths: {
-                lastThreeMonths: {
-                  total: {
-                    unscaledValue: '24774370000000003',
-                    scale: '12',
-                  },
-                  mean: {
-                    unscaledValue: '8258123333333333',
-                    scale: '12',
-                  },
-                  median: {
-                    unscaledValue: '819419',
-                    scale: '2',
-                  },
-                  min: {
-                    unscaledValue: '814296',
-                    scale: '2',
-                  },
-                  max: {
-                    unscaledValue: '843722',
-                    scale: '2',
-                  },
-                },
-                lastSixMonths: {
-                  total: {
-                    unscaledValue: '4943726000000001',
-                    scale: '11',
-                  },
-                  mean: {
-                    unscaledValue: '8239543333333333',
-                    scale: '12',
-                  },
-                  median: {
-                    unscaledValue: '8218945',
-                    scale: '3',
-                  },
-                  min: {
-                    unscaledValue: '795676',
-                    scale: '2',
-                  },
-                  max: {
-                    unscaledValue: '846243',
-                    scale: '2',
-                  },
-                },
-              },
-              summaryByTransactions: {
-                lastThreeMonths: {
-                  total: {
-                    unscaledValue: '2477437',
-                    scale: '2',
-                  },
-                  mean: {
-                    unscaledValue: '8258123333333333',
-                    scale: '12',
-                  },
-                  median: {
-                    unscaledValue: '819419',
-                    scale: '2',
-                  },
-                  min: {
-                    unscaledValue: '814296',
-                    scale: '2',
-                  },
-                  max: {
-                    unscaledValue: '843722',
-                    scale: '2',
-                  },
-                },
-                lastSixMonths: {
-                  total: {
-                    unscaledValue: '4943726',
-                    scale: '2',
-                  },
-                  mean: {
-                    unscaledValue: '8258123333333333',
-                    scale: '12',
-                  },
-                  median: {
-                    unscaledValue: '819419',
-                    scale: '2',
-                  },
-                  min: {
-                    unscaledValue: '814296',
-                    scale: '2',
-                  },
-                  max: {
-                    unscaledValue: '843722',
-                    scale: '2',
-                  },
-                },
-              },
-              occurrences: {
-                count: 12,
-                first: '2025-05-18',
-                last: '2026-04-18',
-              },
-              streamIds: ['32ab49258a9843778a7c5ed166b42b25'],
-            },
-          },
-        },
-      },
-    },
-    streams: [
-      {
-        id: '32ab49258a9843778a7c5ed166b42b25',
-        accountId: '063c3cb6ff7c4fcfa248329a3d7c6326',
-        type: 'SALARY',
-        currencyCode: 'GBP',
-        summaryByMonths: {
-          lastThreeMonths: {
-            total: {
-              unscaledValue: '24774370000000003',
-              scale: '12',
-            },
-            mean: {
-              unscaledValue: '8258123333333333',
-              scale: '12',
-            },
-            median: {
-              unscaledValue: '819419',
-              scale: '2',
-            },
-            min: {
-              unscaledValue: '814296',
-              scale: '2',
-            },
-            max: {
-              unscaledValue: '843722',
-              scale: '2',
-            },
-          },
-          lastSixMonths: {
-            total: {
-              unscaledValue: '4943726000000001',
-              scale: '11',
-            },
-            mean: {
-              unscaledValue: '8239543333333333',
-              scale: '12',
-            },
-            median: {
-              unscaledValue: '8218945',
-              scale: '3',
-            },
-            min: {
-              unscaledValue: '795676',
-              scale: '2',
-            },
-            max: {
-              unscaledValue: '846243',
-              scale: '2',
-            },
-          },
-        },
-        summaryByTransactions: {
-          lastThreeMonths: {
-            total: {
-              unscaledValue: '2477437',
-              scale: '2',
-            },
-            mean: {
-              unscaledValue: '8258123333333333',
-              scale: '12',
-            },
-            median: {
-              unscaledValue: '819419',
-              scale: '2',
-            },
-            min: {
-              unscaledValue: '814296',
-              scale: '2',
-            },
-            max: {
-              unscaledValue: '843722',
-              scale: '2',
-            },
-          },
-          lastSixMonths: {
-            total: {
-              unscaledValue: '4943726',
-              scale: '2',
-            },
-            mean: {
-              unscaledValue: '8258123333333333',
-              scale: '12',
-            },
-            median: {
-              unscaledValue: '819419',
-              scale: '2',
-            },
-            min: {
-              unscaledValue: '814296',
-              scale: '2',
-            },
-            max: {
-              unscaledValue: '843722',
-              scale: '2',
-            },
-          },
-        },
-        occurrences: {
-          count: 12,
-          first: '2025-05-18',
-          last: '2026-04-18',
-        },
-        transactions: [
-          {
-            id: '2539cce490454f909864703383bbde14',
-            description: 'income',
-            time: '2026-04-18T10:00:00Z',
-            amount: {
-              value: {
-                unscaledValue: '80616',
-                scale: '1',
-              },
-              currencyCode: 'GBP',
-            },
-            accountId: '063c3cb6ff7c4fcfa248329a3d7c6326',
-          },
-          {
-            id: '4d066d3418f54ee19a72f025b634ad79',
-            description: 'income',
-            time: '2026-03-18T11:00:00Z',
-            amount: {
-              value: {
-                unscaledValue: '814296',
-                scale: '2',
-              },
-              currencyCode: 'GBP',
-            },
-            accountId: '063c3cb6ff7c4fcfa248329a3d7c6326',
-          },
-          {
-            id: '41f592261a1349c38cb209aca873e66a',
-            description: 'income',
-            time: '2026-02-18T11:00:00Z',
-            amount: {
-              value: {
-                unscaledValue: '819419',
-                scale: '2',
-              },
-              currencyCode: 'GBP',
-            },
-            accountId: '063c3cb6ff7c4fcfa248329a3d7c6326',
-          },
-          {
-            id: '363c25b76eb04849b17f2c8698bd5479',
-            description: 'income',
-            time: '2026-01-18T11:00:00Z',
-            amount: {
-              value: {
-                unscaledValue: '843722',
-                scale: '2',
-              },
-              currencyCode: 'GBP',
-            },
-            accountId: '063c3cb6ff7c4fcfa248329a3d7c6326',
-          },
-          {
-            id: '929466e5a7534dedad0b0c8d42d5c877',
-            description: 'income',
-            time: '2025-12-18T11:00:00Z',
-            amount: {
-              value: {
-                unscaledValue: '795676',
-                scale: '2',
-              },
-              currencyCode: 'GBP',
-            },
-            accountId: '063c3cb6ff7c4fcfa248329a3d7c6326',
-          },
-          {
-            id: '728c8131a2314e0f84c1d32717fbd787',
-            description: 'income',
-            time: '2025-11-18T11:00:00Z',
-            amount: {
-              value: {
-                unscaledValue: '846243',
-                scale: '2',
-              },
-              currencyCode: 'GBP',
-            },
-            accountId: '063c3cb6ff7c4fcfa248329a3d7c6326',
-          },
-          {
-            id: '1c7f53997cad4b6cb7ef9306fc4af95b',
-            description: 'income',
-            time: '2025-10-18T10:00:00Z',
-            amount: {
-              value: {
-                unscaledValue: '82437',
-                scale: '1',
-              },
-              currencyCode: 'GBP',
-            },
-            accountId: '063c3cb6ff7c4fcfa248329a3d7c6326',
-          },
-          {
-            id: '7f06381d8a434412a0f9ac65cc5e7767',
-            description: 'income',
-            time: '2025-09-18T10:00:00Z',
-            amount: {
-              value: {
-                unscaledValue: '848395',
-                scale: '2',
-              },
-              currencyCode: 'GBP',
-            },
-            accountId: '063c3cb6ff7c4fcfa248329a3d7c6326',
-          },
-          {
-            id: '75ab527408374f03b50d2afe5c69b2fb',
-            description: 'income',
-            time: '2025-08-18T10:00:00Z',
-            amount: {
-              value: {
-                unscaledValue: '813209',
-                scale: '2',
-              },
-              currencyCode: 'GBP',
-            },
-            accountId: '063c3cb6ff7c4fcfa248329a3d7c6326',
-          },
-          {
-            id: '8422974cce454519b1515ff98c73764e',
-            description: 'income',
-            time: '2025-07-18T10:00:00Z',
-            amount: {
-              value: {
-                unscaledValue: '816653',
-                scale: '2',
-              },
-              currencyCode: 'GBP',
-            },
-            accountId: '063c3cb6ff7c4fcfa248329a3d7c6326',
-          },
-          {
-            id: '9754282456944ddc9444438478135b82',
-            description: 'income',
-            time: '2025-06-18T10:00:00Z',
-            amount: {
-              value: {
-                unscaledValue: '829451',
-                scale: '2',
-              },
-              currencyCode: 'GBP',
-            },
-            accountId: '063c3cb6ff7c4fcfa248329a3d7c6326',
-          },
-          {
-            id: '968096a43e784e139f6805308001de8e',
-            description: 'income',
-            time: '2025-05-18T10:00:00Z',
-            amount: {
-              value: {
-                unscaledValue: '818404',
-                scale: '2',
-              },
-              currencyCode: 'GBP',
-            },
-            accountId: '063c3cb6ff7c4fcfa248329a3d7c6326',
-          },
-        ],
-        subType: 'SALARY_SUB_TYPE_SALARY',
-      },
-    ],
-    primaryIncomeStreamId: '32ab49258a9843778a7c5ed166b42b25',
-  },
-  appId: '4f7f0640b15745a8ba55cb4021f4f098',
-  userId: 'c845eda57a6f4d14930fcd163204f6b8',
-};
-
 export interface IncomeBreakdown {
   salary: number;
   pension: number;
   benefits: number;
   cashDeposits: number;
+  other: number;
+  total: number;
+}
+
+export interface ExpenseBreakdown {
+  housing: number;
+  food: number;
+  utilities: number;
+  transport: number;
   other: number;
   total: number;
 }
@@ -622,11 +33,29 @@ export class BankDataExtractionService {
 
   /**
    * Extract income breakdown from Tink response
-   * Reads lastSixMonths.total from each stream and categorizes by type
+   * Reads lastSixMonths.mean from each stream and categorizes by type
    */
-  static extractIncome(tinkResponse: typeof MOCK_TINK_RESPONSE = MOCK_TINK_RESPONSE): Result<IncomeBreakdown, Error> {
+  static extractIncome(tinkResponse?: any): Result<IncomeBreakdown, Error> {
+    // Default mock data: £3,000/month salary income
+    const defaultResponse = tinkResponse || {
+      income: {
+        streams: [
+          {
+            type: 'SALARY',
+            summaryByMonths: {
+              lastSixMonths: {
+                mean: {
+                  unscaledValue: '300000',
+                  scale: '2',
+                },
+              },
+            },
+          },
+        ],
+      },
+    };
     try {
-      if (!tinkResponse?.income?.streams || !Array.isArray(tinkResponse.income.streams)) {
+      if (!defaultResponse?.income?.streams || !Array.isArray(defaultResponse.income.streams)) {
         return Result.fail(new Error('Invalid income data structure'));
       }
 
@@ -639,14 +68,14 @@ export class BankDataExtractionService {
         total: 0,
       };
 
-      for (const stream of tinkResponse.income.streams) {
-        const total = stream?.summaryByMonths?.lastSixMonths?.total;
+      for (const stream of defaultResponse.income.streams) {
+        const mean = stream?.summaryByMonths?.lastSixMonths?.mean;
 
-        if (!total || !total.unscaledValue || !total.scale) {
+        if (!mean || !mean.unscaledValue || !mean.scale) {
           continue;
         }
 
-        const amount = this.decodeScaledValue(total.unscaledValue, total.scale);
+        const amount = Math.abs(this.decodeScaledValue(mean.unscaledValue, mean.scale));
         const streamType = (stream.type || 'OTHER').toUpperCase();
 
         switch (streamType) {
@@ -667,12 +96,126 @@ export class BankDataExtractionService {
         }
       }
 
-      breakdown.total = breakdown.salary + breakdown.pension + breakdown.benefits + breakdown.cashDeposits + breakdown.other;
+      breakdown.total =
+        breakdown.salary +
+        breakdown.pension +
+        breakdown.benefits +
+        breakdown.cashDeposits +
+        breakdown.other;
       breakdown.total = Math.round(breakdown.total * 100) / 100;
 
       return Result.ok(breakdown);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error extracting income';
+      return Result.fail(new Error(message));
+    }
+  }
+
+  /**
+   * Extract expense breakdown from Tink response
+   * Reads lastSixMonths.mean from each category and maps to budget buckets
+   */
+  static extractExpenses(tinkResponse?: any): Result<ExpenseBreakdown, Error> {
+    // Default mock data: realistic GB expenses (£2,100/month total)
+    const defaultResponse = tinkResponse || {
+      expenses: {
+        housing: {
+          summaries: {
+            summariesByMonth: {
+              lastSixMonths: { mean: { unscaledValue: '-80000', scale: '2' } },
+            },
+          },
+        },
+        groceries: {
+          summaries: {
+            summariesByMonth: {
+              lastSixMonths: { mean: { unscaledValue: '-40000', scale: '2' } },
+            },
+          },
+        },
+        utilities: {
+          summaries: {
+            summariesByMonth: {
+              lastSixMonths: { mean: { unscaledValue: '-20000', scale: '2' } },
+            },
+          },
+        },
+        transportation: {
+          summaries: {
+            summariesByMonth: {
+              lastSixMonths: { mean: { unscaledValue: '-20000', scale: '2' } },
+            },
+          },
+        },
+        other: {
+          summaries: {
+            summariesByMonth: {
+              lastSixMonths: { mean: { unscaledValue: '-50000', scale: '2' } },
+            },
+          },
+        },
+      },
+    };
+
+    try {
+      if (!defaultResponse?.expenses || typeof defaultResponse.expenses !== 'object') {
+        return Result.fail(new Error('Invalid expenses data structure'));
+      }
+
+      const breakdown: ExpenseBreakdown = {
+        housing: 0,
+        food: 0,
+        utilities: 0,
+        transport: 0,
+        other: 0,
+        total: 0,
+      };
+
+      const expensesObj = defaultResponse.expenses;
+
+      // Map Tink categories to hardship assessment buckets
+      const categoryMapping: Record<string, keyof ExpenseBreakdown> = {
+        housing: 'housing',
+        groceries: 'food',
+        utilities: 'utilities',
+        transportation: 'transport',
+        childRelated: 'other',
+        collections: 'other',
+        creditCards: 'other',
+        healthcare: 'other',
+        insurance: 'other',
+        loans: 'other',
+        other: 'other',
+        savingsAndInvestments: 'other',
+        subscriptionsAndIt: 'other',
+        taxes: 'other',
+        transfers: 'other',
+      };
+
+      for (const [categoryKey, category] of Object.entries(expensesObj)) {
+        const mean = (category as any)?.summaries?.summariesByMonth?.lastSixMonths?.mean;
+
+        if (!mean || !mean.unscaledValue || !mean.scale) {
+          continue;
+        }
+
+        const amount = Math.abs(this.decodeScaledValue(mean.unscaledValue, mean.scale));
+        const bucketKey = categoryMapping[categoryKey] || 'other';
+
+        breakdown[bucketKey] += amount;
+      }
+
+      breakdown.total =
+        breakdown.housing +
+        breakdown.food +
+        breakdown.utilities +
+        breakdown.transport +
+        breakdown.other;
+      breakdown.total = Math.round(breakdown.total * 100) / 100;
+
+      return Result.ok(breakdown);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error extracting expenses';
       return Result.fail(new Error(message));
     }
   }
