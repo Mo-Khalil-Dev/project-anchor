@@ -4,7 +4,6 @@ import type { IBankConnectionRepository } from '../../domain/bank-connection/IBa
 import type { ILogger } from '../../shared/logging';
 import type { TinkOAuthService } from '../../infrastructure/services/TinkOAuthService';
 import { BankDataExtractionService } from '../../infrastructure/services/BankDataExtractionService';
-import { IAssessmentRepository } from '../../domain/repositories/IAssessmentRepository';
 import { Assessment } from '../../domain/entities/Assessment.entity';
 import { ProcessAssessmentJobService } from '../services/ProcessAssessmentJobService';
 
@@ -12,18 +11,16 @@ export class HandleBankOAuthCallbackUseCase {
   constructor(
     private repository: IBankConnectionRepository,
     private tinkService: TinkOAuthService,
-    private assessmentRepository: IAssessmentRepository,
     private prisma: PrismaClient,
-    private extractionService: BankDataExtractionService,
     private logger: ILogger,
-    private processJobService?: ProcessAssessmentJobService,
+    private processJobService?: ProcessAssessmentJobService
   ) {}
 
   async execute(
     code: string,
     state: string,
     customerMonthlyBill: number,
-    customerArrears?: number,
+    customerArrears?: number
   ): Promise<
     Result<
       {
@@ -55,7 +52,7 @@ export class HandleBankOAuthCallbackUseCase {
       const accessToken = tokenResult.getOrThrow();
 
       // Fetch both income and expense check data
-      const incomeResult = await this.tinkService.getIncomeCheck(code, accessToken);
+      const incomeResult = await this.tinkService.getIncomeReport(code);
       if (incomeResult.isFail) {
         return Result.fail(incomeResult.getError() || new Error('Failed to fetch income data'));
       }
@@ -69,21 +66,25 @@ export class HandleBankOAuthCallbackUseCase {
       const expenseData = expenseResult.getOrThrow();
 
       // Extract key figures
-      const extractedIncomeResult = this.extractionService.extractIncome(incomeData);
+      const extractedIncomeResult = BankDataExtractionService.extractIncome(incomeData);
       if (extractedIncomeResult.isFail) {
-        return Result.fail(extractedIncomeResult.getError() || new Error('Failed to extract income figures'));
+        return Result.fail(
+          extractedIncomeResult.getError() || new Error('Failed to extract income figures')
+        );
       }
 
-      const extractedExpenseResult = this.extractionService.extractExpenses(expenseData);
+      const extractedExpenseResult = BankDataExtractionService.extractExpenses(expenseData);
       if (extractedExpenseResult.isFail) {
-        return Result.fail(extractedExpenseResult.getError() || new Error('Failed to extract expense figures'));
+        return Result.fail(
+          extractedExpenseResult.getError() || new Error('Failed to extract expense figures')
+        );
       }
 
       const income = extractedIncomeResult.getOrThrow();
       const expenses = extractedExpenseResult.getOrThrow();
 
       // Save raw JSONs to BankReports table
-      const bankReport = await this.prisma.bankReports.upsert({
+      await this.prisma.bankReports.upsert({
         where: { bankConnectionId: connection.id },
         update: {
           incomeJson: JSON.stringify(incomeData),
@@ -138,7 +139,9 @@ export class HandleBankOAuthCallbackUseCase {
       connection.markDataRetrieved();
       const updateResult = await this.repository.update(connection);
       if (updateResult.isFail) {
-        return Result.fail(updateResult.getError() || new Error('Failed to update bank connection'));
+        return Result.fail(
+          updateResult.getError() || new Error('Failed to update bank connection')
+        );
       }
 
       // Process job synchronously if flag is set

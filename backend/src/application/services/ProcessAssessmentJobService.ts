@@ -7,7 +7,6 @@ import type { ILogger } from '../../shared/logging';
 export class ProcessAssessmentJobService {
   constructor(
     private prisma: PrismaClient,
-    private extractionService: BankDataExtractionService,
     private assessmentRepository: IAssessmentRepository,
     private logger: ILogger,
   ) {}
@@ -70,13 +69,13 @@ export class ProcessAssessmentJobService {
         return Result.fail(error);
       }
 
-      const incomeResult = this.extractionService.extractIncome(incomeData);
+      const incomeResult = BankDataExtractionService.extractIncome(incomeData);
       if (incomeResult.isFail) {
         await this.updateJobStatus(jobId, 'FAILED', incomeResult.getError()?.message);
         return Result.fail(incomeResult.getError() || new Error('Failed to extract income'));
       }
 
-      const expenseResult = this.extractionService.extractExpenses(expenseData);
+      const expenseResult = BankDataExtractionService.extractExpenses(expenseData);
       if (expenseResult.isFail) {
         await this.updateJobStatus(jobId, 'FAILED', expenseResult.getError()?.message);
         return Result.fail(expenseResult.getError() || new Error('Failed to extract expenses'));

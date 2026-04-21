@@ -28,6 +28,7 @@ services:
       FRONTEND_URL: http://localhost:5173
       REDIRECT_URL: http://localhost:3000/bank-connection
       ENABLE_ERROR_STACK_TRACES: false
+      PROCESS_JOBS_SYNCHRONOUSLY: true
       DISABLE_AUTH: true
     ports:
       - "3000:3000"

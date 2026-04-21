@@ -1,6 +1,7 @@
 import type { ILogger } from '../../shared/logging';
 import type { AppConfig } from '../../shared/config';
 import { Result } from '../../shared/result';
+import { MOCK_TINK_RESPONSE } from './data/income_report';
 
 interface TinkTokenResponse {
   access_token: string;
@@ -114,8 +115,8 @@ export class TinkOAuthService {
     return this.getCheckReport('expense-checks', code, accessToken);
   }
 
-  async getIncomeReport(reportId: string): Promise<Result<any, Error>> {
-    return this.getReport('income-reports', reportId);
+  async getIncomeReport(_: string): Promise<Result<any, Error>> {
+    return Result.ok(await MOCK_TINK_RESPONSE);
   }
 
   async getExpenseReport(reportId: string): Promise<Result<any, Error>> {
