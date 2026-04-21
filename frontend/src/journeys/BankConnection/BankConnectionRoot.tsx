@@ -26,7 +26,7 @@ export function BankConnectionRoot() {
     if (expenseCheckId && state && !callbackProcessedRef.current) {
       callbackProcessedRef.current = true;
       dispatch(setBankJourneyState('connecting'));
-      handleCallback(expenseCheckId, state).then(response=>{console.log('response:',response)}).catch(() => {
+      handleCallback(expenseCheckId, state).catch(() => {
         // Error is handled by the hook and sets state to 'error'
       });
     }

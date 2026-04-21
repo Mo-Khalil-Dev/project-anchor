@@ -10,15 +10,27 @@ export function Success() {
   const data = useAppSelector((s) => s.customer.bankConnectionData);
 
   const handleViewAssessment = () => {
-    dispatch(setCurrentStep('assessment'));
-    navigate('/assessment');
+    if (data?.assessmentId) {
+      dispatch(setCurrentStep('assessment'));
+      navigate(`/assessment/${data.assessmentId}`);
+    }
   };
 
   const summaryData = [
     { label: 'Bank', value: data?.bankName || 'Barclays' },
     { label: 'Transactions', value: data?.transactions || '6 months' },
-    { label: 'Monthly Income', value: `£${data?.monthlyIncome || '1,850'}` },
-    { label: 'Avg. Monthly Spend', value: `£${data?.avgMonthlySpend || '1,720'}` },
+    {
+      label: 'Monthly Income',
+      value: `£${(data?.totalIncome || data?.monthlyIncome || 1850).toLocaleString('en-GB', {
+        maximumFractionDigits: 2,
+      })}`,
+    },
+    {
+      label: 'Avg. Monthly Spend',
+      value: `£${(data?.totalExpenses || data?.avgMonthlySpend || 1720).toLocaleString('en-GB', {
+        maximumFractionDigits: 2,
+      })}`,
+    },
   ];
 
   return (

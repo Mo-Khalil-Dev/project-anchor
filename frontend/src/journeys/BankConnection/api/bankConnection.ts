@@ -1,5 +1,5 @@
 import { axiosInstance } from '@/api/client';
-import { ApiResponse, BankConnectionData } from '@/types';
+import { ApiResponse } from '@/types';
 
 export interface InitiateBankResponse {
   authUrl: string;
@@ -8,7 +8,9 @@ export interface InitiateBankResponse {
 
 export interface HandleBankCallbackResponse {
   connectionId: string;
-  expenseData: BankConnectionData;
+  totalExpenses: number;
+  totalIncome: number;
+  assessmentId: string;
 }
 
 export async function initiateBank(): Promise<InitiateBankResponse> {

@@ -24,13 +24,6 @@ interface Assessment {
   calculatedAt: string;
 }
 
-interface ExpenseBreakdown {
-  housing: number;
-  food: number;
-  utilities: number;
-  transport: number;
-  other: number;
-}
 
 export function AssessmentOverview() {
   const { assessmentId } = useParams<{ assessmentId: string }>();
@@ -40,13 +33,6 @@ export function AssessmentOverview() {
   const [assessment, setAssessment] = useState<Assessment | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [expenseBreakdown, setExpenseBreakdown] = useState<ExpenseBreakdown>({
-    housing: 0,
-    food: 0,
-    utilities: 0,
-    transport: 0,
-    other: 0,
-  });
 
   useEffect(() => {
     fetchAssessment();
@@ -82,8 +68,8 @@ export function AssessmentOverview() {
   };
 
   const handleNext = () => {
-    dispatch(setCurrentStep('payment-plans'));
-    navigate('/payment-plans');
+    dispatch(setCurrentStep('plan-select'));
+    navigate('/plan-select');
   };
 
   if (loading && !assessment) {

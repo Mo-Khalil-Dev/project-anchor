@@ -43,6 +43,9 @@ export interface BankConnectionData {
   connectionId?: string;
   authUrl?: string;
   state?: string;
+  totalIncome?: number;
+  totalExpenses?: number;
+  assessmentId?: string;
 }
 
 export interface BankError {

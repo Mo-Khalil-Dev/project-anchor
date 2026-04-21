@@ -43,13 +43,14 @@ export function useBankConnection() {
       const response = await bankConnectionApi.handleBankCallback(expenseCheckId, state);
       dispatch(
         setBankConnectionData({
-          ...response.expenseData,
           connectionId: response.connectionId,
+          totalIncome: response.totalIncome,
+          totalExpenses: response.totalExpenses,
+          assessmentId: response.assessmentId,
           expenseCheckReportId: expenseCheckId,
         })
       );
       dispatch(setBankJourneyState('success'));
-      console.log("Bank connection successful:", response);
       return response;
     } catch (err: any) {
       const errorData = {
