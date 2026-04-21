@@ -1,11 +1,7 @@
 import { useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '@/store';
-import { setBankJourneyState } from '@/store/slices/customerSlice';
 import { CustomerLayout } from '@/components/layouts/CustomerLayout';
 
 export function Connecting() {
-  const dispatch = useAppDispatch();
-  const currentJourneyState = useAppSelector((s) => s.customer.bankJourneyState);
   const [step, setStep] = useState(0);
   const STEPS = ['Connecting to Barclays...', 'Fetching your transactions...', 'Running financial assessment...'];
 

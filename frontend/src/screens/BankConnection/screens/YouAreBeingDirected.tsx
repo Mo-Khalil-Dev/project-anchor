@@ -10,7 +10,7 @@ export function YouAreBeingDirected() {
       if (authUrl) {
         window.location.href = authUrl;
       }
-    }, 2200);
+    }, 4000);
 
     return () => clearTimeout(timer);
   }, [authUrl]);
