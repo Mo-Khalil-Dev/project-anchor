@@ -17,6 +17,7 @@ model Customer {
   updatedAt       DateTime @updatedAt
 
   bankConnections BankConnection[]
+  assessments     Assessment[]
 }
 
 model BankConnection {
@@ -33,6 +34,7 @@ model BankConnection {
   expenseData     BankExpenseReport?
   riskInsights    BankRiskInsights?
   bankReports     BankReports?
+  assessments     Assessment[]
 
   connectedAt     DateTime?
   dataRetrievedAt DateTime?
@@ -121,4 +123,48 @@ model BankReports {
   expiresAt              DateTime?
 
   @@index([bankConnectionId])
+}
+
+model Assessment {
+  id                String          @id @default(cuid())
+  customerId        String
+  customer          Customer        @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  bankConnectionId  String?
+  bankConnection    BankConnection? @relation(fields: [bankConnectionId], references: [id], onDelete: SetNull)
+
+  monthlyIncome     Float?
+  monthlyExpenses   Float?
+  monthlyBill       Float?
+  arrears           Float?
+
+  disposableIncome  Float?
+  billRatio         Float?
+  hardshipLevel     String?
+  sustainabilityScore String?
+
+  status            String          @default("PENDING")
+
+  assessmentJob     AssessmentJob?
+
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  @@index([customerId])
+  @@index([bankConnectionId])
+}
+
+model AssessmentJob {
+  id                String          @id @default(cuid())
+  assessmentId      String          @unique
+  assessment        Assessment      @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  status            String          @default("PENDING")
+  errorMessage      String?
+  retryCount        Int             @default(0)
+
+  createdAt         DateTime        @default(now())
+  processedAt       DateTime?
+
+  @@index([status])
 }
