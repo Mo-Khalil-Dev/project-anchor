@@ -9,6 +9,24 @@ import { StatCard } from '@/components/core/StatCard';
 import { CustomerLayout } from '@/components/layouts/CustomerLayout';
 import axiosInstance from '@/api/client';
 
+interface IncomeBreakdown {
+  salary: number;
+  pension: number;
+  benefits: number;
+  cashDeposits: number;
+  other: number;
+  total: number;
+}
+
+interface ExpenseBreakdown {
+  housing: number;
+  food: number;
+  utilities: number;
+  transport: number;
+  other: number;
+  total: number;
+}
+
 interface Assessment {
   id: string;
   customerId: string;
@@ -21,6 +39,8 @@ interface Assessment {
   sustainabilityScore: 'HIGH' | 'MEDIUM' | 'LOW';
   status: 'PENDING' | 'COMPLETED' | 'FAILED';
   arrears?: number | null;
+  incomeBreakdown?: IncomeBreakdown | null;
+  expenseBreakdown?: ExpenseBreakdown | null;
   calculatedAt: string;
 }
 
@@ -317,23 +337,45 @@ export function AssessmentOverview() {
             </div>
 
             <div className="section">
+              <div className="section-title">Income Sources</div>
+              <div className="expense-grid">
+                <div className="expense-item">
+                  <div className="expense-label">💼 Salary</div>
+                  <div className="expense-value">£{(assessment.incomeBreakdown?.salary || 0).toFixed(2)}</div>
+                </div>
+                <div className="expense-item">
+                  <div className="expense-label">🏦 Pension</div>
+                  <div className="expense-value">£{(assessment.incomeBreakdown?.pension || 0).toFixed(2)}</div>
+                </div>
+                <div className="expense-item">
+                  <div className="expense-label">🎁 Benefits</div>
+                  <div className="expense-value">£{(assessment.incomeBreakdown?.benefits || 0).toFixed(2)}</div>
+                </div>
+                <div className="expense-item">
+                  <div className="expense-label">💵 Other Income</div>
+                  <div className="expense-value">£{(assessment.incomeBreakdown?.other || 0).toFixed(2)}</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="section">
               <div className="section-title">Expense Breakdown</div>
               <div className="expense-grid">
                 <div className="expense-item">
                   <div className="expense-label">🏠 Housing</div>
-                  <div className="expense-value">£{assessment.monthlyExpenses * 0.35 | 0}</div>
+                  <div className="expense-value">£{(assessment.expenseBreakdown?.housing || assessment.monthlyExpenses * 0.35).toFixed(2)}</div>
                 </div>
                 <div className="expense-item">
                   <div className="expense-label">🍔 Food & Groceries</div>
-                  <div className="expense-value">£{assessment.monthlyExpenses * 0.20 | 0}</div>
+                  <div className="expense-value">£{(assessment.expenseBreakdown?.food || assessment.monthlyExpenses * 0.20).toFixed(2)}</div>
                 </div>
                 <div className="expense-item">
                   <div className="expense-label">⚡ Utilities</div>
-                  <div className="expense-value">£{assessment.monthlyExpenses * 0.10 | 0}</div>
+                  <div className="expense-value">£{(assessment.expenseBreakdown?.utilities || assessment.monthlyExpenses * 0.10).toFixed(2)}</div>
                 </div>
                 <div className="expense-item">
                   <div className="expense-label">🚗 Transport</div>
-                  <div className="expense-value">£{assessment.monthlyExpenses * 0.10 | 0}</div>
+                  <div className="expense-value">£{(assessment.expenseBreakdown?.transport || assessment.monthlyExpenses * 0.10).toFixed(2)}</div>
                 </div>
               </div>
             </div>

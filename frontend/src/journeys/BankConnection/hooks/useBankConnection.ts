@@ -47,6 +47,8 @@ export function useBankConnection() {
           totalIncome: response.totalIncome,
           totalExpenses: response.totalExpenses,
           assessmentId: response.assessmentId,
+          incomeBreakdown: response.incomeBreakdown,
+          expenseBreakdown: response.expenseBreakdown,
           expenseCheckReportId: expenseCheckId,
         })
       );

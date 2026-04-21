@@ -6,11 +6,31 @@ export interface InitiateBankResponse {
   state: string;
 }
 
+export interface IncomeBreakdown {
+  salary: number;
+  pension: number;
+  benefits: number;
+  cashDeposits: number;
+  other: number;
+  total: number;
+}
+
+export interface ExpenseBreakdown {
+  housing: number;
+  food: number;
+  utilities: number;
+  transport: number;
+  other: number;
+  total: number;
+}
+
 export interface HandleBankCallbackResponse {
   connectionId: string;
   totalExpenses: number;
   totalIncome: number;
   assessmentId: string;
+  incomeBreakdown: IncomeBreakdown;
+  expenseBreakdown: ExpenseBreakdown;
 }
 
 export async function initiateBank(): Promise<InitiateBankResponse> {

@@ -34,6 +34,24 @@ export interface AssessmentData {
   dataQuality: number;
 }
 
+export interface IncomeBreakdown {
+  salary: number;
+  pension: number;
+  benefits: number;
+  cashDeposits: number;
+  other: number;
+  total: number;
+}
+
+export interface ExpenseBreakdown {
+  housing: number;
+  food: number;
+  utilities: number;
+  transport: number;
+  other: number;
+  total: number;
+}
+
 export interface BankConnectionData {
   bankName?: string;
   transactions?: string;
@@ -46,6 +64,8 @@ export interface BankConnectionData {
   totalIncome?: number;
   totalExpenses?: number;
   assessmentId?: string;
+  incomeBreakdown?: IncomeBreakdown;
+  expenseBreakdown?: ExpenseBreakdown;
 }
 
 export interface BankError {
