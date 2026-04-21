@@ -32,6 +32,7 @@ model BankConnection {
   incomeData      BankIncomeReport?
   expenseData     BankExpenseReport?
   riskInsights    BankRiskInsights?
+  bankReports     BankReports?
 
   connectedAt     DateTime?
   dataRetrievedAt DateTime?
@@ -103,4 +104,21 @@ model BankRiskInsights {
   dataSource       String
   analysisDate     DateTime
   createdAt        DateTime        @default(now())
+}
+
+model BankReports {
+  id                     String          @id @default(cuid())
+  bankConnectionId       String          @unique
+  bankConnection         BankConnection  @relation(fields: [bankConnectionId], references: [id], onDelete: Cascade)
+
+  expensesJson           String
+  incomeJson             String
+
+  totalMonthlyExpenses   Float
+  totalMonthlyIncome     Float
+
+  createdAt              DateTime        @default(now())
+  expiresAt              DateTime?
+
+  @@index([bankConnectionId])
 }
