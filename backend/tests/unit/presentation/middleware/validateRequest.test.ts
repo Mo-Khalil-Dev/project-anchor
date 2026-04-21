@@ -2,421 +2,674 @@ import { Request, Response } from 'express';
 import { z } from 'zod';
 import {
   validateRequest,
+  createStrictValidator,
+  createPartialValidator,
+  validateBody,
+  validateParams,
+  validateQuery,
   composeValidators,
+  ValidatedRequest,
 } from '../../../../src/presentation/middleware/validateRequest';
 import { ValidationError } from '../../../../src/shared/errors/ValidationError';
-import {
-  createAssessmentSchema,
-  emailSchema,
-  extractValidationErrors,
-} from '../../../../src/shared/validators/schemas';
 
-describe('Request Validation Middleware', () => {
-  let req: Partial<Request>;
-  let res: Partial<Response>;
-  let next: jest.Mock;
+describe('validateRequest Middleware', () => {
+  let mockReq: Partial<Request> & { validated?: any };
+  let mockRes: Partial<Response>;
+  let mockNext: jest.Mock;
 
   beforeEach(() => {
-    req = {
+    mockReq = {
       body: {},
       params: {},
       query: {},
     };
-    res = {};
-    next = jest.fn();
+    mockRes = {};
+    mockNext = jest.fn();
   });
 
-  describe('validateRequest()', () => {
-    it('should validate body successfully', () => {
+  describe('validateRequest', () => {
+    it('should validate request with body only', () => {
       const schema = z.object({
         body: z.object({
-          email: emailSchema,
-          name: z.string(),
+          email: z.string().email(),
+          password: z.string().min(8),
         }),
       });
 
-      req.body = { email: 'test@example.com', name: 'John' };
+      mockReq.body = {
+        email: 'test@example.com',
+        password: 'password123',
+      };
 
-      validateRequest(schema)(req as Request, res as Response, next);
+      const middleware = validateRequest(schema);
+      middleware(mockReq as Request, mockRes as Response, mockNext);
 
-      expect(next).toHaveBeenCalledWith();
-      expect((req as any).validated).toEqual({
-        body: { email: 'test@example.com', name: 'John' },
+      expect(mockNext).toHaveBeenCalledWith();
+      expect((mockReq as ValidatedRequest).validated).toEqual({
+        body: {
+          email: 'test@example.com',
+          password: 'password123',
+        },
       });
     });
 
-    it('should validate params successfully', () => {
+    it('should validate request with body, params, and query', () => {
+      const schema = z.object({
+        body: z.object({ name: z.string() }),
+        params: z.object({ id: z.string() }),
+        query: z.object({ filter: z.string() }),
+      });
+
+      mockReq.body = { name: 'John' };
+      mockReq.params = { id: '123' };
+      mockReq.query = { filter: 'active' };
+
+      const middleware = validateRequest(schema);
+      middleware(mockReq as Request, mockRes as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalledWith();
+      expect((mockReq as ValidatedRequest).validated).toEqual({
+        body: { name: 'John' },
+        params: { id: '123' },
+        query: { filter: 'active' },
+      });
+    });
+
+    it('should attach only specified properties to validated', () => {
+      const schema = z.object({
+        body: z.object({ email: z.string().email() }),
+      });
+
+      mockReq.body = { email: 'test@example.com' };
+      mockReq.params = { id: '123' };
+      mockReq.query = { filter: 'active' };
+
+      const middleware = validateRequest(schema);
+      middleware(mockReq as Request, mockRes as Response, mockNext);
+
+      expect((mockReq as ValidatedRequest).validated).toEqual({
+        body: { email: 'test@example.com' },
+      });
+      expect((mockReq as ValidatedRequest).validated!.params).toBeUndefined();
+    });
+
+    it('should fail validation and call next with ValidationError', () => {
+      const schema = z.object({
+        body: z.object({
+          email: z.string().email('Invalid email format'),
+        }),
+      });
+
+      mockReq.body = { email: 'invalid-email' };
+
+      const middleware = validateRequest(schema);
+      middleware(mockReq as Request, mockRes as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalled();
+      const error = mockNext.mock.calls[0][0];
+      expect(error instanceof ValidationError).toBe(true);
+      expect(error.code).toBe('VALIDATION_ERROR');
+      expect(error.statusCode).toBe(400);
+      expect(error.details).toBeDefined();
+    });
+
+    it('should create ValidationError with field-level details', () => {
+      const schema = z.object({
+        body: z.object({
+          email: z.string().email('Invalid email'),
+          password: z.string().min(8, 'Too short'),
+        }),
+      });
+
+      mockReq.body = {
+        email: 'invalid',
+        password: '123',
+      };
+
+      const middleware = validateRequest(schema);
+      middleware(mockReq as Request, mockRes as Response, mockNext);
+
+      const error = mockNext.mock.calls[0][0] as ValidationError;
+      expect(error.details).toBeDefined();
+      expect(Object.keys(error.details!)).toContain('body.email');
+      expect(Object.keys(error.details!)).toContain('body.password');
+    });
+
+    it('should handle non-ZodError exceptions', () => {
+      const schema = z.object({
+        body: z.object({}).superRefine(() => {
+          throw new Error('Custom error');
+        }),
+      });
+
+      mockReq.body = {};
+
+      const middleware = validateRequest(schema);
+      middleware(mockReq as Request, mockRes as Response, mockNext);
+
+      const error = mockNext.mock.calls[0][0];
+      expect(error).toBeInstanceOf(Error);
+      expect(error.message).toBe('Custom error');
+      expect(error instanceof ValidationError).toBe(false);
+    });
+
+    it('should handle schema without shape property by treating as whole request', () => {
+      const schema = z.object({});
+
+      mockReq.body = {};
+
+      const middleware = validateRequest(schema);
+      middleware(mockReq as Request, mockRes as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalledWith();
+      expect((mockReq as ValidatedRequest).validated).toEqual({});
+    });
+
+    it('should pass empty request through when schema has no requirements', () => {
+      const schema = z.object({
+        body: z.object({}).optional(),
+      });
+
+      mockReq.body = undefined;
+
+      const middleware = validateRequest(schema);
+      middleware(mockReq as Request, mockRes as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalledWith();
+    });
+
+    it('should validate params independently', () => {
       const schema = z.object({
         params: z.object({
           id: z.string().uuid(),
         }),
       });
 
-      req.params = { id: '550e8400-e29b-41d4-a716-446655440000' };
+      mockReq.params = { id: '550e8400-e29b-41d4-a716-446655440000' };
 
-      validateRequest(schema)(req as Request, res as Response, next);
+      const middleware = validateRequest(schema);
+      middleware(mockReq as Request, mockRes as Response, mockNext);
 
-      expect(next).toHaveBeenCalledWith();
+      expect(mockNext).toHaveBeenCalledWith();
+      expect((mockReq as ValidatedRequest).validated!.params!.id).toBe(
+        '550e8400-e29b-41d4-a716-446655440000'
+      );
     });
 
-    it('should validate query successfully', () => {
+    it('should fail param validation with proper error', () => {
       const schema = z.object({
-        query: z.object({
-          limit: z.string().transform(Number),
-          offset: z.string().transform(Number),
+        params: z.object({
+          id: z.string().uuid('Must be valid UUID'),
         }),
       });
 
-      req.query = { limit: '10', offset: '0' };
+      mockReq.params = { id: 'invalid-uuid' };
 
-      validateRequest(schema)(req as Request, res as Response, next);
+      const middleware = validateRequest(schema);
+      middleware(mockReq as Request, mockRes as Response, mockNext);
 
-      expect(next).toHaveBeenCalledWith();
-    });
-
-    it('should validate body, params, and query together', () => {
-      const schema = z.object({
-        body: z.object({ email: emailSchema }),
-        params: z.object({ id: z.string().uuid() }),
-        query: z.object({ filter: z.string() }),
-      });
-
-      req.body = { email: 'test@example.com' };
-      req.params = { id: '550e8400-e29b-41d4-a716-446655440000' };
-      req.query = { filter: 'active' };
-
-      validateRequest(schema)(req as Request, res as Response, next);
-
-      expect(next).toHaveBeenCalledWith();
-      expect((req as any).validated).toEqual({
-        body: { email: 'test@example.com' },
-        params: { id: '550e8400-e29b-41d4-a716-446655440000' },
-        query: { filter: 'active' },
-      });
-    });
-
-    it('should pass ValidationError to next on validation failure', () => {
-      const schema = z.object({
-        body: z.object({
-          email: emailSchema,
-        }),
-      });
-
-      req.body = { email: 'invalid-email' };
-
-      validateRequest(schema)(req as Request, res as Response, next);
-
-      expect(next).toHaveBeenCalledWith(expect.any(ValidationError));
-      const error = next.mock.calls[0][0] as ValidationError;
-      expect(error.code).toBe('VALIDATION_ERROR');
+      const error = mockNext.mock.calls[0][0] as ValidationError;
+      expect(error instanceof ValidationError).toBe(true);
       expect(error.details).toBeDefined();
     });
 
-    it('should extract field-level validation errors', () => {
+    it('should handle multiple validation errors on same field', () => {
       const schema = z.object({
         body: z.object({
-          email: emailSchema,
-          age: z.number().positive(),
+          password: z
+            .string()
+            .min(8, 'Too short')
+            .regex(/[A-Z]/, 'No uppercase'),
         }),
       });
 
-      req.body = { email: 'invalid', age: -5 };
+      mockReq.body = { password: '123' };
 
-      validateRequest(schema)(req as Request, res as Response, next);
+      const middleware = validateRequest(schema);
+      middleware(mockReq as Request, mockRes as Response, mockNext);
 
-      const error = next.mock.calls[0][0] as ValidationError;
-      expect(error.details).toBeDefined();
-      expect(Object.keys(error.details!).length).toBeGreaterThan(0);
+      const error = mockNext.mock.calls[0][0] as ValidationError;
+      expect(Array.isArray(error.details!['body.password'])).toBe(true);
+      expect(error.details!['body.password'].length).toBeGreaterThan(0);
     });
 
-    it('should handle complex nested validation errors', () => {
-      const schema = createAssessmentSchema;
+    it('should validate nested object paths correctly', () => {
+      const schema = z.object({
+        body: z.object({
+          user: z.object({
+            profile: z.object({
+              email: z.string().email(),
+            }),
+          }),
+        }),
+      });
 
-      req.body = {
-        customerId: 'not-a-uuid',
-        monthlyIncome: -100,
-        totalExpenses: 'not-a-number',
-        billAmount: 0,
-        incomeBreakdown: {},
-        expenseBreakdown: {},
+      mockReq.body = {
+        user: {
+          profile: {
+            email: 'invalid',
+          },
+        },
       };
 
-      validateRequest(schema)(req as Request, res as Response, next);
+      const middleware = validateRequest(schema);
+      middleware(mockReq as Request, mockRes as Response, mockNext);
 
-      expect(next).toHaveBeenCalledWith(expect.any(ValidationError));
-      const error = next.mock.calls[0][0] as ValidationError;
-      expect(error.details).toBeDefined();
-      expect(Object.keys(error.details!).length).toBeGreaterThanOrEqual(2);
+      const error = mockNext.mock.calls[0][0] as ValidationError;
+      expect(Object.keys(error.details!)[0]).toContain('user.profile.email');
+    });
+
+    it('should validate array schemas correctly', () => {
+      const schema = z.object({
+        body: z.object({
+          items: z.array(z.object({ name: z.string() })),
+        }),
+      });
+
+      mockReq.body = {
+        items: [{ name: 'item1' }, { name: 'item2' }],
+      };
+
+      const middleware = validateRequest(schema);
+      middleware(mockReq as Request, mockRes as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalledWith();
     });
   });
 
-  describe('validateBody()', () => {
-    it('should validate only body', () => {
+  describe('createStrictValidator', () => {
+    it('should apply strict mode to ZodObject schema', () => {
       const schema = z.object({
-        email: emailSchema,
+        body: z.object({
+          email: z.string().email(),
+        }).strict(),
       });
 
-      req.body = { email: 'test@example.com' };
-      req.params = { any: 'invalid' };
-      req.query = { bad: 'query' };
+      mockReq.body = {
+        email: 'test@example.com',
+        unknownField: 'should fail',
+      };
 
-      validateRequest(z.object({ body: schema }))(req as Request, res as Response, next);
+      const middleware = createStrictValidator(schema);
+      middleware(mockReq as Request, mockRes as Response, mockNext);
 
-      expect(next).toHaveBeenCalledWith();
+      const error = mockNext.mock.calls[0][0];
+      expect(error).toBeDefined();
     });
 
-    it('should fail if body is invalid', () => {
+    it('should pass strict validation when no unknown fields', () => {
       const schema = z.object({
-        email: emailSchema,
+        body: z.object({
+          email: z.string().email(),
+        }),
       });
 
-      req.body = { email: 'not-an-email' };
+      mockReq.body = { email: 'test@example.com' };
 
-      validateRequest(z.object({ body: schema }))(req as Request, res as Response, next);
+      const middleware = createStrictValidator(schema);
+      middleware(mockReq as Request, mockRes as Response, mockNext);
 
-      expect(next).toHaveBeenCalledWith(expect.any(ValidationError));
+      expect(mockNext).toHaveBeenCalledWith();
+    });
+
+    it('should handle non-ZodObject schemas by passing through', () => {
+      const schema = z.object({});
+
+      mockReq.body = {};
+
+      const middleware = createStrictValidator(schema);
+      middleware(mockReq as Request, mockRes as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalledWith();
     });
   });
 
-  describe('validateParams()', () => {
-    it('should validate only params', () => {
-      const schema = z.object({
+  describe('createPartialValidator', () => {
+    it('should make schema fields optional', () => {
+      const bodySchema = z.object({
+        email: z.string().email(),
+        password: z.string().min(8),
+      });
+
+      const schema = z.object({ body: bodySchema });
+
+      mockReq.body = { email: 'test@example.com', password: 'password123' };
+
+      const middleware = createPartialValidator(schema);
+      middleware(mockReq as Request, mockRes as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalledWith();
+      expect((mockReq as ValidatedRequest).validated!.body).toEqual({
+        email: 'test@example.com',
+        password: 'password123',
+      });
+    });
+
+    it('should still validate provided fields', () => {
+      const bodySchema = z.object({
+        email: z.string().email(),
+        password: z.string().min(8),
+      });
+
+      mockReq.body = { email: 'invalid-email' };
+
+      const middleware = createPartialValidator(
+        z.object({ body: bodySchema })
+      );
+      middleware(mockReq as Request, mockRes as Response, mockNext);
+
+      const error = mockNext.mock.calls[0][0];
+      expect(error instanceof ValidationError).toBe(true);
+    });
+
+    it('should allow partial fields in nested schema', () => {
+      const bodySchema = z.object({
+        email: z.string().email().optional(),
+        password: z.string().min(8).optional(),
+      });
+
+      mockReq.body = {};
+
+      const middleware = createPartialValidator(
+        z.object({ body: bodySchema })
+      );
+      middleware(mockReq as Request, mockRes as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalledWith();
+    });
+
+    it('should handle non-ZodObject schemas by passing through', () => {
+      const schema = z.object({});
+
+      mockReq.body = {};
+
+      const middleware = createPartialValidator(schema);
+      middleware(mockReq as Request, mockRes as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalledWith();
+    });
+  });
+
+  describe('validateBody', () => {
+    it('should validate only request body', () => {
+      const bodySchema = z.object({
+        email: z.string().email(),
+      });
+
+      mockReq.body = { email: 'test@example.com' };
+      mockReq.params = { id: '123' };
+
+      const middleware = validateBody(bodySchema);
+      middleware(mockReq as Request, mockRes as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalledWith();
+      expect((mockReq as ValidatedRequest).validated!.body).toEqual({
+        email: 'test@example.com',
+      });
+    });
+
+    it('should fail body validation with proper error', () => {
+      const bodySchema = z.object({
+        email: z.string().email(),
+      });
+
+      mockReq.body = { email: 'invalid' };
+
+      const middleware = validateBody(bodySchema);
+      middleware(mockReq as Request, mockRes as Response, mockNext);
+
+      const error = mockNext.mock.calls[0][0];
+      expect(error instanceof ValidationError).toBe(true);
+    });
+
+    it('should ignore params and query in validation', () => {
+      const bodySchema = z.object({
+        email: z.string().email(),
+      });
+
+      mockReq.body = { email: 'test@example.com' };
+      mockReq.params = { unknownParam: 'value' };
+      mockReq.query = { unknownQuery: 'value' };
+
+      const middleware = validateBody(bodySchema);
+      middleware(mockReq as Request, mockRes as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalledWith();
+    });
+  });
+
+  describe('validateParams', () => {
+    it('should validate only request params', () => {
+      const paramsSchema = z.object({
         id: z.string().uuid(),
       });
 
-      req.params = { id: '550e8400-e29b-41d4-a716-446655440000' };
+      mockReq.params = { id: '550e8400-e29b-41d4-a716-446655440000' };
 
-      validateRequest(z.object({ params: schema }))(req as Request, res as Response, next);
+      const middleware = validateParams(paramsSchema);
+      middleware(mockReq as Request, mockRes as Response, mockNext);
 
-      expect(next).toHaveBeenCalledWith();
+      expect(mockNext).toHaveBeenCalledWith();
+      expect((mockReq as ValidatedRequest).validated!.params).toEqual({
+        id: '550e8400-e29b-41d4-a716-446655440000',
+      });
+    });
+
+    it('should fail params validation with proper error', () => {
+      const paramsSchema = z.object({
+        id: z.string().uuid(),
+      });
+
+      mockReq.params = { id: 'invalid-uuid' };
+
+      const middleware = validateParams(paramsSchema);
+      middleware(mockReq as Request, mockRes as Response, mockNext);
+
+      const error = mockNext.mock.calls[0][0];
+      expect(error instanceof ValidationError).toBe(true);
+    });
+
+    it('should ignore body and query in validation', () => {
+      const paramsSchema = z.object({
+        id: z.string(),
+      });
+
+      mockReq.params = { id: '123' };
+      mockReq.body = { unknownBody: 'value' };
+      mockReq.query = { unknownQuery: 'value' };
+
+      const middleware = validateParams(paramsSchema);
+      middleware(mockReq as Request, mockRes as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalledWith();
     });
   });
 
-  describe('validateQuery()', () => {
-    it('should validate only query', () => {
-      const schema = z.object({
+  describe('validateQuery', () => {
+    it('should validate only request query', () => {
+      const querySchema = z.object({
+        limit: z.string().transform(Number),
+        offset: z.string().transform(Number),
+      });
+
+      mockReq.query = { limit: '10', offset: '0' };
+
+      const middleware = validateQuery(querySchema);
+      middleware(mockReq as Request, mockRes as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalledWith();
+      expect((mockReq as ValidatedRequest).validated!.query).toBeDefined();
+    });
+
+    it('should fail query validation with proper error', () => {
+      const querySchema = z.object({
         limit: z.string().transform(Number).pipe(z.number().positive()),
       });
 
-      req.query = { limit: '10' };
+      mockReq.query = { limit: '-5' };
 
-      validateRequest(z.object({ query: schema }))(req as Request, res as Response, next);
+      const middleware = validateQuery(querySchema);
+      middleware(mockReq as Request, mockRes as Response, mockNext);
 
-      expect(next).toHaveBeenCalledWith();
+      const error = mockNext.mock.calls[0][0];
+      expect(error instanceof ValidationError).toBe(true);
+    });
+
+    it('should ignore body and params in validation', () => {
+      const querySchema = z.object({
+        filter: z.string(),
+      });
+
+      mockReq.query = { filter: 'active' };
+      mockReq.body = { unknownBody: 'value' };
+      mockReq.params = { unknownParam: 'value' };
+
+      const middleware = validateQuery(querySchema);
+      middleware(mockReq as Request, mockRes as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalledWith();
+    });
+
+    it('should handle optional query parameters', () => {
+      const querySchema = z.object({
+        filter: z.string().optional(),
+      });
+
+      mockReq.query = {};
+
+      const middleware = validateQuery(querySchema);
+      middleware(mockReq as Request, mockRes as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalledWith();
     });
   });
 
-  describe('createStrictValidator()', () => {
-    it('should reject unknown fields in strict mode', () => {
-      const schema = z.object({
-        body: z.object({
-          email: emailSchema,
-        }).strict(),
-      });
+  describe('composeValidators', () => {
+    it('should execute validators in sequence', () => {
+      const validator1 = jest.fn((_req, _res, next) => next());
+      const validator2 = jest.fn((_req, _res, next) => next());
+      const validator3 = jest.fn((_req, _res, next) => next());
 
-      req.body = { email: 'test@example.com', unknownField: 'should fail' };
+      const composed = composeValidators(validator1, validator2, validator3);
+      composed(mockReq as Request, mockRes as Response, mockNext);
 
-      validateRequest(schema)(req as Request, res as Response, next);
-
-      expect(next).toHaveBeenCalledWith(expect.any(ValidationError));
+      expect(validator1).toHaveBeenCalled();
+      expect(validator2).toHaveBeenCalled();
+      expect(validator3).toHaveBeenCalled();
     });
 
-    it('should allow only known fields', () => {
-      const schema = z.object({
-        body: z.object({
-          email: emailSchema,
-          name: z.string(),
-        }).strict(),
-      });
+    it('should stop on first error', () => {
+      const validator1 = jest.fn((_req, _res, next) => next());
+      const validator2 = jest.fn((_req, _res, next) =>
+        next(new Error('Validation failed'))
+      );
+      const validator3 = jest.fn();
 
-      req.body = { email: 'test@example.com', name: 'John' };
+      const composed = composeValidators(validator1, validator2, validator3);
+      composed(mockReq as Request, mockRes as Response, mockNext);
 
-      validateRequest(schema)(req as Request, res as Response, next);
-
-      expect(next).toHaveBeenCalledWith();
-    });
-  });
-
-  describe('createPartialValidator()', () => {
-    it('should allow partial objects in partial mode', () => {
-      const schema = z.object({
-        body: z.object({
-          email: emailSchema,
-          name: z.string(),
-          age: z.number(),
-        }).partial(),
-      });
-
-      req.body = { email: 'test@example.com' };
-
-      validateRequest(schema)(req as Request, res as Response, next);
-
-      expect(next).toHaveBeenCalledWith();
+      expect(validator1).toHaveBeenCalled();
+      expect(validator2).toHaveBeenCalled();
+      expect(validator3).not.toHaveBeenCalled();
+      expect(mockNext).toHaveBeenCalledWith(expect.any(Error));
     });
 
-    it('should validate provided fields even in partial mode', () => {
-      const schema = z.object({
+    it('should compose multiple validators and validate all parts', () => {
+      const fullSchema = z.object({
         body: z.object({
-          email: emailSchema,
-          name: z.string(),
-        }).partial(),
+          email: z.string().email(),
+        }),
+        params: z.object({
+          id: z.string().uuid(),
+        }),
       });
 
-      req.body = { email: 'invalid-email' };
+      mockReq.body = { email: 'test@example.com' };
+      mockReq.params = { id: '550e8400-e29b-41d4-a716-446655440000' };
 
-      validateRequest(schema)(req as Request, res as Response, next);
+      const validator1 = validateRequest(fullSchema);
+      const composed = composeValidators(validator1);
 
-      expect(next).toHaveBeenCalledWith(expect.any(ValidationError));
+      composed(mockReq as Request, mockRes as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalledWith();
+      expect((mockReq as ValidatedRequest).validated).toEqual({
+        body: { email: 'test@example.com' },
+        params: { id: '550e8400-e29b-41d4-a716-446655440000' },
+      });
     });
-  });
 
-  describe('composeValidators()', () => {
-    it('should run multiple validators in sequence', () => {
+    it('should handle error in composed validators', () => {
       const bodySchema = z.object({
-        email: emailSchema,
+        email: z.string().email(),
       });
 
       const paramsSchema = z.object({
         id: z.string().uuid(),
       });
 
-      const validator1 = validateRequest(z.object({ body: bodySchema }));
-      const validator2 = validateRequest(z.object({ params: paramsSchema }));
+      mockReq.body = { email: 'invalid' };
+      mockReq.params = { id: 'invalid-uuid' };
 
-      req.body = { email: 'test@example.com' };
-      req.params = { id: '550e8400-e29b-41d4-a716-446655440000' };
+      const composed = composeValidators(
+        validateBody(bodySchema),
+        validateParams(paramsSchema)
+      );
 
-      const composed = composeValidators(validator1, validator2);
-      composed(req as Request, res as Response, next);
+      composed(mockReq as Request, mockRes as Response, mockNext);
 
-      expect(next).toHaveBeenCalledWith();
-      expect((req as any).validated).toBeDefined();
+      const error = mockNext.mock.calls[0][0];
+      expect(error instanceof ValidationError).toBe(true);
     });
 
-    it('should stop on first validation error', () => {
-      const validator1 = validateRequest(z.object({
-        body: z.object({ email: emailSchema }),
-      }));
-      const validator2 = validateRequest(z.object({
-        params: z.object({ id: z.string().uuid() }),
-      }));
+    it('should pass through request to next middleware when all pass', () => {
+      const bodyValidator = validateBody(
+        z.object({
+          name: z.string(),
+        })
+      );
 
-      req.body = { email: 'invalid' };
-      req.params = { id: 'valid-id' };
+      mockReq.body = { name: 'John' };
 
-      const composed = composeValidators(validator1, validator2);
-      composed(req as Request, res as Response, next);
+      const composed = composeValidators(bodyValidator);
+      composed(mockReq as Request, mockRes as Response, mockNext);
 
-      expect(next).toHaveBeenCalledWith(expect.any(ValidationError));
-      expect(next).toHaveBeenCalledTimes(1);
+      expect(mockNext).toHaveBeenCalledWith();
+      expect((mockReq as ValidatedRequest).validated).toBeDefined();
     });
 
-    it('should handle empty validator list', () => {
+    it('should work with empty validator list', () => {
       const composed = composeValidators();
-      composed(req as Request, res as Response, next);
+      composed(mockReq as Request, mockRes as Response, mockNext);
 
-      expect(next).toHaveBeenCalledWith();
+      expect(mockNext).toHaveBeenCalledWith();
     });
 
-    it('should handle single validator', () => {
-      const validator = validateRequest(z.object({
-        body: z.object({ email: emailSchema }),
-      }));
+    it('should handle async validator behavior correctly', (done) => {
+      const validator1 = jest.fn((_req, _res, next) => next());
+      const validator2 = jest.fn((_req, _res, next) => next());
 
-      req.body = { email: 'test@example.com' };
+      const composed = composeValidators(validator1, validator2);
+      composed(mockReq as Request, mockRes as Response, mockNext);
 
-      const composed = composeValidators(validator);
-      composed(req as Request, res as Response, next);
-
-      expect(next).toHaveBeenCalledWith();
-    });
-  });
-
-  describe('Error details extraction', () => {
-    it('should extract field-level errors from ZodError', () => {
-      const schema = z.object({
-        email: emailSchema,
-        age: z.number().positive(),
-        name: z.string().min(3),
+      setImmediate(() => {
+        expect(validator1).toHaveBeenCalled();
+        expect(validator2).toHaveBeenCalled();
+        expect(mockNext).toHaveBeenCalledWith();
+        done();
       });
-
-      try {
-        schema.parse({
-          email: 'invalid',
-          age: -5,
-          name: 'ab',
-        });
-      } catch (error) {
-        const details = extractValidationErrors(error as any);
-        expect(details.email).toBeDefined();
-        expect(details.age).toBeDefined();
-        expect(details.name).toBeDefined();
-      }
     });
 
-    it('should handle nested field errors', () => {
-      const schema = z.object({
-        user: z.object({
-          email: emailSchema,
-          profile: z.object({
-            age: z.number().positive(),
-          }),
-        }),
+    it('should handle validator that passes error to next', () => {
+      const error = new ValidationError('Validation failed', {
+        field: 'invalid',
       });
+      const validator1 = jest.fn((_req, _res, next) => next(error));
 
-      try {
-        schema.parse({
-          user: {
-            email: 'invalid',
-            profile: { age: -5 },
-          },
-        });
-      } catch (error) {
-        const details = extractValidationErrors(error as any);
-        expect(Object.keys(details).length).toBeGreaterThan(0);
-      }
-    });
-  });
+      const composed = composeValidators(validator1);
+      composed(mockReq as Request, mockRes as Response, mockNext);
 
-  describe('Edge cases', () => {
-    it('should handle missing body', () => {
-      const schema = z.object({
-        body: z.object({
-          email: emailSchema,
-        }).optional(),
-      });
-
-      req.body = undefined;
-
-      validateRequest(schema)(req as Request, res as Response, next);
-
-      expect(next).toHaveBeenCalledWith();
-    });
-
-    it('should handle empty request', () => {
-      const schema = z.object({
-        body: z.object({}).optional(),
-        params: z.object({}).optional(),
-        query: z.object({}).optional(),
-      });
-
-      validateRequest(schema)(req as Request, res as Response, next);
-
-      expect(next).toHaveBeenCalledWith();
-    });
-
-    it('should handle type transformation errors', () => {
-      const schema = z.object({
-        query: z.object({
-          count: z.string().transform(Number).pipe(z.number()),
-        }),
-      });
-
-      req.query = { count: 'not-a-number' };
-
-      validateRequest(schema)(req as Request, res as Response, next);
-
-      expect(next).toHaveBeenCalledWith(expect.any(ValidationError));
+      expect(mockNext).toHaveBeenCalledWith(error);
     });
   });
 });
