@@ -1,6 +1,6 @@
 ---
 name: PROJECT BRIDGE Overview
-description: Hardship assessment platform for UK utilities — 7 epics, customer + admin flows, 37 UI screens
+description: Hardship assessment platform for UK utilities — 7 epics, customer + admin flows, 37 UI journeys
 type: project
 ---
 
