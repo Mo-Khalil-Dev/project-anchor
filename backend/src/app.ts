@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import { globalErrorHandler } from './presentation/middleware';
 import { createBankConnectionRoutes } from './presentation/routes/bankConnection.routes';
+import { createAssessmentRoutes } from './presentation/routes/assessment.routes';
 import type { AppConfig } from './shared/config';
 import type { ILogger } from './shared/logging';
 
@@ -49,6 +50,7 @@ export function createApp(config: AppConfig, logger: ILogger): Express {
 
   // API Routes
   app.use('/api/bank-connections', createBankConnectionRoutes(config, logger));
+  app.use('/api', createAssessmentRoutes());
 
   // ============ ERROR HANDLING ============
 

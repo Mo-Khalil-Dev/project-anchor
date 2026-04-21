@@ -84,7 +84,7 @@ export class ProcessAssessmentJobService {
       const income = incomeResult.getOrThrow();
       const expenses = expenseResult.getOrThrow();
 
-      // Create updated assessment with calculated figures
+      // Create updated assessment with calculated figures and breakdown data
       const updatedAssessment = new (require('../../domain/entities/Assessment.entity').Assessment)({
         id: assessment.getId(),
         customerId: assessment.getCustomerId(),
@@ -93,6 +93,8 @@ export class ProcessAssessmentJobService {
         monthlyExpenses: expenses.total,
         monthlyBill: assessment.getMonthlyBill(),
         arrears: assessment.getArrears(),
+        incomeBreakdown: JSON.stringify(income),
+        expenseBreakdown: JSON.stringify(expenses),
         status: 'COMPLETED',
         createdAt: assessment.getCreatedAt(),
         updatedAt: new Date(),

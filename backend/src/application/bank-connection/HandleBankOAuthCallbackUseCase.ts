@@ -3,7 +3,7 @@ import { Result } from '../../shared/result';
 import type { IBankConnectionRepository } from '../../domain/bank-connection/IBankConnectionRepository';
 import type { ILogger } from '../../shared/logging';
 import type { TinkOAuthService } from '../../infrastructure/services/TinkOAuthService';
-import { BankDataExtractionService } from '../../infrastructure/services/BankDataExtractionService';
+import { BankDataExtractionService, IncomeBreakdown, ExpenseBreakdown } from '../../infrastructure/services/BankDataExtractionService';
 import { Assessment } from '../../domain/entities/Assessment.entity';
 import { ProcessAssessmentJobService } from '../services/ProcessAssessmentJobService';
 
@@ -28,6 +28,8 @@ export class HandleBankOAuthCallbackUseCase {
         totalExpenses: number;
         totalIncome: number;
         assessmentId: string;
+        incomeBreakdown: IncomeBreakdown;
+        expenseBreakdown: ExpenseBreakdown;
       },
       Error
     >
@@ -169,6 +171,8 @@ export class HandleBankOAuthCallbackUseCase {
         totalExpenses: expenses.total,
         totalIncome: income.total,
         assessmentId,
+        incomeBreakdown: income,
+        expenseBreakdown: expenses,
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);

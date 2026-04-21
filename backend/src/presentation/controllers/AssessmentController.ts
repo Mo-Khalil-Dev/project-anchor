@@ -32,6 +32,13 @@ export class AssessmentController {
         return;
       }
 
+      const incomeBreakdown = assessment.getIncomeBreakdown()
+        ? JSON.parse(assessment.getIncomeBreakdown()!)
+        : null;
+      const expenseBreakdown = assessment.getExpenseBreakdown()
+        ? JSON.parse(assessment.getExpenseBreakdown()!)
+        : null;
+
       const response = {
         id: assessment.getId(),
         customerId: assessment.getCustomerId(),
@@ -45,6 +52,8 @@ export class AssessmentController {
         sustainabilityScore: assessment.getSustainabilityScore(),
         status: assessment.getStatus(),
         arrears: assessment.getArrears(),
+        incomeBreakdown,
+        expenseBreakdown,
         calculatedAt: assessment.getUpdatedAt().toISOString(),
       };
 

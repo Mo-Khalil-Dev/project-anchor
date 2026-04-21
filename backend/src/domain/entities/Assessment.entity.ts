@@ -10,6 +10,8 @@ export interface AssessmentProps {
   monthlyExpenses: number;
   monthlyBill: number;
   arrears?: number | null;
+  incomeBreakdown?: string | null;
+  expenseBreakdown?: string | null;
   status: AssessmentStatus;
   createdAt: Date;
   updatedAt: Date;
@@ -23,6 +25,8 @@ export class Assessment {
   private readonly monthlyExpenses: number;
   private readonly monthlyBill: number;
   private readonly arrears: number | null;
+  private readonly incomeBreakdown: string | null;
+  private readonly expenseBreakdown: string | null;
   private readonly createdAt: Date;
   private updatedAt: Date;
   private status: AssessmentStatus;
@@ -35,6 +39,8 @@ export class Assessment {
     this.monthlyExpenses = props.monthlyExpenses;
     this.monthlyBill = props.monthlyBill;
     this.arrears = props.arrears ?? null;
+    this.incomeBreakdown = props.incomeBreakdown ?? null;
+    this.expenseBreakdown = props.expenseBreakdown ?? null;
     this.status = props.status;
     this.createdAt = props.createdAt;
     this.updatedAt = props.updatedAt;
@@ -75,6 +81,14 @@ export class Assessment {
 
   getArrears(): number | null {
     return this.arrears;
+  }
+
+  getIncomeBreakdown(): string | null {
+    return this.incomeBreakdown;
+  }
+
+  getExpenseBreakdown(): string | null {
+    return this.expenseBreakdown;
   }
 
   getStatus(): AssessmentStatus {
