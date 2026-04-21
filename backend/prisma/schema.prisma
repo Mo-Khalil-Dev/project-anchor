@@ -143,6 +143,9 @@ model Assessment {
   hardshipLevel     String?
   sustainabilityScore String?
 
+  incomeBreakdown   String?         // JSON: { salary, pension, benefits, cashDeposits, other, total }
+  expenseBreakdown  String?         // JSON: { housing, food, utilities, transport, other, total }
+
   status            String          @default("PENDING")
 
   assessmentJob     AssessmentJob?
