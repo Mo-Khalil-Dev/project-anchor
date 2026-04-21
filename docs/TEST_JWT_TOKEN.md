@@ -10,29 +10,29 @@
 
 ### 1. Header Creation
 ```typescript
-const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64');
+const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
 ```
 - Creates a JWT header object with algorithm (`HS256`) and type (`JWT`)
-- Converts to JSON, then Base64-encodes it
+- Converts to JSON, then Base64-encodes using `btoa()` (browser's native Base64 function)
 - Result: Standard JWT header format
 
 ### 2. Payload Creation
 ```typescript
-const payload = Buffer.from(
+const payload = btoa(
   JSON.stringify({
     sub: 'test-customer-123',
     email: 'test@example.com',
     iat: Math.floor(Date.now() / 1000),
     exp: Math.floor(Date.now() / 1000) + 86400 * 365,
   })
-).toString('base64');
+);
 ```
 - Creates token payload with:
   - `sub`: Subject (customer ID) = `test-customer-123`
   - `email`: Test email address
   - `iat`: Issued-at time (current Unix timestamp)
   - `exp`: Expiration time (1 year from now = very long-lived)
-- Converts to JSON, then Base64-encodes it
+- Converts to JSON, then Base64-encodes using `btoa()` (browser's native Base64 function)
 
 ### 3. Signature Creation
 ```typescript
@@ -68,6 +68,10 @@ return token;
 - Test customer data embedded
 - No cryptographic validation needed
 - Persisted in localStorage for axios interceptor to use
+
+## Browser Compatibility
+
+**btoa() vs Buffer**: This function uses `btoa()` (browser's native Base64 encoding) instead of Node.js `Buffer`. This allows the code to run in the browser without errors. `btoa()` is available in all modern browsers.
 
 ## Related Functions
 

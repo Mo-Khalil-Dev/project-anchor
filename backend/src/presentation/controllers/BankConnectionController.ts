@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
+import { v4 as uuidv4 } from 'uuid';
 import type { InitiateBankOAuthUseCase } from '../../application/bank-connection/InitiateBankOAuthUseCase';
 import type { HandleBankOAuthCallbackUseCase } from '../../application/bank-connection/HandleBankOAuthCallbackUseCase';
-import type { AuthenticatedRequest } from '../middleware/auth.middleware';
 import { ApplicationError } from '../../shared/errors/ApplicationError';
 
 export class BankConnectionController {
@@ -10,11 +10,8 @@ export class BankConnectionController {
     private handleCallbackUseCase: HandleBankOAuthCallbackUseCase,
   ) {}
 
-  async initiateOAuthFlow(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
-    const customerId = req.customer?.id;
-    if (!customerId) {
-      return next(new ApplicationError('MISSING_CUSTOMER', 'Missing customer context', 401));
-    }
+  async initiateOAuthFlow(_: Request, res: Response, next: NextFunction): Promise<void> {
+    const customerId = uuidv4();
 
     const result = await this.initiateOAuth.execute(customerId);
     result.match(

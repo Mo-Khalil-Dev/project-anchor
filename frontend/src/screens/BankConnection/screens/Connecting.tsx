@@ -14,14 +14,9 @@ export function Connecting() {
       setTimeout(() => setStep(1), 1600),
       setTimeout(() => setStep(2), 3400),
       setTimeout(() => setStep(3), 5200),
-      setTimeout(() => {
-        if (currentJourneyState === 'connecting') {
-          dispatch(setBankJourneyState('success'));
-        }
-      }, 6200),
     ];
     return () => t.forEach(clearTimeout);
-  }, [dispatch, currentJourneyState]);
+  }, []);
 
   return (
     <CustomerLayout currentStep={3} totalSteps={4}>

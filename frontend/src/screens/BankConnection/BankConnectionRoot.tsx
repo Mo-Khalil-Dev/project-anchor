@@ -3,7 +3,6 @@ import { useSearchParams } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '@/store';
 import { setBankJourneyState } from '@/store/slices/customerSlice';
 import { useBankConnection } from './hooks/useBankConnection';
-import { setTestJwtToken } from '@/utils/auth';
 import { Intro } from './screens/Intro';
 import { Privacy } from './screens/Privacy';
 import { YouAreBeingDirected } from './screens/YouAreBeingDirected';
@@ -17,13 +16,6 @@ export function BankConnectionRoot() {
   const journeyState = useAppSelector((s) => s.customer.bankJourneyState);
   const { handleCallback } = useBankConnection();
   const callbackProcessedRef = useRef(false);
-
-  // Set test JWT token on mount (development/testing)
-  useEffect(() => {
-    if (!localStorage.getItem('auth_token')) {
-      setTestJwtToken();
-    }
-  }, []);
 
   // Handle OAuth callback - extract expense_check_id and state from Tink redirect
   useEffect(() => {
