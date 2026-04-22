@@ -1,6 +1,7 @@
 import { useAppDispatch, useAppSelector } from '@/store';
 import { setBankJourneyState, resetBankJourney } from '@/store/slices/customerSlice';
 import { Button } from '@/components/core/Button';
+import { AlertTriangleIcon } from '@/components/core/icons';
 import { CustomerLayout } from '@/components/layouts/CustomerLayout';
 
 export function Error() {
@@ -139,11 +140,7 @@ export function Error() {
       <div className="page">
         <div className="card">
           <div className="alert-icon">
-            <svg className="alert-svg" viewBox="0 0 40 40" fill="none">
-              <path d="M20 4L4 34h32L20 4z" fill="#fee" stroke="#c0392b" strokeWidth="2.5" strokeLinejoin="round"/>
-              <path d="M20 15v10" stroke="#c0392b" strokeWidth="2.5" strokeLinecap="round"/>
-              <circle cx="20" cy="29" r="1.8" fill="#c0392b"/>
-            </svg>
+            <AlertTriangleIcon className="alert-svg" />
           </div>
           <h2 className="heading">Connection Failed</h2>
           <p className="subheading">

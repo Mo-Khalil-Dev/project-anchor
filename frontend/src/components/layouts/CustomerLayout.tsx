@@ -1,5 +1,6 @@
 import React from 'react';
 import { cn } from '@/lib/cn';
+import { BridgeLogo } from '@/components/core/icons';
 
 interface CustomerLayoutProps {
   children: React.ReactNode;
@@ -7,48 +8,6 @@ interface CustomerLayoutProps {
   totalSteps?: number;
   className?: string;
 }
-
-const BridgeLogo = () => (
-  <svg width="32" height="20" viewBox="0 0 60 37" fill="none">
-    <path d="M2 31h56" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
-    <path d="M10 31V19" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
-    <path d="M50 31V19" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
-    <path
-      d="M10 19C10 19 18 7 30 7C42 7 50 19 50 19"
-      stroke="white"
-      strokeWidth="3.5"
-      strokeLinecap="round"
-      fill="none"
-    />
-    <line
-      x1="20"
-      y1="31"
-      x2="20"
-      y2="21"
-      stroke="rgba(255,255,255,0.6)"
-      strokeWidth="2.5"
-      strokeLinecap="round"
-    />
-    <line
-      x1="30"
-      y1="31"
-      x2="30"
-      y2="15"
-      stroke="rgba(255,255,255,0.6)"
-      strokeWidth="2.5"
-      strokeLinecap="round"
-    />
-    <line
-      x1="40"
-      y1="31"
-      x2="40"
-      y2="21"
-      stroke="rgba(255,255,255,0.6)"
-      strokeWidth="2.5"
-      strokeLinecap="round"
-    />
-  </svg>
-);
 
 export const CustomerLayout: React.FC<CustomerLayoutProps> = ({
   children,

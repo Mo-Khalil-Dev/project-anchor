@@ -1,5 +1,6 @@
 import { Button } from '@/components/core/Button';
 import { HardshipBadge } from '@/components/core/HardshipBadge';
+import { ClockIcon, XCircleIcon } from '@/components/core/icons';
 import { CustomerLayout } from '@/components/layouts/CustomerLayout';
 import { useOverview } from './useOverview';
 import styles from './Overview.module.css';
@@ -49,21 +50,14 @@ export function AssessmentOverview() {
 
           {isPending && (
             <div className={styles.pendingMessage}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <circle cx="12" cy="12" r="10" />
-                <polyline points="12 6 12 12 16 14" />
-              </svg>
+              <ClockIcon />
               Your assessment is still calculating. We're analysing your financial situation...
             </div>
           )}
 
           {isFailed && (
             <div className={styles.failedMessage}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <circle cx="12" cy="12" r="10" />
-                <line x1="15" y1="9" x2="9" y2="15" />
-                <line x1="9" y1="9" x2="15" y2="15" />
-              </svg>
+              <XCircleIcon />
               Assessment calculation failed. Please try again or contact support.
             </div>
           )}

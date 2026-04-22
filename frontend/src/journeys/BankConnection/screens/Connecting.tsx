@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { CheckIcon, HourglassIcon } from '@/components/core/icons';
 import { CustomerLayout } from '@/components/layouts/CustomerLayout';
 
 export function Connecting() {
@@ -204,13 +205,7 @@ export function Connecting() {
       <div className="page">
         <div className="card">
           <div className="spinner">
-            <svg className="spinner-svg" viewBox="0 0 44 44" fill="none">
-              <path d="M8 4h28l-9 16H17L8 4z" fill="#f0f0ff" stroke="#5b5bd6" strokeWidth="1.8" strokeLinejoin="round"/>
-              <path d="M8 40h28l-9-16H17L8 40z" fill="#f0f0ff" stroke="#5b5bd6" strokeWidth="1.8" strokeLinejoin="round"/>
-              <path d="M17 24s1.5 3 5 3 5-3 5-3" stroke="#5b5bd6" strokeWidth="1.4" strokeLinecap="round" fill="none"/>
-              <line x1="7" y1="4" x2="37" y2="4" stroke="#5b5bd6" strokeWidth="2.2" strokeLinecap="round"/>
-              <line x1="7" y1="40" x2="37" y2="40" stroke="#5b5bd6" strokeWidth="2.2" strokeLinecap="round"/>
-            </svg>
+            <HourglassIcon className="spinner-svg" />
           </div>
           <h2 className="heading">Connecting to your bank...</h2>
           <p className="description">This usually takes 30–60 seconds. Please don't close this window.</p>
@@ -225,9 +220,7 @@ export function Connecting() {
                 >
                   {isCompleted ? (
                     <div className="step-indicator completed">
-                      <svg viewBox="0 0 10 8" fill="none">
-                        <path d="M1 4l3 3 5-6" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
+                      <CheckIcon stroke="#fff" />
                     </div>
                   ) : isActive ? (
                     <div className="step-indicator active" />

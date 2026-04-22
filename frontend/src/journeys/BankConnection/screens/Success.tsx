@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '@/store';
 import { setCurrentStep } from '@/store/slices/customerSlice';
 import { Button } from '@/components/core/Button';
+import { CheckmarkIcon } from '@/components/core/icons';
 import { CustomerLayout } from '@/components/layouts/CustomerLayout';
 
 export function Success() {
@@ -136,9 +137,7 @@ export function Success() {
       <div className="page">
         <div className="card">
           <div className="checkmark-icon">
-            <svg className="checkmark-svg" viewBox="0 0 40 30" fill="none">
-              <path d="M3 15l12 12L37 3" stroke="#1e7d3f" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+            <CheckmarkIcon className="checkmark-svg" />
           </div>
           <h2 className="heading">Bank Connected!</h2>
           <p className="subheading">

@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useAppSelector } from '@/store';
+import { ClockSpinnerIcon } from '@/components/core/icons';
 import { CustomerLayout } from '@/components/layouts/CustomerLayout';
 
 export function YouAreBeingDirected() {
@@ -97,10 +98,7 @@ export function YouAreBeingDirected() {
       <div className="page">
         <div className="card">
           <div className="spinner">
-            <svg className="spinner-svg" viewBox="0 0 36 36" fill="none">
-              <circle cx="18" cy="18" r="14" stroke="#5b5bd6" strokeWidth="2" strokeDasharray="6 4" style={{animation:'spinHG 3s linear infinite',transformOrigin:'18px 18px'}}/>
-              <path d="M18 10v8l5 5" stroke="#5b5bd6" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+            <ClockSpinnerIcon className="spinner-svg" />
           </div>
           <h2 className="heading">Opening Tink…</h2>
           <p className="description">

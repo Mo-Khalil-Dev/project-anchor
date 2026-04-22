@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAppDispatch } from '@/store';
 import { setBankJourneyState } from '@/store/slices/customerSlice';
 import { Button } from '@/components/core/Button';
+import { ShieldCheckIcon } from '@/components/core/icons';
 import { CustomerLayout } from '@/components/layouts/CustomerLayout';
 import { useBankConnection } from '../hooks/useBankConnection';
 
@@ -255,10 +256,7 @@ export function Privacy() {
           <div className="card info-card">
             <div className="info-card-header">
               <div className="info-card-icon">
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                  <path d="M9 2L3 5v5c0 3.3 2.7 6.4 6 7 3.3-.6 6-3.7 6-7V5L9 2z" stroke="#5b5bd6" strokeWidth="1.6" fill="#f0f0ff" strokeLinejoin="round"/>
-                  <path d="M6 9l2 2 4-4" stroke="#5b5bd6" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
+                <ShieldCheckIcon />
               </div>
               <div className="info-card-title">Your data is secure</div>
             </div>

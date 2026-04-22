@@ -1,6 +1,7 @@
 import { useAppDispatch } from '@/store';
 import { setBankJourneyState } from '@/store/slices/customerSlice';
 import { Button } from '@/components/core/Button';
+import { BuildingIcon, CheckIcon, ShieldIcon } from '@/components/core/icons';
 import { CustomerLayout } from '@/components/layouts/CustomerLayout';
 
 export function Intro() {
@@ -234,16 +235,7 @@ export function Intro() {
         <div className="hero">
           <div className="hero-content">
             <div style={{ marginBottom: '20px' }}>
-              <svg width="36" height="32" viewBox="0 0 48 44" fill="none">
-                <rect x="2" y="18" width="44" height="6" rx="3" fill="rgba(255,255,255,0.25)" />
-                <rect x="2" y="36" width="44" height="6" rx="3" fill="white" />
-                <rect x="6" y="24" width="6" height="12" rx="2" fill="white" />
-                <rect x="17" y="24" width="6" height="12" rx="2" fill="white" />
-                <rect x="28" y="24" width="6" height="12" rx="2" fill="white" />
-                <rect x="39" y="24" width="6" height="12" rx="2" fill="white" />
-                <path d="M2 18L24 4l22 14H2z" fill="white" />
-                <circle cx="24" cy="12" r="3" fill="rgba(255,255,255,0.5)" />
-              </svg>
+              <BuildingIcon />
             </div>
             <h1 className="hero-title">Connect Your Bank Account</h1>
             <p className="hero-subtitle">
@@ -263,9 +255,7 @@ export function Intro() {
             ].map(({ title, desc }) => (
               <div key={title} className="value-prop">
                 <div className="value-prop-icon">
-                  <svg width="14" height="12" viewBox="0 0 14 12" fill="none">
-                    <path d="M1 6l4 4 8-8" stroke="#5b5bd6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
+                  <CheckIcon width={14} height={12} />
                 </div>
                 <div className="value-prop-text">
                   <div className="value-prop-title">{title}</div>
@@ -319,13 +309,7 @@ export function Intro() {
 
         {/* Trust Footer */}
         <div className="trust-footer">
-          <svg width="12" height="14" viewBox="0 0 12 14" fill="none">
-            <path
-              d="M6 1L1 3.5v4c0 2.76 2.24 5 5 5s5-2.24 5-5v-4L6 1z"
-              fill="#9197ab"
-              opacity="0.5"
-            />
-          </svg>
+          <ShieldIcon />
           256-bit encryption · Read-only · FCA regulated · GDPR compliant
         </div>
       </div>

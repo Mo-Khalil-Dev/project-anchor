@@ -1,25 +1,11 @@
 import React, { useState } from 'react';
 import { cn } from '@/lib/cn';
+import { BridgeLogo } from '@/components/core/icons';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
   pageTitle?: string;
 }
-
-const BridgeLogo = () => (
-  <svg width="32" height="20" viewBox="0 0 60 37" fill="none">
-    <path d="M2 31h56" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
-    <path d="M10 31V19" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
-    <path d="M50 31V19" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
-    <path
-      d="M10 19C10 19 18 7 30 7C42 7 50 19 50 19"
-      stroke="white"
-      strokeWidth="3.5"
-      strokeLinecap="round"
-      fill="none"
-    />
-  </svg>
-);
 
 const NavItem: React.FC<{
   icon: React.ReactNode;
@@ -64,7 +50,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
         <div className="flex items-center justify-between px-4 py-6 border-b border-white border-opacity-10">
           {!collapsed && (
             <>
-              <BridgeLogo />
+              <BridgeLogo showBars={false} />
               <span className="ml-2 font-bold">Bridge</span>
             </>
           )}
