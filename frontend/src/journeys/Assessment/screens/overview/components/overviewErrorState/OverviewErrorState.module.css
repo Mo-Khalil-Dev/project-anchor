@@ -1,0 +1,25 @@
+.container {
+  background: #ffebee;
+  border: 1px solid #ef5350;
+  border-radius: 12px;
+  padding: 32px 24px;
+  text-align: center;
+  margin: 40px 0;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #c62828;
+  margin-bottom: 8px;
+}
+
+.message {
+  font-size: 14px;
+  color: #d32f2f;
+  line-height: 1.6;
+}
+
+.action {
+  margin-top: 20px;
+}

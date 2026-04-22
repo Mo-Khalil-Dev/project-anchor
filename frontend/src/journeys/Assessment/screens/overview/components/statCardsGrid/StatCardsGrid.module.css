@@ -1,0 +1,47 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  border-top: 3px solid;
+}
+
+.card.green { border-top-color: #059669; }
+.card.amber { border-top-color: #d97706; }
+.card.red   { border-top-color: #dc2626; }
+
+.value {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.8px;
+  margin-bottom: 4px;
+}
+
+.card.green .value { color: #059669; }
+.card.amber .value { color: #d97706; }
+.card.red   .value { color: #dc2626; }
+
+.label {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #0d0f14;
+  margin-bottom: 3px;
+}
+
+.sub {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

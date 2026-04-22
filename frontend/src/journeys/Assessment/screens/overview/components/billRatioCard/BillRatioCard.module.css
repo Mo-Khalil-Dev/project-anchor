@@ -1,0 +1,128 @@
+.card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 22px 24px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  margin-bottom: 16px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.left {
+  flex: 1;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #9197ab;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+}
+
+.ratioContainer {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.ratio {
+  font-size: 36px;
+  font-weight: 800;
+  color: #ef4444;
+  letter-spacing: -1px;
+}
+
+.ratioSub {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.right {
+  text-align: right;
+}
+
+.balanceLabel {
+  font-size: 12px;
+  color: #9197ab;
+  margin-bottom: 3px;
+}
+
+.balance {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0d0f14;
+}
+
+.benchmarkSection {
+  margin-bottom: 14px;
+}
+
+.benchmarkLabels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #9197ab;
+  margin-bottom: 6px;
+}
+
+.benchmarkBar {
+  height: 10px;
+  border-radius: 100px;
+  background: #e5e7eb;
+  position: relative;
+  overflow: hidden;
+}
+
+.benchmarkGradient {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, #059669 0%, #059669 8%, #d97706 20%, #dc2626 45%);
+}
+
+.benchmarkMarkerLeft {
+  position: absolute;
+  left: 8%;
+  top: -3px;
+  height: 16px;
+  width: 2px;
+  background: #fff;
+  border-radius: 1px;
+}
+
+.benchmarkMarkerRight {
+  position: absolute;
+  right: 4px;
+  top: -4px;
+  font-size: 11px;
+  color: #fff;
+  font-weight: 700;
+  background: #ef4444;
+  border-radius: 100px;
+  padding: 2px 6px;
+}
+
+.explanation {
+  background: #fef2f2;
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-size: 13px;
+  color: #991b1b;
+  line-height: 1.5;
+}
+
+@media (max-width: 640px) {
+  .header {
+    flex-direction: column;
+    gap: 16px;
+  }
+}
