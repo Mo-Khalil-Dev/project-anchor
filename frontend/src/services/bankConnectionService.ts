@@ -1,5 +1,6 @@
 import { API } from '@/api/endpoints';
 import { httpService } from '@/api/httpService';
+import { unwrap } from '@/api/unwrap';
 import { ApiResponse } from '@/types';
 
 export interface InitiateBankResponse {
@@ -20,10 +21,6 @@ export interface HandleBankCallbackResponse {
   };
 }
 
-function unwrap<T>(res: ApiResponse<T>): T {
-  if (!res.success || !res.data) throw new Error(res.error || 'Request failed');
-  return res.data;
-}
 
 export const bankConnectionService = {
   initiate: (): Promise<InitiateBankResponse> =>

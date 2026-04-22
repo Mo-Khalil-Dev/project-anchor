@@ -47,6 +47,42 @@ Mohamed Khalil — working on PROJECT BRIDGE, a hardship assessment platform for
 - **Phase 2 Priority:** Admin workflow (queue management, case review, modify plans)
 - **MVP Critical Screens:** Assessment Overview, Payment Plan Options, Case Review, Modify Plan
 
+## Frontend Architecture Rules
+
+### Layering
+Every API call must go through these layers in order — no layer may skip one below it:
+```
+UI hook → service → httpService → axios (client.ts)
+```
+- **Hooks** (`useX.ts`) call service methods only. No axios, no fetch, no direct HTTP.
+- **Services** (`src/services/`) own the domain shape: typed inputs/outputs, `ApiResponse` unwrapping, error messages.
+- **httpService** (`src/api/httpService.ts`) is the only file that imports axios.
+
+### API Response Standard
+All backend endpoints **must** return responses wrapped in `ApiResponse<T>`:
+```ts
+{ success: boolean; data?: T; error?: string }
+```
+- Every service method must call `.then(unwrap)` — never return the raw `ApiResponse` to a hook.
+- The shared `unwrap<T>` utility lives in `src/api/unwrap.ts`. Never copy it inline into a service.
+
+### URL Constants
+All API URL strings must be defined in `src/api/endpoints.ts` under the `API` object.  
+No URL string literals anywhere else in the codebase.
+
+### Component Structure
+Every component folder contains exactly three files:
+- `ComponentName.tsx` — JSX only, no logic
+- `useComponentName.ts` — all UI logic
+- `ComponentName.module.css` — all styles
+
+Max 15 lines of JSX per component file. Break larger components into named sub-components.  
+All SVG icons live in `src/components/core/icons.tsx`. No inline SVGs elsewhere.
+
+### Testing
+Test files are co-located beside the source file (`Component.test.tsx`).  
+Mock at the service boundary — hooks test against mocked services, never mocked axios.
+
 ## Preferences
 - Working with visual mockups as reference during development
 - Screens follow Claude.ai design system (CSS variables for light/dark mode)
