@@ -5,7 +5,7 @@ import {
   setBankConnectionData,
   setBankError,
 } from '@/store/slices/customerSlice';
-import * as bankConnectionApi from '../api/bankConnection';
+import { bankConnectionService } from '@/services/bankConnectionService';
 
 export function useBankConnection() {
   const dispatch = useAppDispatch();
@@ -16,7 +16,7 @@ export function useBankConnection() {
   const initiateBank = useCallback(async () => {
     try {
       dispatch(setBankError(undefined));
-      const response = await bankConnectionApi.initiateBank();
+      const response = await bankConnectionService.initiate();
       dispatch(
         setBankConnectionData({
           authUrl: response.authUrl,
@@ -40,7 +40,7 @@ export function useBankConnection() {
   const handleCallback = useCallback(async (expenseCheckId: string, state: string) => {
     try {
       dispatch(setBankError(undefined));
-      const response = await bankConnectionApi.handleBankCallback(expenseCheckId, state);
+      const response = await bankConnectionService.callback(expenseCheckId, state);
       dispatch(
         setBankConnectionData({
           connectionId: response.connectionId,

@@ -4,14 +4,14 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { createElement } from 'react';
 import { store } from '@/store';
 import { makeAssessment } from '@/test/fixtures';
-import axiosInstance from '@/api/client';
+import { assessmentService } from '@/services/assessmentService';
 import { useOverview } from './useOverview';
 
-vi.mock('@/api/client', () => ({
-  default: { get: vi.fn() },
+vi.mock('@/services/assessmentService', () => ({
+  assessmentService: { get: vi.fn() },
 }));
 
-const mockGet = vi.mocked(axiosInstance.get);
+const mockGet = vi.mocked(assessmentService.get);
 const mockNavigate = vi.fn();
 
 vi.mock('react-router-dom', async (importOriginal) => {
@@ -47,34 +47,33 @@ describe('useOverview', () => {
   });
 
   it('starts in loading state', () => {
-    mockGet.mockResolvedValue({ data: makeAssessment({ status: 'PENDING' }) });
+    mockGet.mockResolvedValue(makeAssessment({ status: 'PENDING' }));
     const { result } = renderHook(() => useOverview(), { wrapper });
     expect(result.current.loading).toBe(true);
     expect(result.current.assessment).toBeNull();
   });
 
   it('sets assessment after successful fetch', async () => {
-    const assessment = makeAssessment({ status: 'COMPLETED' });
-    mockGet.mockResolvedValue({ data: assessment });
+    mockGet.mockResolvedValue(makeAssessment({ status: 'COMPLETED' }));
     const { result } = renderHook(() => useOverview(), { wrapper });
     await waitFor(() => expect(result.current.assessment).not.toBeNull());
     expect(result.current.assessment?.id).toBe('assessment-1');
   });
 
   it('sets loading to false when status is COMPLETED', async () => {
-    mockGet.mockResolvedValue({ data: makeAssessment({ status: 'COMPLETED' }) });
+    mockGet.mockResolvedValue(makeAssessment({ status: 'COMPLETED' }));
     const { result } = renderHook(() => useOverview(), { wrapper });
     await waitFor(() => expect(result.current.loading).toBe(false));
   });
 
   it('sets loading to false when status is FAILED', async () => {
-    mockGet.mockResolvedValue({ data: makeAssessment({ status: 'FAILED' }) });
+    mockGet.mockResolvedValue(makeAssessment({ status: 'FAILED' }));
     const { result } = renderHook(() => useOverview(), { wrapper });
     await waitFor(() => expect(result.current.loading).toBe(false));
   });
 
   it('stops polling when COMPLETED status is received', async () => {
-    mockGet.mockResolvedValue({ data: makeAssessment({ status: 'COMPLETED' }) });
+    mockGet.mockResolvedValue(makeAssessment({ status: 'COMPLETED' }));
     renderHook(() => useOverview(), { wrapper });
     await waitFor(() => expect(mockGet).toHaveBeenCalledTimes(1));
     vi.advanceTimersByTime(9000);
@@ -82,7 +81,7 @@ describe('useOverview', () => {
   });
 
   it('continues polling while status is PENDING', async () => {
-    mockGet.mockResolvedValue({ data: makeAssessment({ status: 'PENDING' }) });
+    mockGet.mockResolvedValue(makeAssessment({ status: 'PENDING' }));
     renderHook(() => useOverview(), { wrapper });
     await waitFor(() => expect(mockGet).toHaveBeenCalledTimes(1));
     await vi.advanceTimersByTimeAsync(6000);
@@ -100,7 +99,7 @@ describe('useOverview', () => {
   });
 
   it('exposes correct derived flags for PENDING status', async () => {
-    mockGet.mockResolvedValue({ data: makeAssessment({ status: 'PENDING' }) });
+    mockGet.mockResolvedValue(makeAssessment({ status: 'PENDING' }));
     const { result } = renderHook(() => useOverview(), { wrapper });
     await waitFor(() => expect(result.current.assessment).not.toBeNull());
     expect(result.current.isPending).toBe(true);
@@ -109,7 +108,7 @@ describe('useOverview', () => {
   });
 
   it('exposes correct derived flags for COMPLETED status', async () => {
-    mockGet.mockResolvedValue({ data: makeAssessment({ status: 'COMPLETED' }) });
+    mockGet.mockResolvedValue(makeAssessment({ status: 'COMPLETED' }));
     const { result } = renderHook(() => useOverview(), { wrapper });
     await waitFor(() => expect(result.current.assessment).not.toBeNull());
     expect(result.current.isCompleted).toBe(true);
@@ -118,7 +117,7 @@ describe('useOverview', () => {
   });
 
   it('formats assessmentDate from calculatedAt', async () => {
-    mockGet.mockResolvedValue({ data: makeAssessment({ status: 'COMPLETED', calculatedAt: '2026-01-15T10:30:00Z' }) });
+    mockGet.mockResolvedValue(makeAssessment({ status: 'COMPLETED', calculatedAt: '2026-01-15T10:30:00Z' }));
     const { result } = renderHook(() => useOverview(), { wrapper });
     await waitFor(() => expect(result.current.assessmentDate).not.toBe(''));
     expect(result.current.assessmentDate).toMatch(/15/);
@@ -126,7 +125,7 @@ describe('useOverview', () => {
   });
 
   it('handleGoBack calls navigate(-1)', async () => {
-    mockGet.mockResolvedValue({ data: makeAssessment({ status: 'COMPLETED' }) });
+    mockGet.mockResolvedValue(makeAssessment({ status: 'COMPLETED' }));
     const { result } = renderHook(() => useOverview(), { wrapper });
     await waitFor(() => expect(result.current.assessment).not.toBeNull());
     result.current.handleGoBack();

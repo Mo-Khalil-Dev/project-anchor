@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppDispatch } from '@/store';
 import { setCurrentStep } from '@/store/slices/customerSlice';
-import axiosInstance from '@/api/client';
+import { assessmentService } from '@/services/assessmentService';
 import { Assessment } from '@/journeys/Assessment/models/assessment';
 
 export function useOverview() {
@@ -31,8 +31,7 @@ export function useOverview() {
         return;
       }
 
-      const response = await axiosInstance.get(`/assessments/${assessmentId}`);
-      const data = response.data as Assessment;
+      const data = await assessmentService.get(assessmentId);
 
       setAssessment(data);
       setError(null);
