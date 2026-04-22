@@ -10,7 +10,7 @@ export class AssessmentController {
       const { assessmentId } = req.params;
 
       if (!assessmentId) {
-        res.status(400).json({ error: 'Assessment ID is required' });
+        res.status(400).json({ success: false, error: 'Assessment ID is required' });
         return;
       }
 
@@ -21,14 +21,14 @@ export class AssessmentController {
           assessmentId,
           error: result.getError()?.message,
         });
-        res.status(500).json({ error: 'Failed to fetch assessment' });
+        res.status(500).json({ success: false, error: 'Failed to fetch assessment' });
         return;
       }
 
       const assessment = result.getOrThrow();
 
       if (!assessment) {
-        res.status(404).json({ error: 'Assessment not found' });
+        res.status(404).json({ success: false, error: 'Assessment not found' });
         return;
       }
 
@@ -39,45 +39,30 @@ export class AssessmentController {
         ? JSON.parse(assessment.getExpenseBreakdown()!)
         : null;
 
-      const response = {
-        id: assessment.getId(),
-        customerId: assessment.getCustomerId(),
-        bankConnectionId: assessment.getBankConnectionId(),
-        monthlyIncome: assessment.getMonthlyIncome(),
-        monthlyExpenses: assessment.getMonthlyExpenses(),
-        disposableIncome: assessment.calculateDisposableIncome(),
-        monthlyBill: assessment.getMonthlyBill(),
-        billRatio: assessment.calculateBillRatio(),
-        hardshipLevel: assessment.getHardshipLevel(),
-        sustainabilityScore: assessment.getSustainabilityScore(),
-        status: assessment.getStatus(),
-        arrears: assessment.getArrears(),
-        incomeBreakdown,
-        expenseBreakdown,
-        calculatedAt: assessment.getUpdatedAt().toISOString(),
-      };
-
-      if (assessment.getStatus() === 'PENDING') {
-        res.status(200).json({
-          ...response,
-          message: 'Assessment is still calculating. Please check back shortly.',
-        });
-        return;
-      }
-
-      if (assessment.getStatus() === 'FAILED') {
-        res.status(200).json({
-          ...response,
-          message: 'Assessment calculation failed. Please contact support.',
-        });
-        return;
-      }
-
-      res.status(200).json(response);
+      res.status(200).json({
+        success: true,
+        data: {
+          id: assessment.getId(),
+          customerId: assessment.getCustomerId(),
+          bankConnectionId: assessment.getBankConnectionId(),
+          monthlyIncome: assessment.getMonthlyIncome(),
+          monthlyExpenses: assessment.getMonthlyExpenses(),
+          disposableIncome: assessment.calculateDisposableIncome(),
+          monthlyBill: assessment.getMonthlyBill(),
+          billRatio: assessment.calculateBillRatio(),
+          hardshipLevel: assessment.getHardshipLevel(),
+          sustainabilityScore: assessment.getSustainabilityScore(),
+          status: assessment.getStatus(),
+          arrears: assessment.getArrears(),
+          incomeBreakdown,
+          expenseBreakdown,
+          calculatedAt: assessment.getUpdatedAt().toISOString(),
+        },
+      });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
       this.logger.error('Assessment controller error', { error: message });
-      res.status(500).json({ error: 'Internal server error' });
+      res.status(500).json({ success: false, error: 'Internal server error' });
     }
   }
 }
