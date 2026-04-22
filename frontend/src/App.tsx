@@ -3,7 +3,7 @@ import { Provider } from 'react-redux';
 import { store } from '@/store';
 import { Home } from '@/journeys/Home';
 import { BankConnectionRoot } from '@/journeys/BankConnection';
-import { AssessmentOverview } from '@/journeys/Assessment/Overview';
+import { AssessmentOverview } from '@/journeys/Assessment/screens/overview/Overview';
 
 function App() {
   return (
