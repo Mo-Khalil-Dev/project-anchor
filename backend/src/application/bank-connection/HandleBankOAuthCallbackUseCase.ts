@@ -14,7 +14,7 @@ export class HandleBankOAuthCallbackUseCase {
     private prisma: PrismaClient,
     private logger: ILogger,
     private processJobService?: ProcessAssessmentJobService
-  ) {}
+  ) { }
 
   async execute(
     code: string,
@@ -56,6 +56,7 @@ export class HandleBankOAuthCallbackUseCase {
         return Result.fail(tokenResult.getError() || new Error('Unknown error'));
       }
 
+      //updated
       const accessToken = tokenResult.getOrThrow();
 
       // Fetch both income and expense check data
