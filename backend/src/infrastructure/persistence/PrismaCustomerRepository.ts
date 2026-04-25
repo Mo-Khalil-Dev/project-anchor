@@ -7,6 +7,7 @@ export interface Customer {
   createdAt: Date;
   updatedAt: Date;
 }
+//updated
 
 export class PrismaCustomerRepository {
   async create(email: string): Promise<Result<Customer, Error>> {
