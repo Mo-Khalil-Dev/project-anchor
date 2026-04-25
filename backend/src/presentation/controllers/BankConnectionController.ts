@@ -27,21 +27,13 @@ export class BankConnectionController {
   }
 
   async handleCallback(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const { code, state, monthlyBill, arrears } = req.query as {
-      code: string;
-      state: string;
-      monthlyBill?: string;
-      arrears?: string;
-    };
+    const { code, state } = req.query as { code: string; state: string };
 
     if (!code || !state) {
       return next(new ApplicationError('MISSING_PARAMS', 'Missing code or state parameter', 400));
     }
 
-    const bill = monthlyBill ? parseFloat(monthlyBill) : 0;
-    const arrearsAmount = arrears ? parseFloat(arrears) : undefined;
-
-    const result = await this.handleCallbackUseCase.execute(code, state, bill, arrearsAmount);
+    const result = await this.handleCallbackUseCase.execute(code, state);
     result.match(
       (data) => {
         res.json({ success: true, data });

@@ -18,9 +18,7 @@ export class HandleBankOAuthCallbackUseCase {
 
   async execute(
     code: string,
-    state: string,
-    customerMonthlyBill: number,
-    customerArrears?: number
+    state: string
   ): Promise<
     Result<
       {
@@ -43,6 +41,13 @@ export class HandleBankOAuthCallbackUseCase {
       const connection = connResult.getOrThrow();
       if (!connection) {
         return Result.fail(new Error('Invalid OAuth state token'));
+      }
+
+      const customer = await this.prisma.customer.findUnique({
+        where: { id: connection.customerId },
+      });
+      if (!customer) {
+        return Result.fail(new Error('Customer not found'));
       }
 
       // Get access token for API requests
@@ -110,8 +115,8 @@ export class HandleBankOAuthCallbackUseCase {
         bankConnectionId: connection.id,
         monthlyIncome: income.total,
         monthlyExpenses: expenses.total,
-        monthlyBill: customerMonthlyBill,
-        arrears: customerArrears ?? null,
+        monthlyBill: customer.monthlyBill ?? 0,
+        arrears: customer.arrears ?? null,
         status: 'PENDING',
         id: '', // Will be overridden
       });

@@ -12,7 +12,7 @@ export class PrismaCustomerRepository {
   async create(email: string): Promise<Result<Customer, Error>> {
     try {
       const customer = await prisma.customer.create({
-        data: { email },
+        data: { email, monthlyBill:300, arrears: 600 },
       });
       return Result.ok(customer);
     } catch (error) {
