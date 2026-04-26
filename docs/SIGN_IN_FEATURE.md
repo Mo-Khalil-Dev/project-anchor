@@ -718,7 +718,59 @@ For post-MVP, infrastructure as code with CloudFormation or Terraform.
 
 ---
 
-## OAuth 2.0 Flow
+## Post-Login Routing Logic
+
+After authentication, the application needs to determine where to send the user based on their account state:
+
+### User Types & Routing
+
+```
+User Authenticated ✓
+    │
+    ├─ User Type = Admin
+    │  └─ Redirect to /admin/dashboard
+    │
+    └─ User Type = Customer
+       │
+       ├─ NOT linked to Customer account
+       │  └─ Redirect to /link-customer
+       │     (Customer enters utility account reference)
+       │
+       └─ Linked to Customer account
+          │
+          ├─ NO bank connection + NO assessment
+          │  └─ Redirect to /bank-connection (start here)
+          │
+          ├─ HAS bank connection + NO assessment
+          │  └─ Redirect to /assessment/:assessmentId
+          │
+          ├─ HAS bank connection + HAS assessment
+          │  └─ Redirect to /payment-plan/:planId
+          │
+          └─ HAS assessment + COMPLETED assessment
+             └─ Redirect to /payment-plan (selection or existing)
+```
+
+### Endpoint: `GET /api/auth/redirect-to-journey`
+
+```typescript
+// Called after login callback
+// Determines where to send the authenticated user
+
+Response: {
+  success: true,
+  data: {
+    userType: 'customer' | 'admin';
+    redirectTo: string;  // '/link-customer' | '/assessment/:id' | etc.
+    customer?: Customer;
+    assessment?: Assessment;
+  }
+}
+```
+
+---
+
+## OAuth 2.0 Flow (with Routing)
 
 ### Complete Sequence
 
@@ -740,17 +792,42 @@ For post-MVP, infrastructure as code with CloudFormation or Terraform.
    - Validate state (CSRF check)
    - Exchange code for tokens (via CognitoAuthProvider)
    - Validate JWT signature
+   - Extract role from Cognito groups (if any)
    - Create/update User in DB
    - Store refresh token (hashed)
-   - Set httpOnly cookie
-   - Redirect to /dashboard
+   - Set httpOnly cookie with customer info
+   - Redirect to frontend auth callback page
    ↓
-8. Frontend:
+8. Frontend Auth Callback:
    - Check authentication status
-   - Load customer data
-   - Route to assessment or bank connection
+   - Call GET /api/auth/redirect-to-journey
+   - Receive: redirectTo URL + user type
    ↓
-9. All API calls include token (in cookie or header)
+9. Frontend Routing Decision:
+   - If admin → /admin/dashboard
+   - If customer not linked → /link-customer
+   - If customer linked, no bank connection → /bank-connection
+   - If customer linked, has assessment → /assessment/:id
+   - If customer linked, completed → /payment-plan
+   ↓
+10. All API calls include token (in cookie or header)
+    Authorization header includes: Authorization: Bearer <token>
+```
+
+### JWT Claims (with Role)
+
+```json
+{
+  "sub": "cognito-user-id",
+  "email": "user@example.com",
+  "email_verified": true,
+  "role": "customer",  // From Cognito groups
+  "cognito:groups": ["customers"],
+  "aud": "client-id",
+  "iss": "https://cognito-idp.region.amazonaws.com/...",
+  "iat": 1234567890,
+  "exp": 1234571490
+}
 ```
 
 ### State Token (CSRF Protection)
