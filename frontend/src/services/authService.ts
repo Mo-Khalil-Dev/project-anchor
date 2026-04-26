@@ -1,5 +1,5 @@
 import { httpService } from '../api/httpService';
-import type { AuthUser } from '../store/slices/authSlice';
+import type { AuthUser } from '../types';
 
 export interface InitiateLoginResponse {
   loginUrl: string;

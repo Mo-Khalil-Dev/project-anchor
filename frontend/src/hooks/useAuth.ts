@@ -1,11 +1,11 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useCallback } from 'react';
-import type { RootState } from '../types';
+import type { RootState, AuthUser } from '../types';
 import { setUser, setAccessToken, clearAuth, setLoading, setError } from '../store/slices/authSlice';
 import { authService } from '../services/authService';
 
 export interface UseAuthReturn {
-  user: ReturnType<typeof useSelector> | null;
+  user: AuthUser | null;
   accessToken: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -19,9 +19,8 @@ export interface UseAuthReturn {
 
 export function useAuth(): UseAuthReturn {
   const dispatch = useDispatch();
-  const { user, accessToken, isAuthenticated, isLoading, error } = useSelector(
-    (state: RootState) => state.auth
-  );
+  const auth = useSelector((state: RootState) => state.auth);
+  const { user, accessToken, isAuthenticated, isLoading, error } = auth;
 
   const initiateLogin = useCallback(async () => {
     dispatch(setLoading(true));

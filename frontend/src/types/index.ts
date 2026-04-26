@@ -256,6 +256,8 @@ export interface AuthUser {
   email: string;
   firstName?: string;
   lastName?: string;
+  role?: 'customer' | 'admin';
+  customerId?: string;
 }
 
 export interface AuthSliceState {
