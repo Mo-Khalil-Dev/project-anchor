@@ -69,7 +69,13 @@ export class HandleAuthCallbackUseCase {
       accessToken,
       refreshToken,
       expiresIn,
-      user
+      {
+        id: dbUser.id,
+        email: dbUser.email,
+        externalId: dbUser.externalId,
+        firstName: dbUser.firstName || undefined,
+        lastName: dbUser.lastName || undefined,
+      }
     );
 
     // Log successful login
