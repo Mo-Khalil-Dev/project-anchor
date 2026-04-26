@@ -1,6 +1,7 @@
 import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
 import { globalErrorHandler } from './presentation/middleware';
 import { createBankConnectionRoutes } from './presentation/routes/bankConnection.routes';
 import { createAssessmentRoutes } from './presentation/routes/assessment.routes';
@@ -24,6 +25,7 @@ export function createApp(config: AppConfig, logger: ILogger): Express {
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
+  app.use(cookieParser());
 
   // Request logging
   app.use((req: Request, res: Response, next: NextFunction) => {

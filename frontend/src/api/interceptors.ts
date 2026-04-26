@@ -67,16 +67,8 @@ export function setupInterceptors(axiosInstance: AxiosInstance) {
       isRefreshing = true;
 
       try {
-        const state = store.getState();
-        const refreshToken = state.auth.refreshToken;
-
-        if (!refreshToken) {
-          store.dispatch(clearAuth());
-          return Promise.reject(error);
-        }
-
-        // Call refresh token endpoint
-        const result = await authService.refreshToken(refreshToken);
+        // Call refresh token endpoint (browser automatically sends httpOnly cookie)
+        const result = await authService.refreshToken();
 
         // Update Redux state with new token
         store.dispatch(setAccessToken(result.accessToken));

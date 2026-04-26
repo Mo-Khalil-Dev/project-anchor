@@ -261,7 +261,6 @@ export interface AuthUser {
 export interface AuthSliceState {
   user: AuthUser | null;
   accessToken: string | null;
-  refreshToken: string | null;
   isLoading: boolean;
   error: string | null;
   isAuthenticated: boolean;

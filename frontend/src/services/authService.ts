@@ -8,14 +8,12 @@ export interface InitiateLoginResponse {
 
 export interface AuthCallbackResponse {
   accessToken: string;
-  refreshToken: string;
   expiresIn: number;
   user: AuthUser;
 }
 
 export interface RefreshTokenResponse {
   accessToken: string;
-  refreshToken: string;
   expiresIn: number;
 }
 
@@ -41,18 +39,17 @@ class AuthService {
     return response;
   }
 
-  async refreshToken(refreshToken: string): Promise<RefreshTokenResponse> {
+  async refreshToken(): Promise<RefreshTokenResponse> {
     const response = await httpService.post<RefreshTokenResponse>(
       '/auth/refresh',
-      { refreshToken }
+      {}
     );
     return response;
   }
 
-  async logout(userId: string, refreshToken?: string, allSessions?: boolean): Promise<void> {
+  async logout(userId: string, allSessions?: boolean): Promise<void> {
     await httpService.post('/auth/logout', {
       userId,
-      refreshToken,
       allSessions,
     });
   }

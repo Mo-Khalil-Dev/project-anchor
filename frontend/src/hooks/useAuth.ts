@@ -1,13 +1,12 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useCallback } from 'react';
 import type { RootState } from '../types';
-import { setUser, setTokens, setAccessToken, clearAuth, setLoading, setError } from '../store/slices/authSlice';
+import { setUser, setAccessToken, clearAuth, setLoading, setError } from '../store/slices/authSlice';
 import { authService } from '../services/authService';
 
 export interface UseAuthReturn {
   user: ReturnType<typeof useSelector> | null;
   accessToken: string | null;
-  refreshToken: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
@@ -20,7 +19,7 @@ export interface UseAuthReturn {
 
 export function useAuth(): UseAuthReturn {
   const dispatch = useDispatch();
-  const { user, accessToken, refreshToken, isAuthenticated, isLoading, error } = useSelector(
+  const { user, accessToken, isAuthenticated, isLoading, error } = useSelector(
     (state: RootState) => state.auth
   );
 
@@ -48,7 +47,7 @@ export function useAuth(): UseAuthReturn {
       try {
         const result = await authService.handleCallback(code, state);
         dispatch(setUser(result.user));
-        dispatch(setTokens({ accessToken: result.accessToken, refreshToken: result.refreshToken }));
+        dispatch(setAccessToken(result.accessToken));
       } catch (err) {
         const errorMsg = err instanceof Error ? err.message : 'Failed to handle callback';
         dispatch(setError(errorMsg));
@@ -61,13 +60,8 @@ export function useAuth(): UseAuthReturn {
   );
 
   const refreshAccessToken = useCallback(async () => {
-    if (!refreshToken) {
-      dispatch(setError('No refresh token available'));
-      return;
-    }
-
     try {
-      const result = await authService.refreshToken(refreshToken);
+      const result = await authService.refreshToken();
       dispatch(setAccessToken(result.accessToken));
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Failed to refresh token';
@@ -75,7 +69,7 @@ export function useAuth(): UseAuthReturn {
       dispatch(clearAuth());
       throw err;
     }
-  }, [dispatch, refreshToken]);
+  }, [dispatch]);
 
   const logout = useCallback(
     async (allSessions: boolean = false) => {
@@ -84,7 +78,7 @@ export function useAuth(): UseAuthReturn {
 
       try {
         if (user) {
-          await authService.logout(user.id, refreshToken || undefined, allSessions);
+          await authService.logout(user.id, allSessions);
         }
       } catch (err) {
         const errorMsg = err instanceof Error ? err.message : 'Failed to logout';
@@ -94,7 +88,7 @@ export function useAuth(): UseAuthReturn {
         dispatch(setLoading(false));
       }
     },
-    [dispatch, user, refreshToken]
+    [dispatch, user]
   );
 
   const getCurrentUser = useCallback(async () => {
@@ -117,7 +111,6 @@ export function useAuth(): UseAuthReturn {
   return {
     user,
     accessToken,
-    refreshToken,
     isAuthenticated,
     isLoading,
     error,

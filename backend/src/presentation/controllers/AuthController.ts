@@ -53,9 +53,22 @@ export class AuthController {
         redirectUri,
       });
 
+      // Set httpOnly cookie with refresh token (not sent in response body)
+      res.cookie('refreshToken', result.refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
+
+      // Return only accessToken and user (not refreshToken)
       res.json({
         success: true,
-        data: result,
+        data: {
+          accessToken: result.accessToken,
+          expiresIn: result.expiresIn,
+          user: result.user,
+        },
       });
     } catch (error) {
       res.status(401).json({
@@ -67,21 +80,33 @@ export class AuthController {
 
   async refreshToken(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      const { refreshToken } = req.body;
+      const refreshToken = req.cookies?.refreshToken;
 
       if (!refreshToken || typeof refreshToken !== 'string') {
-        res.status(400).json({
+        res.status(401).json({
           success: false,
-          error: 'Missing or invalid refreshToken in body',
+          error: 'Missing or invalid refresh token cookie',
         });
         return;
       }
 
       const result = await this.refreshAccessTokenUseCase.execute({ refreshToken });
 
+      // Set new refresh token cookie
+      res.cookie('refreshToken', result.refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
+
+      // Return only accessToken (not refreshToken)
       res.json({
         success: true,
-        data: result,
+        data: {
+          accessToken: result.accessToken,
+          expiresIn: result.expiresIn,
+        },
       });
     } catch (error) {
       res.status(401).json({
