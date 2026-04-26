@@ -1,9 +1,9 @@
 import { ReactNode } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 
 export interface ProtectedRouteProps {
-  children: ReactNode;
+  children?: ReactNode;
   requiredRole?: 'customer' | 'admin';
 }
 
@@ -29,5 +29,5 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
     return <Navigate to="/" replace />;
   }
 
-  return <>{children}</>;
+  return <>{children || <Outlet />}</>;
 }
