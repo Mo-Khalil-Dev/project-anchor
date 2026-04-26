@@ -1,4 +1,4 @@
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useDispatch } from 'react-redux';
@@ -13,27 +13,33 @@ export interface ProtectedRouteProps {
 export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) {
   const { isAuthenticated, isLoading, user } = useAuth();
   const dispatch = useDispatch();
+  const [restoreAttempted, setRestoreAttempted] = useState(false);
 
   // Try to restore auth from refresh token on first load
   useEffect(() => {
-    if (!isAuthenticated && !isLoading) {
-      // No token in Redux, try to refresh from cookie
-      const restoreAuth = async () => {
-        dispatch(setLoading(true));
-        try {
-          const result = await authService.refreshToken();
-          dispatch(setAccessToken(result.accessToken));
-        } catch (err) {
-          // Refresh failed, user not authenticated
-          dispatch(setLoading(false));
-        }
-      };
-
-      restoreAuth();
+    if (isAuthenticated) {
+      setRestoreAttempted(true);
+      return;
     }
+
+    const restoreAuth = async () => {
+      dispatch(setLoading(true));
+      try {
+        const result = await authService.refreshToken();
+        dispatch(setAccessToken(result.accessToken));
+      } catch {
+        // Refresh failed, user not authenticated
+      } finally {
+        dispatch(setLoading(false));
+        setRestoreAttempted(true);
+      }
+    };
+
+    restoreAuth();
   }, []); // Run once on mount
 
-  if (isLoading) {
+  // Wait for the initial restore attempt before deciding to redirect
+  if (!restoreAttempted || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
