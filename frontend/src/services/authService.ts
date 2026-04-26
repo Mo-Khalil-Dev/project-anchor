@@ -1,5 +1,6 @@
 import { httpService } from '../api/httpService';
-import type { AuthUser } from '../types';
+import { unwrap } from '../api/unwrap';
+import type { AuthUser, ApiResponse } from '../types';
 
 export interface InitiateLoginResponse {
   loginUrl: string;
@@ -26,37 +27,40 @@ export interface GetCurrentUserResponse {
 
 class AuthService {
   async initiateLogin(): Promise<InitiateLoginResponse> {
-    const response = await httpService.get<InitiateLoginResponse>(
+    const response = await httpService.get<ApiResponse<InitiateLoginResponse>>(
       '/auth/initiate-login'
     );
-    return response;
+    return unwrap(response);
   }
 
   async handleCallback(code: string, state: string): Promise<AuthCallbackResponse> {
-    const response = await httpService.get<AuthCallbackResponse>(
+    const response = await httpService.get<ApiResponse<AuthCallbackResponse>>(
       `/auth/callback?code=${encodeURIComponent(code)}&state=${encodeURIComponent(state)}`
     );
-    return response;
+    return unwrap(response);
   }
 
   async refreshToken(): Promise<RefreshTokenResponse> {
-    const response = await httpService.post<RefreshTokenResponse>(
+    const response = await httpService.post<ApiResponse<RefreshTokenResponse>>(
       '/auth/refresh',
       {}
     );
-    return response;
+    return unwrap(response);
   }
 
   async logout(userId: string, allSessions?: boolean): Promise<void> {
-    await httpService.post('/auth/logout', {
-      userId,
-      allSessions,
-    });
+    const response = await httpService.post<ApiResponse<void>>(
+      '/auth/logout',
+      { userId, allSessions }
+    );
+    unwrap(response);
   }
 
   async getCurrentUser(): Promise<GetCurrentUserResponse> {
-    const response = await httpService.get<GetCurrentUserResponse>('/auth/me');
-    return response;
+    const response = await httpService.get<ApiResponse<GetCurrentUserResponse>>(
+      '/auth/me'
+    );
+    return unwrap(response);
   }
 }
 
