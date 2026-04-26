@@ -28,6 +28,14 @@ export function setupAuthRoutes(
     authController.initiateLogin(req as any, res)
   );
 
+  router.get('/auth/mock-login', (req, res) =>
+    authController.mockLogin(req as any, res)
+  );
+
+  router.post('/auth/callback', (req, res) =>
+    authController.handleCallback(req as any, res)
+  );
+
   router.get('/auth/callback', (req, res) =>
     authController.handleCallback(req as any, res)
   );
