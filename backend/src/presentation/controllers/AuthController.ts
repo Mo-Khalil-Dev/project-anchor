@@ -46,8 +46,8 @@ export class AuthController {
         return;
       }
 
-      const backendUrl = process.env.BACKEND_URL || 'http://localhost:3001';
-      const redirectUri = `${backendUrl}/api/auth/callback`;
+      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+      const redirectUri = `${frontendUrl}/auth/callback`;
 
       const result = await this.handleAuthCallbackUseCase.execute({
         code,

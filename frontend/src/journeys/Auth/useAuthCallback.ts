@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { redirectService } from '../../services/redirectService';
@@ -7,6 +7,7 @@ export function useAuthCallback() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { handleCallback, isLoading, error } = useAuth();
+  const processedRef = useRef(false);
 
   useEffect(() => {
     const code = searchParams.get('code');
@@ -16,6 +17,13 @@ export function useAuthCallback() {
       navigate('/login', { replace: true });
       return;
     }
+
+    // Prevent processing the same callback twice
+    if (processedRef.current) {
+      return;
+    }
+
+    processedRef.current = true;
 
     const handleAuth = async () => {
       try {
@@ -31,7 +39,7 @@ export function useAuthCallback() {
     };
 
     handleAuth();
-  }, [searchParams, handleCallback, navigate]);
+  }, [searchParams, navigate, handleCallback]);
 
   return {
     isLoading,

@@ -41,9 +41,8 @@ class AuthService {
   }
 
   async refreshToken(): Promise<RefreshTokenResponse> {
-    const response = await httpService.post<ApiResponse<RefreshTokenResponse>>(
-      '/auth/refresh',
-      {}
+    const response = await httpService.get<ApiResponse<RefreshTokenResponse>>(
+      '/auth/refresh'
     );
     return unwrap(response);
   }

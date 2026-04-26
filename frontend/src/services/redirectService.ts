@@ -1,4 +1,6 @@
 import { httpService } from '../api/httpService';
+import { unwrap } from '../api/unwrap';
+import type { ApiResponse } from '../types';
 
 export interface GetRedirectToJourneyResponse {
   nextPage: string;
@@ -7,11 +9,10 @@ export interface GetRedirectToJourneyResponse {
 
 class RedirectService {
   async getRedirectToJourney(): Promise<GetRedirectToJourneyResponse> {
-    const response = await httpService.post<GetRedirectToJourneyResponse>(
-      '/auth/redirect-to-journey',
-      {}
+    const response = await httpService.get<ApiResponse<GetRedirectToJourneyResponse>>(
+      '/auth/redirect-to-journey'
     );
-    return response;
+    return unwrap(response);
   }
 }
 

@@ -40,7 +40,7 @@ export function setupAuthRoutes(
     authController.handleCallback(req as any, res)
   );
 
-  router.post('/auth/refresh', (req, res) =>
+  router.get('/auth/refresh', (req, res) =>
     authController.refreshToken(req as any, res)
   );
 
@@ -53,7 +53,7 @@ export function setupAuthRoutes(
     authController.getCurrentUser(req as any, res)
   );
 
-  router.post('/auth/redirect-to-journey', authenticateRequest, (req, res) =>
+  router.get('/auth/redirect-to-journey', authenticateRequest, (req, res) =>
     authController.getRedirectToJourney(req as any, res)
   );
 }

@@ -1,6 +1,9 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { useDispatch } from 'react-redux';
+import { setAccessToken, setLoading } from '../../store/slices/authSlice';
+import { authService } from '../../services/authService';
 
 export interface ProtectedRouteProps {
   children?: ReactNode;
@@ -9,6 +12,26 @@ export interface ProtectedRouteProps {
 
 export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) {
   const { isAuthenticated, isLoading, user } = useAuth();
+  const dispatch = useDispatch();
+
+  // Try to restore auth from refresh token on first load
+  useEffect(() => {
+    if (!isAuthenticated && !isLoading) {
+      // No token in Redux, try to refresh from cookie
+      const restoreAuth = async () => {
+        dispatch(setLoading(true));
+        try {
+          const result = await authService.refreshToken();
+          dispatch(setAccessToken(result.accessToken));
+        } catch (err) {
+          // Refresh failed, user not authenticated
+          dispatch(setLoading(false));
+        }
+      };
+
+      restoreAuth();
+    }
+  }, []); // Run once on mount
 
   if (isLoading) {
     return (
