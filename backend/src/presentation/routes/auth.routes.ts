@@ -4,6 +4,7 @@ import type { InitiateLoginUseCase } from '../../application/use-cases/auth/Init
 import type { HandleAuthCallbackUseCase } from '../../application/use-cases/auth/HandleAuthCallbackUseCase';
 import type { RefreshAccessTokenUseCase } from '../../application/use-cases/auth/RefreshAccessTokenUseCase';
 import type { LogoutUseCase } from '../../application/use-cases/auth/LogoutUseCase';
+import type { GetRedirectToJourneyUseCase } from '../../application/use-cases/auth/GetRedirectToJourneyUseCase';
 
 export function setupAuthRoutes(
   router: Router,
@@ -11,13 +12,15 @@ export function setupAuthRoutes(
   handleAuthCallbackUseCase: HandleAuthCallbackUseCase,
   refreshAccessTokenUseCase: RefreshAccessTokenUseCase,
   logoutUseCase: LogoutUseCase,
+  getRedirectToJourneyUseCase: GetRedirectToJourneyUseCase,
   authenticateRequest: RequestHandler
 ) {
   const authController = new AuthController(
     initiateLoginUseCase,
     handleAuthCallbackUseCase,
     refreshAccessTokenUseCase,
-    logoutUseCase
+    logoutUseCase,
+    getRedirectToJourneyUseCase
   );
 
   // Public endpoints (no auth required)
@@ -40,5 +43,9 @@ export function setupAuthRoutes(
   // Protected endpoints (auth required)
   router.get('/auth/me', authenticateRequest, (req, res) =>
     authController.getCurrentUser(req as any, res)
+  );
+
+  router.post('/auth/redirect-to-journey', authenticateRequest, (req, res) =>
+    authController.getRedirectToJourney(req as any, res)
   );
 }

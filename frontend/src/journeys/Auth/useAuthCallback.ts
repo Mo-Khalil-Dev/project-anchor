@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { redirectService } from '../../services/redirectService';
 
 export function useAuthCallback() {
   const navigate = useNavigate();
@@ -19,10 +20,10 @@ export function useAuthCallback() {
     const handleAuth = async () => {
       try {
         await handleCallback(code, state);
-        // Redirect based on customer state
-        // For now, redirect to assessment
-        // In real app: check if customer is linked, if not go to /link-customer
-        navigate('/assessment', { replace: true });
+
+        // Get the next page based on user's customer state
+        const redirect = await redirectService.getRedirectToJourney();
+        navigate(redirect.nextPage, { replace: true });
       } catch (err) {
         console.error('Auth callback failed:', err);
         navigate('/login', { replace: true });

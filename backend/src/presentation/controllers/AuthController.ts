@@ -4,13 +4,15 @@ import type { InitiateLoginUseCase } from '../../application/use-cases/auth/Init
 import type { HandleAuthCallbackUseCase } from '../../application/use-cases/auth/HandleAuthCallbackUseCase';
 import type { RefreshAccessTokenUseCase } from '../../application/use-cases/auth/RefreshAccessTokenUseCase';
 import type { LogoutUseCase } from '../../application/use-cases/auth/LogoutUseCase';
+import type { GetRedirectToJourneyUseCase } from '../../application/use-cases/auth/GetRedirectToJourneyUseCase';
 
 export class AuthController {
   constructor(
     private initiateLoginUseCase: InitiateLoginUseCase,
     private handleAuthCallbackUseCase: HandleAuthCallbackUseCase,
     private refreshAccessTokenUseCase: RefreshAccessTokenUseCase,
-    private logoutUseCase: LogoutUseCase
+    private logoutUseCase: LogoutUseCase,
+    private getRedirectToJourneyUseCase: GetRedirectToJourneyUseCase
   ) {}
 
   async initiateLogin(_req: AuthenticatedRequest, res: Response): Promise<void> {
@@ -165,6 +167,32 @@ export class AuthController {
       res.status(500).json({
         success: false,
         error: error instanceof Error ? error.message : 'Failed to get current user',
+      });
+    }
+  }
+
+  async getRedirectToJourney(req: AuthenticatedRequest, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        res.status(401).json({
+          success: false,
+          error: 'User not authenticated',
+        });
+        return;
+      }
+
+      const result = await this.getRedirectToJourneyUseCase.execute({
+        userId: req.user.id,
+      });
+
+      res.json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to determine redirect',
       });
     }
   }
