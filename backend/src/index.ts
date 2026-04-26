@@ -7,7 +7,7 @@ import { prisma } from './utils/db';
 async function main() {
   const config = await initConfig();
   const logger = initLogger(config);
-  const app = createApp(config, logger);
+  const app = createApp(config, logger, prisma);
 
   const server = app.listen(config.server.port, () => {
     logger.info('Bridge backend started', {

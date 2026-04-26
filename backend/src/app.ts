@@ -2,13 +2,15 @@ import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
+import { PrismaClient } from '@prisma/client';
 import { globalErrorHandler } from './presentation/middleware';
 import { createBankConnectionRoutes } from './presentation/routes/bankConnection.routes';
 import { createAssessmentRoutes } from './presentation/routes/assessment.routes';
+import { initializeAuthDependencies } from './infrastructure/auth/authDependencies';
 import type { AppConfig } from './shared/config';
 import type { ILogger } from './shared/logging';
 
-export function createApp(config: AppConfig, logger: ILogger): Express {
+export function createApp(config: AppConfig, logger: ILogger, prisma: PrismaClient): Express {
   const app: Express = express();
 
   // ============ MIDDLEWARE ============
@@ -51,8 +53,15 @@ export function createApp(config: AppConfig, logger: ILogger): Express {
   });
 
   // API Routes
+  const apiRouter = express.Router();
+
+  // Auth routes
+  initializeAuthDependencies(apiRouter, config, prisma);
+
+  // Other routes
   app.use('/api/bank-connections', createBankConnectionRoutes(config, logger));
   app.use('/api', createAssessmentRoutes());
+  app.use('/api', apiRouter);
 
   // ============ ERROR HANDLING ============
 
