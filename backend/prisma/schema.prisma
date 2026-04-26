@@ -8,16 +8,75 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Customer {
+model User {
   id              String   @id @default(cuid())
   email           String   @unique
-  monthlyBill     Float?
-  arrears         Float?
+  externalId      String   @unique  // From Cognito (sub)
+  firstName       String?
+  lastName        String?
+  role            String   @default("customer")  // 'customer' | 'admin'
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
+  customerId      String?  @unique
+  customer        Customer? @relation(fields: [customerId], references: [id])
+
+  refreshTokens   RefreshToken[]
+  sessionLogs     SessionLog[]
+
+  @@index([externalId])
+  @@index([role])
+}
+
+model RefreshToken {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  token           String   @unique
+  tokenHash       String
+  revokedAt       DateTime?
+  expiresAt       DateTime
+  createdAt       DateTime @default(now())
+
+  @@index([userId])
+  @@index([tokenHash])
+}
+
+model SessionLog {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  action          String   // LOGIN, LOGOUT, REFRESH_TOKEN, TOKEN_EXPIRED, ACCOUNT_LINKED
+  ipAddress       String?
+  userAgent       String?
+  createdAt       DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+}
+
+model Customer {
+  id              String   @id @default(cuid())
+  email           String   @unique
+  firstName       String?
+  lastName        String?
+  phone           String?
+  address         String?
+  postcode        String?
+  utilityAccountNo String?
+  utilityType     String?  // 'Electricity', 'Gas', 'Water'
+  monthlyBill     Float?
+  arrears         Float?
+
+  user            User?
+
   bankConnections BankConnection[]
   assessments     Assessment[]
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 model BankConnection {
