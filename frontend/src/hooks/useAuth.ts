@@ -40,7 +40,6 @@ export function useAuth(): UseAuthReturn {
 
   const handleCallback = useCallback(
     async (code: string, state: string) => {
-      console.log('handleCallback called with code:', code, 'and state:', state);
       dispatch(setLoading(true));
       dispatch(setError(null));
 
@@ -56,7 +55,7 @@ export function useAuth(): UseAuthReturn {
         dispatch(setLoading(false));
       }
     },
-    []
+    [dispatch]
   );
 
   const refreshAccessToken = useCallback(async () => {
