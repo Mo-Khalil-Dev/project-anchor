@@ -18,9 +18,10 @@ const rawEnvSchema = z.object({
 
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
 
+  AUTH_PROVIDER: z.enum(['mock', 'cognito', 'auth0']).default('mock'),
   JWT_SECRET: z.string().min(1, 'JWT_SECRET is required'),
-  COGNITO_USER_POOL_ID: z.string().min(1, 'COGNITO_USER_POOL_ID is required'),
-  COGNITO_CLIENT_ID: z.string().min(1, 'COGNITO_CLIENT_ID is required'),
+  COGNITO_USER_POOL_ID: z.string().optional(),
+  COGNITO_CLIENT_ID: z.string().optional(),
   COGNITO_REGION: z.string().default('us-east-1'),
 
   AWS_REGION: z.string().default('us-east-1'),
@@ -55,6 +56,24 @@ const rawEnvSchema = z.object({
       message: 'DATABASE_URL is required when DATABASE_PROVIDER=postgresql',
     });
   }
+
+  const authProvider = env.AUTH_PROVIDER ?? 'mock';
+  if (authProvider === 'cognito') {
+    if (!env.COGNITO_USER_POOL_ID) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['COGNITO_USER_POOL_ID'],
+        message: 'COGNITO_USER_POOL_ID is required when AUTH_PROVIDER=cognito',
+      });
+    }
+    if (!env.COGNITO_CLIENT_ID) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['COGNITO_CLIENT_ID'],
+        message: 'COGNITO_CLIENT_ID is required when AUTH_PROVIDER=cognito',
+      });
+    }
+  }
 });
 
 export const configSchema = rawEnvSchema.transform((env) => {
@@ -78,10 +97,11 @@ export const configSchema = rawEnvSchema.transform((env) => {
       level: env.LOG_LEVEL,
     },
     auth: {
+      provider: env.AUTH_PROVIDER ?? 'mock',
       jwtSecret: env.JWT_SECRET,
       cognito: {
-        userPoolId: env.COGNITO_USER_POOL_ID,
-        clientId: env.COGNITO_CLIENT_ID,
+        userPoolId: env.COGNITO_USER_POOL_ID || '',
+        clientId: env.COGNITO_CLIENT_ID || '',
         region: env.COGNITO_REGION,
       },
     },

@@ -15,6 +15,7 @@ export interface AppConfig {
     level: 'debug' | 'info' | 'warn' | 'error';
   };
   auth: {
+    provider: 'mock' | 'cognito' | 'auth0';
     jwtSecret: string;
     cognito: {
       userPoolId: string;
