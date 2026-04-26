@@ -208,87 +208,15 @@ export class AuthController {
       return;
     }
 
-    // For mock auth, return an HTML form that auto-submits with a test email
-    const html = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>Mock Login - PROJECT BRIDGE</title>
-        <style>
-          body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            background: #f4f5f9;
-            margin: 0;
-          }
-          .container {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-            max-width: 400px;
-            width: 100%;
-            text-align: center;
-          }
-          h1 { font-size: 24px; margin: 0 0 10px 0; color: #0d0f14; }
-          p { color: #5a5f72; margin: 0 0 20px 0; }
-          input {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid rgba(0,0,0,0.08);
-            border-radius: 6px;
-            font-size: 14px;
-            box-sizing: border-box;
-          }
-          button {
-            width: 100%;
-            padding: 12px;
-            background: #3b52ff;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 10px;
-          }
-          button:hover { background: #2a3dd4; }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <h1>PROJECT BRIDGE</h1>
-          <p>Mock Login (Development Only)</p>
-          <form id="mockForm" method="POST" action="${redirect_uri.replace(/"/g, '&quot;')}">
-            <input type="text" id="email" placeholder="test@example.com" value="test@example.com" style="display: none;">
-            <input type="hidden" name="code" id="code">
-            <input type="hidden" name="state" value="${state.replace(/"/g, '&quot;')}">
-            <p style="text-align: left; font-size: 12px;">Email: <strong id="emailDisplay">test@example.com</strong></p>
-            <button type="button" onclick="submitForm()">Continue</button>
-          </form>
-        </div>
-        <script>
-          function submitForm() {
-            const email = document.getElementById('email').value || 'test@example.com';
-            const code = btoa(email); // Base64 encode the email as "code"
-            document.getElementById('code').value = code;
-            document.getElementById('emailDisplay').textContent = email;
-            document.getElementById('mockForm').submit();
-          }
-          // Auto-submit on page load
-          window.addEventListener('load', () => {
-            setTimeout(() => submitForm(), 500);
-          });
-        </script>
-      </body>
-      </html>
-    `;
+    // For mock auth, encode the default email as the "code"
+    const testEmail = 'test@example.com';
+    const code = Buffer.from(testEmail).toString('base64');
 
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.send(html);
+    // Redirect directly back to callback with code + state (no intermediate form)
+    const callbackUrl = new URL(redirect_uri);
+    callbackUrl.searchParams.set('code', code);
+    callbackUrl.searchParams.set('state', state as string);
+
+    res.redirect(callbackUrl.toString());
   }
 }
