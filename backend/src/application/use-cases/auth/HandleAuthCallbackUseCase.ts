@@ -39,9 +39,17 @@ export class HandleAuthCallbackUseCase {
     );
 
     // Find or create user in database
+    // First try by externalId, then by email (for providers with dynamic IDs like mock)
     let dbUser = await this.prisma.user.findUnique({
       where: { externalId: user.externalId },
     });
+
+    if (!dbUser) {
+      // Try finding by email
+      dbUser = await this.prisma.user.findUnique({
+        where: { email: user.email },
+      });
+    }
 
     if (!dbUser) {
       dbUser = await this.prisma.user.create({
@@ -54,10 +62,11 @@ export class HandleAuthCallbackUseCase {
         },
       });
     } else {
-      // Update user info if changed
+      // Update user info and externalId if changed
       dbUser = await this.prisma.user.update({
         where: { id: dbUser.id },
         data: {
+          externalId: user.externalId,
           firstName: user.firstName || dbUser.firstName,
           lastName: user.lastName || dbUser.lastName,
         },
