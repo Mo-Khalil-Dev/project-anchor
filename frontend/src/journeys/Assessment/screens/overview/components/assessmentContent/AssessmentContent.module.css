@@ -26,19 +26,6 @@
   line-height: 1.6;
 }
 
-.pendingMessage {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: #dbeafe;
-  border: 1px solid #93c5fd;
-  border-radius: 8px;
-  padding: 12px 16px;
-  font-size: 13px;
-  color: #1d4ed8;
-  margin-bottom: 20px;
-}
-
 .failedMessage {
   display: flex;
   align-items: center;

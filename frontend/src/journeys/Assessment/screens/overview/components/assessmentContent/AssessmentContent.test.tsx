@@ -2,7 +2,9 @@ import { render, screen } from '@testing-library/react';
 import { makeAssessment } from '@/test/fixtures';
 import { AssessmentContent } from './AssessmentContent';
 
-vi.mock('./PendingBanner', () => ({ PendingBanner: () => <div>pending-banner</div> }));
+vi.mock('../assessmentPendingView/AssessmentPendingView', () => ({
+  AssessmentPendingView: () => <div>pending-view</div>,
+}));
 vi.mock('./FailedBanner', () => ({ FailedBanner: () => <div>failed-banner</div> }));
 vi.mock('../completedAssessmentView/CompletedAssessmentView', () => ({
   CompletedAssessmentView: () => <div>completed-view</div>,
@@ -18,26 +20,31 @@ const baseProps = {
 };
 
 describe('AssessmentContent', () => {
-  it('renders the page heading', () => {
-    render(<AssessmentContent {...baseProps} />);
+  it('renders the page heading when not pending', () => {
+    render(<AssessmentContent {...baseProps} isCompleted={true} />);
     expect(screen.getByText('Your Financial Assessment')).toBeInTheDocument();
   });
 
-  it('renders the assessment date in the subtitle', () => {
-    render(<AssessmentContent {...baseProps} />);
+  it('renders the assessment date in the subtitle when not pending', () => {
+    render(<AssessmentContent {...baseProps} isCompleted={true} />);
     expect(screen.getByText(/15 January 2026/)).toBeInTheDocument();
   });
 
-  it('shows PendingBanner when isPending is true', () => {
+  it('hides the page heading when pending', () => {
     render(<AssessmentContent {...baseProps} isPending={true} />);
-    expect(screen.getByText('pending-banner')).toBeInTheDocument();
+    expect(screen.queryByText('Your Financial Assessment')).not.toBeInTheDocument();
+  });
+
+  it('shows AssessmentPendingView when isPending is true', () => {
+    render(<AssessmentContent {...baseProps} isPending={true} />);
+    expect(screen.getByText('pending-view')).toBeInTheDocument();
     expect(screen.queryByText('failed-banner')).not.toBeInTheDocument();
   });
 
   it('shows FailedBanner when isFailed is true', () => {
     render(<AssessmentContent {...baseProps} isFailed={true} />);
     expect(screen.getByText('failed-banner')).toBeInTheDocument();
-    expect(screen.queryByText('pending-banner')).not.toBeInTheDocument();
+    expect(screen.queryByText('pending-view')).not.toBeInTheDocument();
   });
 
   it('shows CompletedAssessmentView when isCompleted is true', () => {
