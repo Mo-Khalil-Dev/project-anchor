@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Screen 0 – Account Setup Journey</title>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; font-family: 'Roboto', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  input, select, button { font-family: 'Roboto', system-ui, sans-serif; }
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 10px; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  @keyframes pop {
+    0%   { transform: scale(0.7); opacity: 0; }
+    60%  { transform: scale(1.08); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .fade-in { animation: fadeIn 0.3s ease both; }
+  .spinner { animation: spin 0.9s linear infinite; }
+  .pop { animation: pop 0.45s cubic-bezier(0.34,1.56,0.64,1) both; }
+</style>
+
+<script type="text/babel" src="../bridge-ui.jsx"></script>
+
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+/* ── Tokens (mirrors bridge-ui.jsx) ─────────────────────────── */
+const T = {
+  accent:   'oklch(56% 0.14 200)',
+  accentDk: 'oklch(48% 0.14 200)',
+  accentBg: 'oklch(97% 0.03 200)',
+  green:    'oklch(51% 0.17 145)',
+  greenBg:  'oklch(96.5% 0.04 145)',
+  red:      'oklch(52% 0.18 25)',
+  redBg:    'oklch(97% 0.03 25)',
+  amber:    'oklch(62% 0.16 76)',
+  amberBg:  'oklch(96.5% 0.05 76)',
+  text:     '#111827',
+  sub:      '#4b5563',
+  muted:    '#9ca3af',
+  border:   'rgba(0,0,0,0.08)',
+  divider:  'rgba(0,0,0,0.07)',
+  card:     '#ffffff',
+  bg:       '#f4f6f8',
+};
+
+/* ── Shared small components ─────────────────────────────────── */
+const InputField = ({ label, type='text', value, onChange, placeholder, hint, error, icon, autoFocus }) => {
+  const [focused, setFocused] = useState(false);
+  return (
+    <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
+      <label style={{ fontSize:13, fontWeight:600, color: T.text }}>{label}</label>
+      <div style={{ position:'relative' }}>
+        {icon && <span style={{ position:'absolute', left:14, top:'50%', transform:'translateY(-50%)', color: focused ? T.accent : T.muted, pointerEvents:'none', display:'flex' }}>{icon}</span>}
+        <input
+          autoFocus={autoFocus}
+          type={type}
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          placeholder={placeholder}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          style={{
+            width:'100%', height:48, borderRadius:12,
+            border: `1.5px solid ${error ? T.red : focused ? T.accent : T.border}`,
+            background: error ? T.redBg : focused ? T.accentBg : '#fff',
+            padding: icon ? '0 14px 0 42px' : '0 14px',
+            fontSize:14.5, color: T.text, outline:'none',
+            transition:'border-color 0.15s, background 0.15s',
+          }}
+        />
+      </div>
+      {error && <p style={{ fontSize:12.5, color: T.red, display:'flex', alignItems:'center', gap:5 }}>
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="6" stroke={T.red} strokeWidth="1.3"/><path d="M6.5 3.5v3.5" stroke={T.red} strokeWidth="1.4" strokeLinecap="round"/><circle cx="6.5" cy="9.5" r="0.7" fill={T.red}/></svg>
+        {error}
+      </p>}
+      {hint && !error && <p style={{ fontSize:12.5, color: T.muted }}>{hint}</p>}
+    </div>
+  );
+};
+
+const PrimaryBtn = ({ children, onClick, disabled, loading, full=true }) => {
+  const [pressed, setPressed] = useState(false);
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled || loading}
+      onPointerDown={() => setPressed(true)}
+      onPointerUp={() => setPressed(false)}
+      onPointerLeave={() => setPressed(false)}
+      style={{
+        width: full ? '100%' : 'auto',
+        height:52, borderRadius:14, border:'none',
+        background: (disabled || loading) ? T.muted : T.accent,
+        color:'#fff', fontSize:15, fontWeight:700,
+        cursor: (disabled || loading) ? 'not-allowed' : 'pointer',
+        transform: pressed ? 'scale(0.98)' : 'scale(1)',
+        boxShadow: (disabled || loading) ? 'none' : `0 4px 18px oklch(56% 0.14 200 / 0.28)`,
+        transition:'all 0.12s', display:'flex', alignItems:'center', justifyContent:'center', gap:10,
+      }}
+    >
+      {loading && <svg className="spinner" width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7" stroke="rgba(255,255,255,0.3)" strokeWidth="2.5"/><path d="M9 2 A7 7 0 0 1 16 9" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"/></svg>}
+      {children}
+    </button>
+  );
+};
+
+const SecondaryBtn = ({ children, onClick }) => (
+  <button onClick={onClick} style={{ height:44, borderRadius:12, border:`1.5px solid ${T.border}`, background:'transparent', color:T.sub, fontSize:14, fontWeight:600, cursor:'pointer', padding:'0 20px', transition:'border-color 0.15s, color 0.15s', fontFamily:"'Roboto',sans-serif" }}
+    onMouseEnter={e => { e.currentTarget.style.borderColor = T.accent; e.currentTarget.style.color = T.accent; }}
+    onMouseLeave={e => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.color = T.sub; }}
+  >{children}</button>
+);
+
+/* ── Cognito Login screen ────────────────────────────────────── */
+const LoginScreen = ({ onLogin }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [showPw, setShowPw] = useState(false);
+
+  const validate = () => {
+    const e = {};
+    if (!email.includes('@')) e.email = 'Please enter a valid email address';
+    if (password.length < 6) e.password = 'Password must be at least 6 characters';
+    return e;
+  };
+
+  const handleLogin = () => {
+    const e = validate();
+    if (Object.keys(e).length) { setErrors(e); return; }
+    setLoading(true);
+    setTimeout(() => { setLoading(false); onLogin(); }, 1800);
+  };
+
+  const eyeIcon = (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style={{ cursor:'pointer' }} onClick={() => setShowPw(p => !p)}>
+      {showPw
+        ? <><path d="M1 9s3-6 8-6 8 6 8 6-3 6-8 6-8-6-8-6Z" stroke="currentColor" strokeWidth="1.4" fill="none"/><circle cx="9" cy="9" r="2.5" stroke="currentColor" strokeWidth="1.4"/></>
+        : <><path d="M1 9s3-6 8-6 8 6 8 6-3 6-8 6-8-6-8-6Z" stroke="currentColor" strokeWidth="1.4" fill="none"/><circle cx="9" cy="9" r="2.5" stroke="currentColor" strokeWidth="1.4"/><line x1="2" y1="2" x2="16" y2="16" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/></>
+      }
+    </svg>
+  );
+
+  return (
+    <div style={{ minHeight:'100vh', background: T.bg, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'24px 16px' }}>
+      {/* Header */}
+      <div className="fade-in" style={{ marginBottom:32, display:'flex', flexDirection:'column', alignItems:'center', gap:12 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+          <BridgeLogo size={36} />
+          <span style={{ fontSize:24, fontWeight:800, color:T.text, letterSpacing:-0.6 }}>Bridge</span>
+        </div>
+        <p style={{ fontSize:13.5, color:T.muted, textAlign:'center' }}>Sign in to your account to continue</p>
+      </div>
+
+      {/* Card */}
+      <div className="fade-in" style={{ width:'100%', maxWidth:420, background:'#fff', borderRadius:24, padding:'36px 32px', boxShadow:'0 4px 32px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.05)' }}>
+        <h2 style={{ fontSize:20, fontWeight:700, color:T.text, marginBottom:24, letterSpacing:-0.4 }}>Welcome back</h2>
+
+        <div style={{ display:'flex', flexDirection:'column', gap:18 }}>
+          <InputField
+            label="Email address"
+            type="email"
+            value={email}
+            onChange={v => { setEmail(v); setErrors(p => ({...p, email:null})); }}
+            placeholder="you@example.com"
+            error={errors.email}
+            autoFocus
+            icon={<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="1.4"/><path d="M1 5l7 5 7-5" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/></svg>}
+          />
+          <div>
+            <InputField
+              label="Password"
+              type={showPw ? 'text' : 'password'}
+              value={password}
+              onChange={v => { setPassword(v); setErrors(p => ({...p, password:null})); }}
+              placeholder="••••••••"
+              error={errors.password}
+              icon={eyeIcon}
+            />
+            <div style={{ marginTop:8, textAlign:'right' }}>
+              <span style={{ fontSize:13, color:T.accent, cursor:'pointer', fontWeight:500 }}>Forgot password?</span>
+            </div>
+          </div>
+
+          <PrimaryBtn onClick={handleLogin} loading={loading} disabled={loading}>
+            {loading ? 'Signing in…' : 'Sign in'}
+          </PrimaryBtn>
+        </div>
+
+        <div style={{ marginTop:24, padding:'16px 0 0', borderTop:`1px solid ${T.divider}`, display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="4" width="12" height="9" rx="1.5" stroke={T.muted} strokeWidth="1.3"/><path d="M4 4V3a3 3 0 016 0v1" stroke={T.muted} strokeWidth="1.3" strokeLinecap="round"/></svg>
+          <span style={{ fontSize:12, color:T.muted }}>Secured by <strong style={{ fontWeight:600 }}>AWS Cognito</strong></span>
+        </div>
+      </div>
+
+      <p className="fade-in" style={{ marginTop:20, fontSize:12.5, color:T.muted, textAlign:'center' }}>
+        Need help? <span style={{ color:T.accent, cursor:'pointer', fontWeight:500 }}>Contact support</span>
+      </p>
+    </div>
+  );
+};
+
+/* ── Checking account screen ─────────────────────────────────── */
+const CheckingScreen = ({ onLinked, onNotLinked }) => {
+  useEffect(() => { setTimeout(onNotLinked, 2200); }, []);
+  return (
+    <div style={{ minHeight:'100vh', background:T.bg, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:24 }}>
+      <BridgeLogo size={44} />
+      <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:12 }}>
+        <svg className="spinner" width="36" height="36" viewBox="0 0 36 36" fill="none">
+          <circle cx="18" cy="18" r="15" stroke={T.border} strokeWidth="3"/>
+          <path d="M18 3 A15 15 0 0 1 33 18" stroke={T.accent} strokeWidth="3" strokeLinecap="round"/>
+        </svg>
+        <p style={{ fontSize:15, fontWeight:600, color:T.text }}>Checking your account…</p>
+        <p style={{ fontSize:13.5, color:T.muted }}>Looking up linked utility accounts</p>
+      </div>
+    </div>
+  );
+};
+
+/* ── Utility type card ───────────────────────────────────────── */
+const UtilityTypeCard = ({ type, label, desc, icon, selected, onClick }) => (
+  <button
+    onClick={onClick}
+    style={{
+      display:'flex', alignItems:'center', gap:14,
+      padding:'16px 18px', borderRadius:16, border:`2px solid ${selected ? T.accent : T.border}`,
+      background: selected ? T.accentBg : '#fff',
+      cursor:'pointer', textAlign:'left', width:'100%',
+      transition:'all 0.15s',
+      boxShadow: selected ? `0 0 0 3px oklch(56% 0.14 200 / 0.12)` : 'none',
+    }}
+  >
+    <div style={{ width:44, height:44, borderRadius:12, background: selected ? T.accent : T.bg, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, transition:'background 0.15s' }}>
+      {icon(selected ? '#fff' : T.muted)}
+    </div>
+    <div style={{ flex:1 }}>
+      <div style={{ fontSize:14.5, fontWeight:700, color: selected ? T.accent : T.text }}>{label}</div>
+      <div style={{ fontSize:12.5, color:T.muted, marginTop:2 }}>{desc}</div>
+    </div>
+    <div style={{ width:20, height:20, borderRadius:'50%', border:`2px solid ${selected ? T.accent : T.border}`, background: selected ? T.accent : 'transparent', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, transition:'all 0.15s' }}>
+      {selected && <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+    </div>
+  </button>
+);
+
+const UTILITY_TYPES = [
+  {
+    id:'water', label:'Water', desc:'Water supply & sewerage',
+    icon: c => <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 3C11 3 4 10 4 14a7 7 0 0014 0C18 10 11 3 11 3Z" stroke={c} strokeWidth="1.7" fill="none" strokeLinejoin="round"/><path d="M8 16a4 4 0 006-3" stroke={c} strokeWidth="1.5" strokeLinecap="round"/></svg>
+  },
+  {
+    id:'gas', label:'Gas', desc:'Natural gas supply',
+    icon: c => <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 3c0 0-5 4-5 9s2 7 5 7 5-2 5-7-5-9-5-9Z" stroke={c} strokeWidth="1.7" fill="none"/><path d="M9 14c0 2 1.5 3 2 3" stroke={c} strokeWidth="1.5" strokeLinecap="round"/><path d="M11 9c0 0 2 2 2 4" stroke={c} strokeWidth="1.4" strokeLinecap="round"/></svg>
+  },
+  {
+    id:'electricity', label:'Electricity', desc:'Electricity supply',
+    icon: c => <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M13 3L7 12h5l-3 7 8-10h-5l3-6Z" stroke={c} strokeWidth="1.7" fill="none" strokeLinejoin="round"/></svg>
+  },
+];
+
+/* ── Utility Account Linking form ────────────────────────────── */
+const LinkingForm = ({ onSuccess, onError }) => {
+  const [step, setStep] = useState(1); // 1=type, 2=details
+  const [utilityType, setUtilityType] = useState('');
+  const [postcode, setPostcode] = useState('');
+  const [accountRef, setAccountRef] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  const validateDetails = () => {
+    const e = {};
+    if (!postcode.trim()) e.postcode = 'Postcode is required';
+    else if (!/^[A-Z]{1,2}[0-9][0-9A-Z]?\s?[0-9][A-Z]{2}$/i.test(postcode.trim())) e.postcode = 'Please enter a valid UK postcode';
+    if (!accountRef.trim()) e.accountRef = 'Account reference is required';
+    else if (accountRef.trim().length < 5) e.accountRef = 'Please enter your full account reference';
+    return e;
+  };
+
+  const handleSubmit = () => {
+    const e = validateDetails();
+    if (Object.keys(e).length) { setErrors(e); return; }
+    setLoading(true);
+    // Simulate: ref starting with "ERR" goes to error state
+    const willFail = accountRef.trim().toUpperCase().startsWith('ERR');
+    setTimeout(() => { setLoading(false); willFail ? onError({ utilityType, postcode, accountRef }) : onSuccess({ utilityType, postcode, accountRef }); }, 2000);
+  };
+
+  const selectedType = UTILITY_TYPES.find(t => t.id === utilityType);
+
+  return (
+    <div style={{ minHeight:'100vh', background:T.bg, fontFamily:"'Roboto',system-ui,sans-serif", WebkitFontSmoothing:'antialiased' }}>
+      {/* Header */}
+      <header style={{ height:60, background:'#fff', borderBottom:`1px solid ${T.border}`, display:'flex', alignItems:'center', padding:'0 32px', justifyContent:'space-between', position:'sticky', top:0, zIndex:100, boxShadow:'0 1px 3px rgba(0,0,0,0.04)' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+          <BridgeLogo size={26} />
+          <span style={{ fontSize:17, fontWeight:700, color:T.text, letterSpacing:-0.4 }}>Bridge</span>
+          <span style={{ fontSize:11.5, color:T.accent, marginLeft:4, padding:'2px 8px', background:T.accentBg, borderRadius:100, fontWeight:600 }}>Customer Portal</span>
+        </div>
+        {/* Step indicator */}
+        <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+          {[1,2].map(s => (
+            <div key={s} style={{ display:'flex', alignItems:'center', gap:6 }}>
+              <div style={{ width: s === step ? 28 : 20, height:6, borderRadius:100, background: s <= step ? T.accent : T.border, transition:'all 0.3s' }}/>
+            </div>
+          ))}
+          <span style={{ fontSize:12.5, color:T.muted, marginLeft:4 }}>Step {step} of 2</span>
+        </div>
+        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+          <span style={{ fontSize:13.5, color:T.sub }}>Sarah Mitchell</span>
+          <div style={{ width:34, height:34, borderRadius:'50%', background:T.accentBg, display:'flex', alignItems:'center', justifyContent:'center', fontSize:13, fontWeight:700, color:T.accent }}>SM</div>
+        </div>
+      </header>
+
+      <main style={{ maxWidth:600, margin:'0 auto', padding:'44px 24px 80px' }} className="fade-in">
+
+        {step === 1 && (
+          <>
+            <div style={{ marginBottom:32 }}>
+              <div style={{ display:'inline-flex', alignItems:'center', gap:6, background:T.amberBg, color:T.amber, borderRadius:100, padding:'4px 12px', fontSize:12, fontWeight:700, marginBottom:16 }}>
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5.5" stroke={T.amber} strokeWidth="1.2"/><path d="M6 3.5v3" stroke={T.amber} strokeWidth="1.2" strokeLinecap="round"/><circle cx="6" cy="8.5" r="0.6" fill={T.amber}/></svg>
+                Action required
+              </div>
+              <h1 style={{ fontSize:26, fontWeight:800, color:T.text, letterSpacing:-0.6, marginBottom:8 }}>Link your utility account</h1>
+              <p style={{ fontSize:14.5, color:T.sub, lineHeight:1.6 }}>To get started, we need to connect your utility account so we can assess your situation accurately. This takes less than a minute.</p>
+            </div>
+
+            <div style={{ marginBottom:28 }}>
+              <p style={{ fontSize:13, fontWeight:600, color:T.muted, textTransform:'uppercase', letterSpacing:'0.07em', marginBottom:14 }}>What type of utility account?</p>
+              <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+                {UTILITY_TYPES.map(t => (
+                  <UtilityTypeCard key={t.id} {...t} selected={utilityType === t.id} onClick={() => setUtilityType(t.id)} />
+                ))}
+              </div>
+            </div>
+
+            <PrimaryBtn onClick={() => setStep(2)} disabled={!utilityType}>
+              Continue
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </PrimaryBtn>
+
+            <p style={{ marginTop:14, fontSize:12.5, color:T.muted, textAlign:'center' }}>
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ verticalAlign:'middle', marginRight:4 }}><rect x="1" y="4" width="10" height="7" rx="1.5" stroke={T.muted} strokeWidth="1.2"/><path d="M3.5 4V3a2.5 2.5 0 015 0v1" stroke={T.muted} strokeWidth="1.2" strokeLinecap="round"/></svg>
+              Your data is encrypted and never shared with third parties
+            </p>
+          </>
+        )}
+
+        {step === 2 && (
+          <>
+            {/* Back */}
+            <button onClick={() => { setStep(1); setErrors({}); }} style={{ display:'flex', alignItems:'center', gap:6, background:'none', border:'none', color:T.sub, cursor:'pointer', fontSize:13.5, fontWeight:500, marginBottom:28, padding:0 }}>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              Back
+            </button>
+
+            <div style={{ marginBottom:28 }}>
+              <div style={{ display:'inline-flex', alignItems:'center', gap:8, background:T.accentBg, borderRadius:100, padding:'5px 14px', marginBottom:14 }}>
+                {selectedType && selectedType.icon(T.accent)}
+                <span style={{ fontSize:13, fontWeight:700, color:T.accent }}>{selectedType?.label} account</span>
+              </div>
+              <h1 style={{ fontSize:26, fontWeight:800, color:T.text, letterSpacing:-0.6, marginBottom:8 }}>Account details</h1>
+              <p style={{ fontSize:14.5, color:T.sub, lineHeight:1.6 }}>Enter the details from your {selectedType?.label?.toLowerCase()} bill or welcome letter.</p>
+            </div>
+
+            <div style={{ background:'#fff', borderRadius:20, padding:'28px 24px', boxShadow:'0 1px 4px rgba(0,0,0,0.06)', marginBottom:20 }}>
+              <div style={{ display:'flex', flexDirection:'column', gap:20 }}>
+                <InputField
+                  label="Postcode"
+                  value={postcode}
+                  onChange={v => { setPostcode(v.toUpperCase()); setErrors(p => ({...p, postcode:null})); }}
+                  placeholder="e.g. SW1A 1AA"
+                  hint="The postcode associated with your utility account"
+                  error={errors.postcode}
+                  autoFocus
+                  icon={<svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 1C5 1 3 3 3 5.5c0 3.5 4.5 8.5 4.5 8.5S12 9 12 5.5C12 3 10 1 7.5 1Z" stroke="currentColor" strokeWidth="1.4"/><circle cx="7.5" cy="5.5" r="1.5" stroke="currentColor" strokeWidth="1.3"/></svg>}
+                />
+                <InputField
+                  label="Account reference number"
+                  value={accountRef}
+                  onChange={v => { setAccountRef(v); setErrors(p => ({...p, accountRef:null})); }}
+                  placeholder="e.g. 123456789"
+                  hint="Found on your bill, usually 8–12 digits"
+                  error={errors.accountRef}
+                  icon={<svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1" y="2" width="13" height="11" rx="2" stroke="currentColor" strokeWidth="1.4"/><path d="M4 6h7M4 9h5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>}
+                />
+              </div>
+            </div>
+
+            {/* Tip box */}
+            <div style={{ background:T.accentBg, borderRadius:14, padding:'14px 16px', marginBottom:24, display:'flex', gap:12, alignItems:'flex-start' }}>
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style={{ flexShrink:0, marginTop:1 }}><circle cx="9" cy="9" r="8" stroke={T.accent} strokeWidth="1.5"/><path d="M9 8v5" stroke={T.accent} strokeWidth="1.5" strokeLinecap="round"/><circle cx="9" cy="5.5" r="0.8" fill={T.accent}/></svg>
+              <p style={{ fontSize:13, color:T.sub, lineHeight:1.55 }}>
+                <strong style={{ fontWeight:600, color:T.accent }}>Tip:</strong> Your account reference is printed at the top of any recent bill, labelled "Account No." or "Reference". You can also find it in your online account portal.
+              </p>
+            </div>
+
+            <PrimaryBtn onClick={handleSubmit} loading={loading} disabled={loading}>
+              {loading ? 'Verifying your account…' : 'Link account'}
+              {!loading && <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+            </PrimaryBtn>
+
+            <p style={{ marginTop:14, fontSize:12.5, color:T.muted, textAlign:'center' }}>
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ verticalAlign:'middle', marginRight:4 }}><rect x="1" y="4" width="10" height="7" rx="1.5" stroke={T.muted} strokeWidth="1.2"/><path d="M3.5 4V3a2.5 2.5 0 015 0v1" stroke={T.muted} strokeWidth="1.2" strokeLinecap="round"/></svg>
+              Your data is encrypted and never shared with third parties
+            </p>
+          </>
+        )}
+      </main>
+    </div>
+  );
+};
+
+/* ── Success screen ──────────────────────────────────────────── */
+const SuccessScreen = ({ details, onContinue }) => {
+  const selectedType = UTILITY_TYPES.find(t => t.id === details?.utilityType);
+  return (
+    <div style={{ minHeight:'100vh', background:T.bg, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'24px 16px', fontFamily:"'Roboto',system-ui,sans-serif" }}>
+      <div className="fade-in" style={{ width:'100%', maxWidth:480 }}>
+        {/* Success icon */}
+        <div className="pop" style={{ width:80, height:80, borderRadius:'50%', background:T.greenBg, display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 24px' }}>
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+            <circle cx="18" cy="18" r="17" fill={T.green} opacity="0.15"/>
+            <path d="M11 18.5l5 5 9-10" stroke={T.green} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+
+        <div style={{ textAlign:'center', marginBottom:32 }}>
+          <h1 style={{ fontSize:26, fontWeight:800, color:T.text, letterSpacing:-0.6, marginBottom:8 }}>Account linked!</h1>
+          <p style={{ fontSize:14.5, color:T.sub, lineHeight:1.6 }}>Your {selectedType?.label?.toLowerCase()} account has been successfully connected to Bridge.</p>
+        </div>
+
+        {/* Summary card */}
+        <div style={{ background:'#fff', borderRadius:20, padding:'20px 24px', boxShadow:'0 1px 4px rgba(0,0,0,0.06)', marginBottom:24 }}>
+          <p style={{ fontSize:11.5, fontWeight:600, color:T.muted, textTransform:'uppercase', letterSpacing:'0.07em', marginBottom:14 }}>Account summary</p>
+          {[
+            { label:'Utility type', value: selectedType?.label },
+            { label:'Postcode', value: details?.postcode },
+            { label:'Account reference', value: details?.accountRef },
+            { label:'Status', value: <span style={{ display:'inline-flex', alignItems:'center', gap:5, color:T.green, fontWeight:700 }}><span style={{ width:7, height:7, borderRadius:'50%', background:T.green, display:'inline-block' }}></span>Verified</span> },
+          ].map((row, i, arr) => (
+            <div key={row.label} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'10px 0', borderBottom: i < arr.length-1 ? `1px solid ${T.divider}` : 'none' }}>
+              <span style={{ fontSize:13.5, color:T.sub }}>{row.label}</span>
+              <span style={{ fontSize:13.5, fontWeight:600, color:T.text }}>{row.value}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Next step callout */}
+        <div style={{ background:`linear-gradient(135deg, oklch(56% 0.14 200), oklch(48% 0.14 200))`, borderRadius:18, padding:'22px 24px', marginBottom:24, color:'#fff', position:'relative', overflow:'hidden' }}>
+          <div style={{ position:'absolute', right:-12, top:-12, width:100, height:100, borderRadius:'50%', background:'rgba(255,255,255,0.06)' }}/>
+          <p style={{ fontSize:11.5, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.08em', opacity:0.7, marginBottom:8 }}>Next step</p>
+          <h3 style={{ fontSize:17, fontWeight:700, marginBottom:6, letterSpacing:-0.3 }}>Connect your bank account</h3>
+          <p style={{ fontSize:13, opacity:0.82, lineHeight:1.55 }}>We'll now securely connect to your bank via Open Banking to complete your financial assessment.</p>
+        </div>
+
+        <PrimaryBtn onClick={onContinue}>
+          Continue to bank connection
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        </PrimaryBtn>
+      </div>
+    </div>
+  );
+};
+
+/* ── Error screen ────────────────────────────────────────────── */
+const ErrorScreen = ({ details, onRetry, onHelp }) => {
+  const selectedType = UTILITY_TYPES.find(t => t.id === details?.utilityType);
+  return (
+    <div style={{ minHeight:'100vh', background:T.bg, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'24px 16px', fontFamily:"'Roboto',system-ui,sans-serif" }}>
+      <div className="fade-in" style={{ width:'100%', maxWidth:480 }}>
+        {/* Error icon */}
+        <div className="pop" style={{ width:80, height:80, borderRadius:'50%', background:T.redBg, display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 24px' }}>
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+            <circle cx="18" cy="18" r="17" fill={T.red} opacity="0.12"/>
+            <path d="M13 13l10 10M23 13L13 23" stroke={T.red} strokeWidth="2.5" strokeLinecap="round"/>
+          </svg>
+        </div>
+
+        <div style={{ textAlign:'center', marginBottom:28 }}>
+          <h1 style={{ fontSize:26, fontWeight:800, color:T.text, letterSpacing:-0.6, marginBottom:8 }}>Couldn't verify account</h1>
+          <p style={{ fontSize:14.5, color:T.sub, lineHeight:1.6 }}>We couldn't match these details to a {selectedType?.label?.toLowerCase()} account. Please check and try again.</p>
+        </div>
+
+        {/* Details entered */}
+        <div style={{ background:'#fff', borderRadius:20, padding:'20px 24px', boxShadow:'0 1px 4px rgba(0,0,0,0.06)', marginBottom:20 }}>
+          <p style={{ fontSize:11.5, fontWeight:600, color:T.muted, textTransform:'uppercase', letterSpacing:'0.07em', marginBottom:14 }}>Details you entered</p>
+          {[
+            { label:'Utility type', value: selectedType?.label },
+            { label:'Postcode', value: details?.postcode },
+            { label:'Account reference', value: details?.accountRef },
+          ].map((row, i, arr) => (
+            <div key={row.label} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'10px 0', borderBottom: i < arr.length-1 ? `1px solid ${T.divider}` : 'none' }}>
+              <span style={{ fontSize:13.5, color:T.sub }}>{row.label}</span>
+              <span style={{ fontSize:13.5, fontWeight:600, color:T.text }}>{row.value}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Common reasons */}
+        <div style={{ background:T.redBg, borderRadius:14, padding:'16px 18px', marginBottom:24 }}>
+          <p style={{ fontSize:13, fontWeight:700, color:T.red, marginBottom:10 }}>Common reasons this happens</p>
+          {[
+            'Postcode doesn\'t match the account address',
+            'Account reference copied incorrectly — check for spaces',
+            'Account may be registered under a different name',
+          ].map(reason => (
+            <div key={reason} style={{ display:'flex', gap:8, alignItems:'flex-start', padding:'6px 0' }}>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink:0, marginTop:2 }}><circle cx="7" cy="7" r="6.5" stroke={T.red} strokeWidth="1.2"/><path d="M7 4v3.5" stroke={T.red} strokeWidth="1.2" strokeLinecap="round"/><circle cx="7" cy="10" r="0.6" fill={T.red}/></svg>
+              <span style={{ fontSize:13, color:T.sub, lineHeight:1.5 }}>{reason}</span>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+          <PrimaryBtn onClick={onRetry}>
+            Try again
+          </PrimaryBtn>
+          <button onClick={onHelp} style={{ height:48, borderRadius:14, border:`1.5px solid ${T.border}`, background:'transparent', color:T.sub, fontSize:14.5, fontWeight:600, cursor:'pointer', transition:'all 0.15s', fontFamily:"'Roboto',sans-serif" }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = T.accent; e.currentTarget.style.color = T.accent; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.color = T.sub; }}
+          >
+            I need help finding my details
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ── Help sheet ──────────────────────────────────────────────── */
+const HelpScreen = ({ onBack }) => (
+  <div style={{ minHeight:'100vh', background:T.bg, fontFamily:"'Roboto',system-ui,sans-serif" }}>
+    <header style={{ height:60, background:'#fff', borderBottom:`1px solid ${T.border}`, display:'flex', alignItems:'center', padding:'0 32px', gap:16, boxShadow:'0 1px 3px rgba(0,0,0,0.04)' }}>
+      <button onClick={onBack} style={{ display:'flex', alignItems:'center', gap:6, background:'none', border:'none', color:T.sub, cursor:'pointer', fontSize:14, fontWeight:500, fontFamily:"'Roboto',sans-serif" }}>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        Back
+      </button>
+      <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+        <BridgeLogo size={22} />
+        <span style={{ fontSize:15, fontWeight:700, color:T.text }}>Bridge Support</span>
+      </div>
+    </header>
+    <main className="fade-in" style={{ maxWidth:560, margin:'0 auto', padding:'40px 24px' }}>
+      <h1 style={{ fontSize:24, fontWeight:800, color:T.text, letterSpacing:-0.5, marginBottom:8 }}>Finding your account details</h1>
+      <p style={{ fontSize:14.5, color:T.sub, lineHeight:1.6, marginBottom:28 }}>Here's how to locate your account reference for each utility type.</p>
+      {[
+        { label:'Water', steps:['Look for "Account No." at the top of your water bill','Check your online account at your supplier\'s website','Contact your water provider directly on the number on your bill'] },
+        { label:'Gas', steps:['Your gas account reference appears as "Account Number" on all correspondence','It\'s also visible in your online portal under Account Settings','British Gas, EDF and others use 8–10 digit references'] },
+        { label:'Electricity', steps:['Find your electricity reference labelled "Supply Number" or "Account Ref"','Log into your supplier\'s app — it\'s shown on the dashboard','Found on the top-right of any printed statement'] },
+      ].map(section => (
+        <div key={section.label} style={{ background:'#fff', borderRadius:18, padding:'20px 22px', marginBottom:14, boxShadow:'0 1px 4px rgba(0,0,0,0.06)' }}>
+          <h3 style={{ fontSize:15, fontWeight:700, color:T.text, marginBottom:12 }}>{section.label}</h3>
+          {section.steps.map((s, i) => (
+            <div key={i} style={{ display:'flex', gap:12, alignItems:'flex-start', padding:'6px 0' }}>
+              <div style={{ width:22, height:22, borderRadius:'50%', background:T.accentBg, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                <span style={{ fontSize:11.5, fontWeight:700, color:T.accent }}>{i+1}</span>
+              </div>
+              <span style={{ fontSize:13.5, color:T.sub, lineHeight:1.5 }}>{s}</span>
+            </div>
+          ))}
+        </div>
+      ))}
+      <div style={{ background:T.accentBg, borderRadius:14, padding:'16px 18px', marginTop:8 }}>
+        <p style={{ fontSize:13.5, color:T.sub }}>Still stuck? Call our helpline: <strong style={{ color:T.accent }}>0800 123 4567</strong> (Mon–Fri 9am–5pm)</p>
+      </div>
+    </main>
+  </div>
+);
+
+/* ── Bank Connection redirect screen ─────────────────────────── */
+const BankRedirectScreen = () => (
+  <div style={{ minHeight:'100vh', background:T.bg, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:20, fontFamily:"'Roboto',system-ui,sans-serif" }}>
+    <BridgeLogo size={44} />
+    <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:10 }}>
+      <svg className="spinner" width="36" height="36" viewBox="0 0 36 36" fill="none">
+        <circle cx="18" cy="18" r="15" stroke={T.border} strokeWidth="3"/>
+        <path d="M18 3 A15 15 0 0 1 33 18" stroke={T.accent} strokeWidth="3" strokeLinecap="round"/>
+      </svg>
+      <p style={{ fontSize:15, fontWeight:600, color:T.text }}>Taking you to bank connection…</p>
+      <p style={{ fontSize:13.5, color:T.muted }}>Securely redirecting via Open Banking</p>
+    </div>
+  </div>
+);
+
+/* ── Cognito callback spinner ────────────────────────────────── */
+const CognitoCallbackScreen = ({ onDone }) => {
+  useEffect(() => { setTimeout(onDone, 1800); }, []);
+  return (
+    <div style={{ minHeight:'100vh', background:T.bg, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:24 }}>
+      <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:8 }}>
+        <BridgeLogo size={32} />
+        <span style={{ fontSize:20, fontWeight:800, color:T.text, letterSpacing:-0.5 }}>Bridge</span>
+      </div>
+      <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:12 }}>
+        <svg className="spinner" width="40" height="40" viewBox="0 0 40 40" fill="none">
+          <circle cx="20" cy="20" r="16" stroke={T.border} strokeWidth="3.5"/>
+          <path d="M20 4 A16 16 0 0 1 36 20" stroke={T.accent} strokeWidth="3.5" strokeLinecap="round"/>
+        </svg>
+        <p style={{ fontSize:15, fontWeight:600, color:T.text }}>Signing you in…</p>
+        <p style={{ fontSize:13.5, color:T.muted }}>Completing authentication with AWS Cognito</p>
+      </div>
+    </div>
+  );
+};
+
+/* ── App shell ───────────────────────────────────────────────── */
+const SCREENS = {
+  CALLBACK: 'callback',
+  CHECKING: 'checking',
+  LINKING:  'linking',
+  SUCCESS:  'success',
+  ERROR:    'error',
+  HELP:     'help',
+  REDIRECT: 'redirect',
+};
+
+const App = () => {
+  const [screen, setScreen] = useState(SCREENS.CALLBACK);
+  const [linkDetails, setLinkDetails] = useState(null);
+
+  const goTo = s => setScreen(s);
+
+  return (
+    <div data-screen-label={screen}>
+      {screen === SCREENS.CALLBACK && <CognitoCallbackScreen onDone={() => goTo(SCREENS.CHECKING)} />}
+      {screen === SCREENS.CHECKING && <CheckingScreen onNotLinked={() => goTo(SCREENS.LINKING)} />}
+      {screen === SCREENS.LINKING  && (
+        <LinkingForm
+          onSuccess={d => { setLinkDetails(d); goTo(SCREENS.SUCCESS); }}
+          onError={d => { setLinkDetails(d); goTo(SCREENS.ERROR); }}
+        />
+      )}
+      {screen === SCREENS.SUCCESS  && <SuccessScreen details={linkDetails} onContinue={() => goTo(SCREENS.REDIRECT)} />}
+      {screen === SCREENS.ERROR    && <ErrorScreen details={linkDetails} onRetry={() => goTo(SCREENS.LINKING)} onHelp={() => goTo(SCREENS.HELP)} />}
+      {screen === SCREENS.HELP     && <HelpScreen onBack={() => goTo(SCREENS.ERROR)} />}
+      {screen === SCREENS.REDIRECT && <BankRedirectScreen />}
+    </div>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</head>
+<body>
+<div id="root"></div>
+</body>
+</html>

@@ -1,8 +1,8 @@
 import { Assessment } from '@/journeys/Assessment/models/assessment';
+import { AssessmentPendingView } from '../assessmentPendingView/AssessmentPendingView';
 import { CompletedAssessmentView } from '../completedAssessmentView/CompletedAssessmentView';
 import styles from './AssessmentContent.module.css';
 import { FailedBanner } from './FailedBanner';
-import { PendingBanner } from './PendingBanner';
 
 interface Props {
   assessment: Assessment;
@@ -16,11 +16,13 @@ interface Props {
 export function AssessmentContent({ assessment, assessmentDate, isPending, isFailed, isCompleted, onExplorePaymentPlans }: Props) {
   return (
     <div className={styles.page}>
-      <div className={styles.heading}>
-        <h1 className={styles.headingTitle}>Your Financial Assessment</h1>
-        <p className={styles.headingSubtitle}>Based on 6 months of transaction data from your connected bank, assessed on {assessmentDate}.</p>
-      </div>
-      {isPending && <PendingBanner />}
+      {!isPending && (
+        <div className={styles.heading}>
+          <h1 className={styles.headingTitle}>Your Financial Assessment</h1>
+          <p className={styles.headingSubtitle}>Based on 6 months of transaction data from your connected bank, assessed on {assessmentDate}.</p>
+        </div>
+      )}
+      {isPending && <AssessmentPendingView />}
       {isFailed && <FailedBanner />}
       {isCompleted && <CompletedAssessmentView assessment={assessment} assessmentDate={assessmentDate} onExplorePaymentPlans={onExplorePaymentPlans} />}
     </div>

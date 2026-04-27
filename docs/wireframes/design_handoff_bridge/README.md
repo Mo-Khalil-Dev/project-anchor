@@ -162,6 +162,82 @@ List item with green ✓ or red ✗ circle icon, 13.5px body text, 1px bottom bo
 
 ## Screens
 
+### Epic 0 — Account Setup
+
+#### 0.1 Account Setup Journey
+**File:** `screens/Screen 0 - Account Setup Journey.html`
+**Type:** Customer · Multi-step flow (7 states in one file)
+
+This is the **first screen a customer sees** after being redirected back from AWS Cognito authentication. There is **no login form in the app** — authentication is handled entirely by the Cognito hosted UI (external). The app receives the user after a successful Cognito redirect.
+
+| Step | State key | Description |
+|------|-----------|-------------|
+| 0 | `callback` | Cognito redirect landing — full-screen spinner while session is established |
+| 1 | `checking` | Checking whether the user already has a linked utility account (auto-advances ~2s) |
+| 2 | `linking` Step 1 | Select utility type: Water / Gas / Electricity |
+| 3 | `linking` Step 2 | Enter postcode + account reference number |
+| 4 | `success` | Account verified — summary + "Continue to bank connection" CTA |
+| 5 | `error` | Verification failed — details entered, common reasons, retry / help CTAs |
+| 6 | `help` | How to find your account reference (per utility type) |
+| 7 | `redirect` | Transitional spinner: "Taking you to bank connection…" |
+
+**Authentication flow:**
+- The app does **not** render a login screen. AWS Cognito handles authentication via its hosted UI.
+- After login, Cognito redirects the user back to the app (e.g. `/callback?code=...`).
+- On landing, the app immediately shows the `callback` spinner (~1.8s) while it exchanges the auth code for tokens.
+- Once tokens are obtained, transition to `checking`.
+
+**Callback spinner (`callback` state):**
+- Full-screen, page background `#f4f6f8`
+- Bridge logo + wordmark centred
+- Spinning arc loader: 40×40px, accent colour `oklch(56% 0.14 200)`
+- Label: `"Signing you in…"` (15px 600wt) + `"Completing authentication with AWS Cognito"` (13.5px muted)
+- Auto-advances after ~1.8s (in production: advance when token exchange completes)
+
+**Checking state (`checking`):**
+- Same full-screen spinner layout
+- Label: `"Checking your account…"` + `"Looking up linked utility accounts"`
+- Auto-advances to `linking` after ~2.2s (in production: advance when accounts API responds)
+- If account already linked → skip ahead to Epic 1 (Bank Connection)
+
+**Utility type selection — Step 1 of `linking`:**
+- Amber "Action required" pill badge
+- H1: `"Link your utility account"`
+- 3 radio-style cards: Water / Gas / Electricity — icon (44×44) + label + desc + radio circle
+- Selected state: 2px accent border + accent-tinted bg + accent glow shadow
+- Primary CTA disabled until a type is selected
+
+**Account details form — Step 2 of `linking`:**
+- Back button, selected utility pill with icon
+- H1: `"Account details"`
+- 2 inputs: Postcode (auto-uppercase, validates UK format `^[A-Z]{1,2}[0-9][0-9A-Z]?\s?[0-9][A-Z]{2}$`) + Account reference
+- Blue info tip: how to find the reference number
+- CTA: `"Link account"` with 2s loading state
+- Test: reference starting with `"ERR"` routes to `error` state
+
+**Step indicator (header, Steps 1–2):**
+- Two rectangles top-right: 28px wide active / 8px inactive, accent fill
+- Label: `"Step 1 of 2"` / `"Step 2 of 2"`
+
+**Success state:**
+- Green check icon 80×80, `pop` keyframe animation on mount
+- Summary card: utility type / postcode / account ref / Verified status pill
+- Gradient CTA banner: "Next step — Connect your bank account"
+- Primary CTA: `"Continue to bank connection"` → `redirect` state
+
+**Error state:**
+- Red ✕ icon 80×80, `pop` keyframe
+- Summary of details entered
+- Red callout with 3 common failure reasons
+- CTAs: `"Try again"` (→ `linking`) + `"I need help finding my details"` (→ `help`)
+
+**Help screen:**
+- Back → `error` state
+- Numbered steps per utility type for locating account reference
+- Support callout: `0800 123 4567`
+
+---
+
 ### Epic 1 — Bank Connection
 
 #### 1.1 Bank Connection Journey
@@ -478,6 +554,7 @@ design_handoff_bridge/
 ├── bridge-ui.jsx                      ← Shared design system components
 ├── Bridge Screen Index.html           ← Navigable screen index
 └── screens/
+    ├── Screen 0 - Account Setup Journey.html
     ├── Screen 1.1 - Bank Connection Journey.html
     ├── Screen 1.1.1 - Home.html
     ├── Screen 2.1.1 - Assessment Overview.html

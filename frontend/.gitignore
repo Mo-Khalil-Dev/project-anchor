@@ -10,3 +10,4 @@ dist-ssr
 # Exclude JavaScript files - TypeScript only project
 src/**/*.js
 src/*.js
+!src/**/*.config.js

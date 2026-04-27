@@ -251,7 +251,25 @@ export interface AdminSliceState {
   escalateMode: boolean;
 }
 
+export interface AuthUser {
+  id: string;
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  role?: 'customer' | 'admin';
+  customerId?: string;
+}
+
+export interface AuthSliceState {
+  user: AuthUser | null;
+  accessToken: string | null;
+  isLoading: boolean;
+  error: string | null;
+  isAuthenticated: boolean;
+}
+
 export interface RootState {
+  auth: AuthSliceState;
   customer: CustomerSliceState;
   admin: AdminSliceState;
 }

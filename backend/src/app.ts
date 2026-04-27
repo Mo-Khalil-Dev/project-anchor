@@ -1,29 +1,46 @@
 import express, { Express, Request, Response, NextFunction } from 'express';
-import cors from 'cors';
 import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
+import { PrismaClient } from '@prisma/client';
 import { globalErrorHandler } from './presentation/middleware';
 import { createBankConnectionRoutes } from './presentation/routes/bankConnection.routes';
 import { createAssessmentRoutes } from './presentation/routes/assessment.routes';
+import { initializeAuthDependencies } from './infrastructure/auth/authDependencies';
 import type { AppConfig } from './shared/config';
 import type { ILogger } from './shared/logging';
 
-export function createApp(config: AppConfig, logger: ILogger): Express {
+export function createApp(config: AppConfig, logger: ILogger, prisma: PrismaClient): Express {
   const app: Express = express();
 
   // ============ MIDDLEWARE ============
 
   app.use(helmet());
-  // CORS configuration - allow all origins
-  app.use(cors({
-    origin: '*',
-    credentials: false,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Trace-ID'],
-    maxAge: 86400,
-  }));
+
+  // Manual CORS middleware - the cors package wasn't setting credentials header
+  app.use((req: Request, res: Response, next: NextFunction): void => {
+    const origin = req.headers.origin;
+
+    if (origin) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD');
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Trace-ID');
+      res.setHeader('Access-Control-Expose-Headers', 'Set-Cookie');
+      res.setHeader('Access-Control-Max-Age', '86400');
+      res.setHeader('Vary', 'Origin');
+    }
+
+    if (req.method === 'OPTIONS') {
+      res.sendStatus(200);
+      return;
+    }
+
+    next();
+  });
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
+  app.use(cookieParser());
 
   // Request logging
   app.use((req: Request, res: Response, next: NextFunction) => {
@@ -49,8 +66,15 @@ export function createApp(config: AppConfig, logger: ILogger): Express {
   });
 
   // API Routes
+  const apiRouter = express.Router();
+
+  // Auth routes
+  initializeAuthDependencies(apiRouter, config, prisma);
+
+  // Other routes
   app.use('/api/bank-connections', createBankConnectionRoutes(config, logger));
   app.use('/api', createAssessmentRoutes());
+  app.use('/api', apiRouter);
 
   // ============ ERROR HANDLING ============
 

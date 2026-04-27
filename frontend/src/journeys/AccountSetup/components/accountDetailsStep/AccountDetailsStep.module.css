@@ -1,0 +1,101 @@
+.section {
+  margin-bottom: 28px;
+}
+
+.backBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: #4b5563;
+  cursor: pointer;
+  font-size: 13.5px;
+  font-weight: 500;
+  margin-bottom: 28px;
+  padding: 0;
+  font-family: 'Roboto', system-ui, sans-serif;
+}
+
+.typePill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: oklch(97% 0.03 200);
+  border-radius: 100px;
+  padding: 5px 14px;
+  margin-bottom: 14px;
+}
+
+.typePillLabel {
+  font-size: 13px;
+  font-weight: 700;
+  color: oklch(56% 0.14 200);
+}
+
+.title {
+  font-size: 26px;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: -0.6px;
+  margin: 0 0 8px 0;
+}
+
+.subtitle {
+  font-size: 14.5px;
+  color: #4b5563;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.formCard {
+  background: #fff;
+  border-radius: 20px;
+  padding: 28px 24px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  margin-bottom: 20px;
+}
+
+.formGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.tipBox {
+  background: oklch(97% 0.03 200);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 24px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.tipBoxIcon {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.tipText {
+  font-size: 13px;
+  color: #4b5563;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.tipStrong {
+  font-weight: 600;
+  color: oklch(56% 0.14 200);
+}
+
+.footer {
+  margin-top: 14px;
+  font-size: 12.5px;
+  color: #9ca3af;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
