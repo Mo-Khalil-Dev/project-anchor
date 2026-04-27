@@ -46,8 +46,15 @@ export function setupInterceptors(axiosInstance: AxiosInstance) {
     async (error) => {
       const originalRequest = error.config;
 
-      // If not 401 or already tried to refresh, reject
-      if (error.response?.status !== 401 || originalRequest._retry) {
+      // The refresh endpoint itself must never trigger auto-refresh — that would
+      // cause a deadlock (the original call waits for the retry, the retry waits
+      // in the queue for the original call). A 401 from /auth/refresh means the
+      // refresh token is gone or expired; the caller handles it (e.g. by
+      // showing the login page).
+      const isRefreshEndpoint = typeof originalRequest?.url === 'string' && originalRequest.url.includes('/auth/refresh');
+
+      // If not 401, already tried, or hitting the refresh endpoint, reject as-is.
+      if (error.response?.status !== 401 || originalRequest._retry || isRefreshEndpoint) {
         return Promise.reject(error);
       }
 
