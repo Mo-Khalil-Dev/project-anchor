@@ -7,6 +7,7 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Home } from '@/journeys/Home';
 import { BankConnectionRoot } from '@/journeys/BankConnection';
 import { AssessmentOverview } from '@/journeys/Assessment/screens/overview/Overview';
+import { AccountSetupPage } from '@/journeys/AccountSetup/AccountSetupPage';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<Home />} />
+            <Route path="/account-setup" element={<AccountSetupPage />} />
             <Route path="/bank-connection" element={<BankConnectionRoot />} />
             <Route path="/assessment/:assessmentId" element={<AssessmentOverview />} />
           </Route>

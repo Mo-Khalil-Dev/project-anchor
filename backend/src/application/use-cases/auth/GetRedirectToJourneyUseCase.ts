@@ -35,9 +35,9 @@ export class GetRedirectToJourneyUseCase {
     }
 
     // Customer journey
-    // 1. Must be linked to a customer
+    // 1. Must be linked to a customer (utility account setup)
     if (!user.customerId || !user.customer) {
-      return { nextPage: '/link-customer', reason: 'customer_not_linked' };
+      return { nextPage: '/account-setup', reason: 'customer_not_linked' };
     }
 
     // 2. Must have bank connection

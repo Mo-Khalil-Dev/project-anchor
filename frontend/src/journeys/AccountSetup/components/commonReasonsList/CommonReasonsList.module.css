@@ -1,0 +1,32 @@
+.box {
+  background: oklch(97% 0.03 25);
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin-bottom: 24px;
+}
+
+.heading {
+  font-size: 13px;
+  font-weight: 700;
+  color: oklch(52% 0.18 25);
+  margin: 0 0 10px 0;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 6px 0;
+}
+
+.icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: oklch(52% 0.18 25);
+}
+
+.text {
+  font-size: 13px;
+  color: #4b5563;
+  line-height: 1.5;
+}
