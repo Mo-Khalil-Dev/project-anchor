@@ -12,58 +12,74 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-.iconWrap {
-  width: 96px;
-  height: 96px;
-  border-radius: 28px;
-  background: linear-gradient(150deg, oklch(96.5% 0.03 270) 0%, oklch(94% 0.04 270) 100%);
+.mainCard {
+  background: #fff;
+  border-radius: 18px;
+  padding: 44px 40px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  width: 100%;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  color: oklch(52% 0.18 270);
-  margin-bottom: 24px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
 }
 
 .title {
-  font-size: 28px;
+  font-size: 22px;
   font-weight: 800;
   color: #0d0f14;
-  letter-spacing: -0.6px;
+  letter-spacing: -0.5px;
   margin: 0 0 10px 0;
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
 .subtitle {
-  font-size: 15px;
+  font-size: 14px;
   color: #5a5f72;
-  margin: 0 0 32px 0;
   line-height: 1.55;
-  max-width: 440px;
+  margin: 0 0 24px 0;
+  max-width: 400px;
 }
 
-.stepsCard {
-  background: #fff;
-  border-radius: 14px;
-  padding: 8px 20px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+.progressBarWrap {
   width: 100%;
   max-width: 480px;
-  margin-bottom: 24px;
-  text-align: left;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 14px;
 }
 
-.note {
-  background: oklch(96.5% 0.03 270);
-  border-radius: 12px;
-  padding: 14px 18px;
+.activeLabel {
   font-size: 13px;
-  color: oklch(40% 0.22 285);
-  line-height: 1.5;
-  max-width: 480px;
+  font-weight: 600;
+  color: oklch(56% 0.14 200);
+  margin: 0 0 16px 0;
+  height: 20px;
+  line-height: 20px;
+  animation: fadeIn 0.3s ease both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-width: 420px;
+  margin-bottom: 24px;
+}
+
+.notify {
+  display: flex;
+  justify-content: center;
   width: 100%;
 }
 
-@keyframes spinHG {
-  to { transform: rotate(360deg); }
+@media (max-width: 640px) {
+  .mainCard {
+    padding: 32px 22px;
+  }
 }

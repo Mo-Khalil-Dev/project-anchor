@@ -12,6 +12,7 @@ export class ProcessAssessmentJobService {
   ) {}
 
   async execute(jobId: string): Promise<Result<void, Error>> {
+    
     try {
       // Fetch job by ID
       const job = await this.prisma.assessmentJob.findUnique({

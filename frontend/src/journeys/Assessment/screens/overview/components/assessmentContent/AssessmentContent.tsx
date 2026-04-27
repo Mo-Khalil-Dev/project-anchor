@@ -22,9 +22,9 @@ export function AssessmentContent({ assessment, assessmentDate, isPending, isFai
           <p className={styles.headingSubtitle}>Based on 6 months of transaction data from your connected bank, assessed on {assessmentDate}.</p>
         </div>
       )}
-      {isPending && <AssessmentPendingView />}
+      {isPending && <AssessmentPendingView calculatedAt={assessment.calculatedAt} />}
       {isFailed && <FailedBanner />}
-      {isCompleted && <CompletedAssessmentView assessment={assessment} assessmentDate={assessmentDate} onExplorePaymentPlans={onExplorePaymentPlans} />}
+      {isCompleted && <CompletedAssessmentView assessment={assessment} onExplorePaymentPlans={onExplorePaymentPlans} />}
     </div>
   );
 }

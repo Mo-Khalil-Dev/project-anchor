@@ -10,7 +10,6 @@ vi.mock('./AssessmentCTAs', () => ({ AssessmentCTAs: () => <div>ctas</div> }));
 describe('CompletedAssessmentView', () => {
   const defaultProps = {
     assessment: makeAssessment({ hardshipLevel: 'SEVERE' }),
-    assessmentDate: '15 January 2026',
     onExplorePaymentPlans: vi.fn(),
   };
 
@@ -19,9 +18,9 @@ describe('CompletedAssessmentView', () => {
     expect(screen.getByText('SEVERE')).toBeInTheDocument();
   });
 
-  it('renders the assessment date', () => {
+  it('renders the account + bank info text in the badge row', () => {
     render(<CompletedAssessmentView {...defaultProps} />);
-    expect(screen.getByText('Assessed on 15 January 2026')).toBeInTheDocument();
+    expect(screen.getByText('Account #BR-2847 · Barclays connected')).toBeInTheDocument();
   });
 
   it('renders all child sections', () => {
