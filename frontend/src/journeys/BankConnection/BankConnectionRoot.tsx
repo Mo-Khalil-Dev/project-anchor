@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '@/store';
 import { setBankJourneyState } from '@/store/slices/customerSlice';
 import { useBankConnection } from './hooks/useBankConnection';
+import { useJourneyGuard } from '@/hooks/useJourneyGuard';
 import { Intro } from './screens/Intro';
 import { Privacy } from './screens/Privacy';
 import { YouAreBeingDirected } from './screens/YouAreBeingDirected';
@@ -16,6 +17,11 @@ export function BankConnectionRoot() {
   const journeyState = useAppSelector((s) => s.customer.bankJourneyState);
   const { handleCallback } = useBankConnection();
   const callbackProcessedRef = useRef(false);
+
+  // Redirect to account setup if customer has not been linked yet
+  const { status: guardStatus } = useJourneyGuard({
+    blockedNextPages: ['/account-setup'],
+  });
 
   // Handle OAuth callback - extract expense_check_id and state from Tink redirect
   useEffect(() => {
@@ -31,6 +37,14 @@ export function BankConnectionRoot() {
       });
     }
   }, [searchParams, dispatch, handleCallback]);
+
+  // Guard: show spinner while checking, render nothing while redirecting
+  if (guardStatus === 'checking') return (
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-accent" />
+    </div>
+  );
+  if (guardStatus === 'redirecting') return null;
 
   // Default to 'intro' if no state set
   if (!journeyState) {

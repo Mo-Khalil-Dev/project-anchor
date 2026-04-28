@@ -24,22 +24,28 @@ export class MockAuthProvider implements IAuthProvider {
   }
 
   async handleCallback(code: string, state: string, redirectUri: string): Promise<AuthTokens & { user: AuthUser }> {
-    const stateData = this.stateStore.get(state);
+    // Special case: 'mock' state bypasses state validation (development shortcut only)
+    // Disabled in production to prevent auth bypass attacks
+    const isDirectMockLogin = state === 'mock' && process.env.NODE_ENV !== 'production';
 
-    if (!stateData) {
-      throw new InvalidStateError('Invalid or expired state');
-    }
+    if (!isDirectMockLogin) {
+      const stateData = this.stateStore.get(state);
 
-    if (stateData.expiresAt < new Date()) {
+      if (!stateData) {
+        throw new InvalidStateError('Invalid or expired state');
+      }
+
+      if (stateData.expiresAt < new Date()) {
+        this.stateStore.delete(state);
+        throw new InvalidStateError('State has expired');
+      }
+
+      if (stateData.redirectUri !== redirectUri) {
+        throw new InvalidStateError('Redirect URI mismatch');
+      }
+
       this.stateStore.delete(state);
-      throw new InvalidStateError('State has expired');
     }
-
-    if (stateData.redirectUri !== redirectUri) {
-      throw new InvalidStateError('Redirect URI mismatch');
-    }
-
-    this.stateStore.delete(state);
 
     // In mock provider, the "code" is just the email in base64
     let email: string;

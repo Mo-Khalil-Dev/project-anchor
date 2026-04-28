@@ -3,10 +3,23 @@ import { useDispatch } from 'react-redux';
 import { setCurrentStep } from '@/store/slices/customerSlice';
 import { CustomerLayout } from '@/components/layouts/CustomerLayout';
 import { colors } from '@/lib/theme';
+import { useJourneyGuard } from '@/hooks/useJourneyGuard';
 
 export const Home = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  // Block access if any prior step is incomplete
+  const { status } = useJourneyGuard({
+    blockedNextPages: ['/account-setup', '/bank-connection', '/assessment'],
+  });
+
+  // Redirect to the correct journey step if the customer is not ready for this page
+  if (status === 'checking') return (
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-accent" />
+    </div>
+  );
+  if (status === 'redirecting') return null;
 
   const handleBankConnection = () => {
     dispatch(setCurrentStep('bank-connection'));

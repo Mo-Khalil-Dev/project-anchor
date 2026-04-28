@@ -5,7 +5,11 @@ import { PrismaClient } from '@prisma/client';
 import { globalErrorHandler } from './presentation/middleware';
 import { createBankConnectionRoutes } from './presentation/routes/bankConnection.routes';
 import { createAssessmentRoutes } from './presentation/routes/assessment.routes';
+import { createCustomerRoutes } from './presentation/routes/customer.routes';
 import { initializeAuthDependencies } from './infrastructure/auth/authDependencies';
+import { createAuthenticateMiddleware } from './presentation/middleware/authenticateRequest';
+import { ValidateTokenUseCase } from './application/use-cases/auth/ValidateTokenUseCase';
+import { createAuthProvider } from './shared/config/providers/auth-provider.factory';
 import type { AppConfig } from './shared/config';
 import type { ILogger } from './shared/logging';
 
@@ -71,9 +75,15 @@ export function createApp(config: AppConfig, logger: ILogger, prisma: PrismaClie
   // Auth routes
   initializeAuthDependencies(apiRouter, config, prisma);
 
+  // Create authentication middleware for protected routes
+  const authProvider = createAuthProvider(config);
+  const validateTokenUseCase = new ValidateTokenUseCase(authProvider, prisma);
+  const authMiddleware = createAuthenticateMiddleware(validateTokenUseCase);
+
   // Other routes
-  app.use('/api/bank-connections', createBankConnectionRoutes(config, logger));
+  app.use('/api/bank-connections', createBankConnectionRoutes(config, logger, authMiddleware));
   app.use('/api', createAssessmentRoutes());
+  app.use('/api/customer', createCustomerRoutes(logger, authMiddleware));
   app.use('/api', apiRouter);
 
   // ============ ERROR HANDLING ============

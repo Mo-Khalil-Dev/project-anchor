@@ -1,17 +1,37 @@
 import { Request, Response, NextFunction } from 'express';
-import { v4 as uuidv4 } from 'uuid';
 import type { InitiateBankOAuthUseCase } from '../../application/bank-connection/InitiateBankOAuthUseCase';
 import type { HandleBankOAuthCallbackUseCase } from '../../application/bank-connection/HandleBankOAuthCallbackUseCase';
+import type { PrismaCustomerRepository } from '../../infrastructure/persistence/PrismaCustomerRepository';
 import { ApplicationError } from '../../shared/errors/ApplicationError';
+import type { AuthenticatedRequest } from '@/presentation/middleware/authenticateRequest';
 
 export class BankConnectionController {
   constructor(
     private initiateOAuth: InitiateBankOAuthUseCase,
     private handleCallbackUseCase: HandleBankOAuthCallbackUseCase,
+    private customerRepository: PrismaCustomerRepository,
   ) {}
 
-  async initiateOAuthFlow(_: Request, res: Response, next: NextFunction): Promise<void> {
-    const customerId = uuidv4();
+  async initiateOAuthFlow(
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    const userId = req.user?.id;
+    if (!userId) {
+      return next(new ApplicationError('UNAUTHORIZED', 'User not authenticated', 401));
+    }
+
+    // Resolve the User's linked Customer ID
+    const customerIdResult = await this.customerRepository.findCustomerIdByUserId(userId);
+    if (customerIdResult.isFail) {
+      return next(customerIdResult.getError());
+    }
+
+    const customerId = customerIdResult.getOrThrow();
+    if (!customerId) {
+      return next(new ApplicationError('CUSTOMER_NOT_LINKED', 'No customer account linked to this user. Please complete account setup first.', 400));
+    }
 
     const result = await this.initiateOAuth.execute(customerId);
     result.match(

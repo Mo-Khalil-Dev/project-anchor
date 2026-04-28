@@ -6,4 +6,6 @@ export interface LinkDetails {
   utilityType: UtilityType;
   postcode: string;
   accountRef: string;
+  /** Backend error message — populated on failure, displayed by ErrorState when ready */
+  errorMessage?: string;
 }

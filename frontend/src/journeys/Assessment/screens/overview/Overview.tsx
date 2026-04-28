@@ -3,9 +3,22 @@ import { AssessmentContent } from './components/assessmentContent/AssessmentCont
 import { OverviewErrorState } from './components/overviewErrorState/OverviewErrorState';
 import { OverviewLoadingState } from './components/overviewLoadingState/OverviewLoadingState';
 import { useOverview } from './useOverview';
+import { useJourneyGuard } from '@/hooks/useJourneyGuard';
 
 export function AssessmentOverview() {
   const { assessment, loading, error, isPending, isFailed, isCompleted, assessmentDate, handleExplorePaymentPlans, handleGoBack } = useOverview();
+
+  // Redirect if account setup or bank connection not yet complete
+  const { status: guardStatus } = useJourneyGuard({
+    blockedNextPages: ['/account-setup', '/bank-connection'],
+  });
+
+  if (guardStatus === 'checking') return (
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-accent" />
+    </div>
+  );
+  if (guardStatus === 'redirecting') return null;
 
   return (
     <CustomerLayout currentStep={5} totalSteps={6}>

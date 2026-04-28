@@ -1,7 +1,7 @@
 import { useLoginPage } from './useLoginPage';
 
 export function LoginPage() {
-  const { mockEmail, setMockEmail, handleSignIn, handleMockLogin, isLoading, error } = useLoginPage();
+  const { mockEmail, setMockEmail, handleSignIn, handleMockLogin, isLoading, error, seededCustomers } = useLoginPage();
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-accent-bg via-bg to-bg px-4 py-8">
@@ -17,8 +17,18 @@ export function LoginPage() {
           <p className="text-sm text-sub">Hardship Assessment Platform</p>
         </div>
 
-        {/* Main Card */}
+        {/* Main Card — AWS Cognito (Production) */}
         <div className="bg-card rounded-card shadow-card-elevated p-8 mb-6">
+          <div className="flex items-center gap-3 mb-5">
+            <div className="flex-1 h-px bg-border"></div>
+            <span className="text-section-label text-muted">AWS Environment</span>
+            <div className="flex-1 h-px bg-border"></div>
+          </div>
+
+          <p className="text-xs text-muted text-center mb-5 leading-relaxed">
+            Authenticates via <strong className="text-sub">AWS Cognito</strong>. Active when deployed to the AWS environment — not available during local development.
+          </p>
+
           <div className="space-y-5">
             {error && (
               <div className="bg-red-bg border border-red/20 rounded-stat p-4 text-red text-sm">
@@ -38,7 +48,7 @@ export function LoginPage() {
                   Redirecting...
                 </span>
               ) : (
-                'Sign In'
+                'Sign In with Cognito'
               )}
             </button>
           </div>
@@ -54,18 +64,39 @@ export function LoginPage() {
 
           <div className="space-y-4">
             <div>
+              <label className="label block mb-2">Quick Select Customer (Mock Auth)</label>
+              <div className="grid grid-cols-1 gap-2 mb-3">
+                {seededCustomers.map((customer) => (
+                  <button
+                    key={customer.email}
+                    onClick={() => setMockEmail(customer.email)}
+                    className={`px-3 py-2 text-left rounded-input text-sm font-medium border transition-all duration-200 ${
+                      mockEmail === customer.email
+                        ? 'border-accent bg-accent/10 text-text'
+                        : 'border-border bg-bg text-sub hover:border-accent/50 hover:bg-accent/5'
+                    }`}
+                  >
+                    <div className="font-semibold">{customer.name}</div>
+                    <div className="text-xs opacity-75">{customer.email}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
               <label htmlFor="mockEmail" className="label block mb-2">
-                Email (Mock Auth)
+                Or Enter Custom Email
               </label>
               <input
                 id="mockEmail"
                 type="email"
-                placeholder="test@example.com"
+                placeholder="custom@example.com"
                 value={mockEmail}
                 onChange={(e) => setMockEmail(e.target.value)}
                 className="w-full px-4 py-2.5 border border-border rounded-input bg-bg text-text placeholder-muted text-sm font-medium focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all duration-200"
               />
             </div>
+
             <button
               onClick={handleMockLogin}
               disabled={isLoading || !mockEmail.trim()}

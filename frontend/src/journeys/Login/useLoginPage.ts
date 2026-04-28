@@ -2,10 +2,19 @@ import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 
+// Seeded customer emails for quick testing (keep in sync with backend/prisma/seed.ts)
+const SEEDED_CUSTOMERS = [
+  { email: 'john.smith@example.com', name: 'John Smith' },
+  { email: 'jane.doe@example.com', name: 'Jane Doe' },
+  { email: 'robert.johnson@example.com', name: 'Robert Johnson' },
+  { email: 'sarah.williams@example.com', name: 'Sarah Williams' },
+  { email: 'michael.brown@example.com', name: 'Michael Brown' },
+];
+
 export function useLoginPage() {
   const navigate = useNavigate();
   const { initiateLogin, isLoading, error } = useAuth();
-  const [mockEmail, setMockEmail] = useState('');
+  const [mockEmail, setMockEmail] = useState(SEEDED_CUSTOMERS[0].email); // Pre-populate with first customer
 
   const handleSignIn = useCallback(async () => {
     try {
@@ -37,5 +46,6 @@ export function useLoginPage() {
     handleMockLogin,
     isLoading,
     error,
+    seededCustomers: SEEDED_CUSTOMERS,
   };
 }

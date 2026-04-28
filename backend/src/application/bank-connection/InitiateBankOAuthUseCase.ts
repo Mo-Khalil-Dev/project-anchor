@@ -1,5 +1,4 @@
 import { randomBytes } from 'crypto';
-import { v4 as uuidv4 } from 'uuid';
 import { Result } from '../../shared/result';
 import { BankConnection } from '../../domain/bank-connection/BankConnection.entity';
 import type { IBankConnectionRepository } from '../../domain/bank-connection/IBankConnectionRepository';
@@ -17,15 +16,18 @@ export class InitiateBankOAuthUseCase {
 
   async execute(customerId: string): Promise<Result<{ authUrl: string; state: string }, Error>> {
     try {
-      // Create a temporary customer if it doesn't exist
-      const tempEmail = `temp-${uuidv4()}@test.local`;
-      const customerResult = await this.customerRepository.create(tempEmail);
+      // Load the existing customer — they must be linked before reaching bank connection
+      const customerResult = await this.customerRepository.findById(customerId);
       if (customerResult.isFail) {
-        this.logger.error('Failed to create temporary customer', { error: customerResult.getError() });
+        this.logger.error('Failed to fetch customer', { customerId, error: customerResult.getError() });
         return Result.fail(customerResult.getError() || new Error('Unknown error'));
       }
 
       const customer = customerResult.getOrThrow();
+      if (!customer) {
+        this.logger.error('Customer not found', { customerId });
+        return Result.fail(new Error('Customer not found'));
+      }
 
       const state = randomBytes(32).toString('hex');
       const connection = BankConnection.create(customer.id, state);

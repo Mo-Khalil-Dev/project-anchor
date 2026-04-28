@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, RequestHandler } from 'express';
 import { PrismaClient } from '@prisma/client';
 import type { ILogger } from '../../shared/logging';
 import type { AppConfig } from '../../shared/config';
@@ -12,7 +12,7 @@ import { PrismaCustomerRepository } from '../../infrastructure/persistence/Prism
 import { PrismaAssessmentRepository } from '../../infrastructure/persistence/PrismaAssessmentRepository';
 import { ProcessAssessmentJobService } from '../../application/services/ProcessAssessmentJobService';
 
-export function createBankConnectionRoutes(config: AppConfig, logger: ILogger) {
+export function createBankConnectionRoutes(config: AppConfig, logger: ILogger, authMiddleware: RequestHandler) {
   const router = Router();
 
   const prisma = new PrismaClient();
@@ -25,10 +25,12 @@ export function createBankConnectionRoutes(config: AppConfig, logger: ILogger) {
   const initiateOAuth = new InitiateBankOAuthUseCase(bankConnectionRepository, customerRepository, tinkService, logger);
   const handleCallback = new HandleBankOAuthCallbackUseCase(bankConnectionRepository, tinkService, prisma, logger, processJobService);
 
-  const controller = new BankConnectionController(initiateOAuth, handleCallback);
+  const controller = new BankConnectionController(initiateOAuth, handleCallback, customerRepository);
 
+  // Protected: requires a linked customer account
   router.post(
     '/initiate',
+    authMiddleware,
     asyncHandler(controller.initiateOAuthFlow.bind(controller))
   );
 
