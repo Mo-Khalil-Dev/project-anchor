@@ -1,11 +1,9 @@
 /**
  * Mock Assessment Data
  *
- * Realistic assessment breakdown data for development and testing.
- * Uses real UK household averages (ONS, FCA data).
- *
- * Used by: Assessment Breakdown UI (4 tabs) + Payment Plan Options
- * Swapped for real data via service when backend API is ready.
+ * Matches the high-fidelity wireframes in:
+ * docs/wireframes/design_handoff_bridge/screens/Screen 2.1.2-5 - Assessment Breakdown.html
+ * docs/wireframes/design_handoff_bridge/screens/Screen 2.2.1 - Payment Plans.html
  */
 
 import type { AssessmentDetailedDTO } from '../types';
@@ -13,104 +11,98 @@ import type { AssessmentDetailedDTO } from '../types';
 export const MOCK_ASSESSMENT_DETAILED: AssessmentDetailedDTO = {
   id: 'assess_mock_001',
   customerId: 'cust_mock_001',
-  hardshipLevel: 'MODERATE',
-  disposableIncome: 2100,
-  billRatio: 15.24, // £320 / £2,100 × 100
-  monthlyBill: 320,
-  monthlyIncome: 4200,
-  monthlyExpenses: 2100,
-  arrears: 3000,
+  hardshipLevel: 'SEVERE',
+  disposableIncome: 130,
+  billRatio: 323,
+  monthlyBill: 420,
+  monthlyIncome: 1850,
+  monthlyExpenses: 1720,
+  arrears: 420,
 
-  // Expense breakdown (realistic UK household)
   expensesByCategory: {
-    Housing: 1200,
-    Utilities: 320,
-    Food: 300,
-    Transport: 150,
-    Other: 130,
+    Housing: 850,
+    'Food & groceries': 320,
+    Transport: 220,
+    Utilities: 180,
+    Other: 150,
   },
 
-  // 6-month income history (with natural variation)
   incomeHistory: [
-    { month: 'Oct 2025', amount: 1950 },
-    { month: 'Nov 2025', amount: 2100 },
-    { month: 'Dec 2025', amount: 1800 },
-    { month: 'Jan 2026', amount: 2050 },
-    { month: 'Feb 2026', amount: 2200 },
-    { month: 'Mar 2026', amount: 2100 },
+    { month: 'Nov', amount: 2100 },
+    { month: 'Dec', amount: 1850 },
+    { month: 'Jan', amount: 1750 },
+    { month: 'Feb', amount: 1900 },
+    { month: 'Mar', amount: 1800 },
+    { month: 'Apr', amount: 1850 },
   ],
 
-  // Income sources (employment + benefits)
   incomeSources: [
-    { type: 'Employment', amount: 1950, frequency: 'Monthly' },
-    { type: 'Benefits', amount: 150, frequency: 'Monthly' },
+    { type: 'Salary (regular)', amount: 1600, frequency: 'Monthly' },
+    { type: 'Universal Credit', amount: 250, frequency: 'Monthly' },
   ],
 
-  // Assessment factors (why they're in hardship)
   factors: [
     {
-      title: 'Household size: 4 dependents',
-      description: 'Four dependents increases essential expenses for food, transport, and childcare.',
+      title: 'High housing costs',
+      description: 'Your rent of £850/mo is £130 above the regional average for a similar property. This is the primary driver of your tight disposable income.',
     },
     {
-      title: 'Recent illness (3 months)',
-      description: 'Medical costs and reduced work hours during recovery have impacted disposable income.',
+      title: 'Low disposable income',
+      description: 'After essential spending, only £130/month remains. This means even a small unexpected expense (car, medical) pushes you into deficit.',
     },
     {
-      title: 'Utility bill 18% above postcode average',
-      description: 'Your utility bills are higher than similar properties in M1 postcode area.',
+      title: 'Arrears accumulating interest',
+      description: 'The £420 outstanding balance has been accruing. Each month without a plan adds further pressure to an already strained budget.',
     },
   ],
 
-  // Payment plans (Conservative 14%, Balanced 18%, Aggressive 20% of disposable income)
   paymentPlans: [
     {
       type: 'Conservative',
-      monthlyAmount: 294, // £2,100 × 0.14
-      duration: 11, // ceil(3,000 / 294)
-      totalRepayment: 3000,
+      monthlyAmount: 35,
+      duration: 12,
+      totalRepayment: 420,
       sustainability: 'HIGH',
     },
     {
       type: 'Balanced',
-      monthlyAmount: 378, // £2,100 × 0.18
-      duration: 8, // ceil(3,000 / 378)
-      totalRepayment: 3000,
+      monthlyAmount: 70,
+      duration: 6,
+      totalRepayment: 420,
       sustainability: 'MEDIUM',
     },
     {
       type: 'Aggressive',
-      monthlyAmount: 420, // £2,100 × 0.20
-      duration: 8, // ceil(3,000 / 420)
-      totalRepayment: 3000,
-      sustainability: 'MEDIUM',
+      monthlyAmount: 140,
+      duration: 3,
+      totalRepayment: 420,
+      sustainability: 'LOW',
     },
   ],
 
-  // Metadata
-  createdAt: new Date('2026-03-25').toISOString(),
-  updatedAt: new Date('2026-03-29').toISOString(),
+  createdAt: new Date('2026-04-15').toISOString(),
+  updatedAt: new Date('2026-04-29').toISOString(),
   status: 'COMPLETED',
 };
 
-/**
- * UK expense averages (ONS, 2025)
- * Used for comparisons in OverviewTab
- */
-export const UK_EXPENSE_AVERAGES = {
-  Housing: 1050,
-  Utilities: 230,
-  Food: 320,
-  Transport: 200,
-  Other: 300,
+export const UK_EXPENSE_AVERAGES: Record<string, number> = {
+  Housing: 720,
+  'Food & groceries': 280,
+  Transport: 160,
+  Utilities: 140,
+  Other: 120,
 };
 
-/**
- * Hardship level colors (for badges)
- */
-export const HARDSHIP_COLORS = {
-  SEVERE: '#dc2626', // red-600
-  MODERATE: '#ea580c', // orange-600
-  LOW: '#eab308', // yellow-500
-  NONE: '#22c55e', // green-500
+export const EXPENSE_COLORS: Record<string, string> = {
+  Housing: 'oklch(52% 0.18 270)',
+  'Food & groceries': 'oklch(62% 0.16 76)',
+  Transport: 'oklch(52% 0.18 200)',
+  Utilities: 'oklch(52% 0.18 145)',
+  Other: '#9197ab',
+};
+
+export const FACTOR_SEVERITY: Record<string, { level: 'High' | 'Medium' | 'Low'; color: 'red' | 'amber' | 'green' }> = {
+  'High housing costs': { level: 'High', color: 'red' },
+  'Low disposable income': { level: 'Medium', color: 'amber' },
+  'Arrears accumulating interest': { level: 'Medium', color: 'amber' },
 };

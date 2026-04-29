@@ -1,53 +1,57 @@
+import { useNavigate } from 'react-router-dom';
 import { useAssessmentBreakdown } from '../../hooks/useAssessmentBreakdown';
+import { CustomerLayout } from '@/components/layouts/CustomerLayout';
+import { Button } from '@/components/core';
 import { OverviewTab } from './OverviewTab';
 import { ExpensesTab } from './ExpensesTab';
 import { IncomeStabilityTab } from './IncomeStabilityTab';
 import { WhyThisHappenedTab } from './WhyThisHappenedTab';
-import styles from './AssessmentBreakdown.module.css';
+
+const TABS = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'expenses', label: 'Expenses' },
+  { id: 'income', label: 'Income Stability' },
+  { id: 'factors', label: 'Why This Happened' },
+] as const;
 
 export function AssessmentBreakdown() {
+  const navigate = useNavigate();
   const { assessment, activeTab, setActiveTab, isLoading, error } = useAssessmentBreakdown();
 
-  if (isLoading) return <div className={styles.loading}>Loading assessment...</div>;
-  if (error) return <div className={styles.error}>Error: {error}</div>;
-  if (!assessment) return <div className={styles.error}>No assessment found</div>;
+  if (isLoading) return <CustomerLayout><div className="text-sub py-12 text-center">Loading assessment...</div></CustomerLayout>;
+  if (error) return <CustomerLayout><div className="text-red py-12 text-center">Error: {error}</div></CustomerLayout>;
+  if (!assessment) return <CustomerLayout><div className="text-sub py-12 text-center">No assessment found</div></CustomerLayout>;
 
   return (
-    <div className={styles.container}>
-      <h1>Your Hardship Assessment</h1>
-      <div className={styles.tabs}>
-        <button
-          className={`${styles.tab} ${activeTab === 'overview' ? styles.active : ''}`}
-          onClick={() => setActiveTab('overview')}
-        >
-          Overview
-        </button>
-        <button
-          className={`${styles.tab} ${activeTab === 'expenses' ? styles.active : ''}`}
-          onClick={() => setActiveTab('expenses')}
-        >
-          Expenses
-        </button>
-        <button
-          className={`${styles.tab} ${activeTab === 'income' ? styles.active : ''}`}
-          onClick={() => setActiveTab('income')}
-        >
-          Income Stability
-        </button>
-        <button
-          className={`${styles.tab} ${activeTab === 'factors' ? styles.active : ''}`}
-          onClick={() => setActiveTab('factors')}
-        >
-          Why This Happened
-        </button>
+    <CustomerLayout>
+      <div className="mb-6">
+        <h1 className="text-page-title text-text mb-2">Detailed Assessment Breakdown</h1>
+        <p className="text-sub text-sm">A full breakdown of your financial position based on bank data from Barclays.</p>
       </div>
 
-      <div className={styles.content}>
-        {activeTab === 'overview' && <OverviewTab assessment={assessment} />}
-        {activeTab === 'expenses' && <ExpensesTab assessment={assessment} />}
-        {activeTab === 'income' && <IncomeStabilityTab assessment={assessment} />}
-        {activeTab === 'factors' && <WhyThisHappenedTab assessment={assessment} />}
+      <div className="flex gap-1 border-b border-divider mb-5 overflow-x-auto">
+        {TABS.map(t => (
+          <button
+            key={t.id}
+            onClick={() => setActiveTab(t.id as typeof activeTab)}
+            className={`px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
+              activeTab === t.id ? 'text-accent border-accent' : 'text-sub border-transparent hover:text-text'
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
       </div>
-    </div>
+
+      {activeTab === 'overview' && <OverviewTab assessment={assessment} />}
+      {activeTab === 'expenses' && <ExpensesTab assessment={assessment} />}
+      {activeTab === 'income' && <IncomeStabilityTab assessment={assessment} />}
+      {activeTab === 'factors' && <WhyThisHappenedTab assessment={assessment} />}
+
+      <div className="mt-6 grid grid-cols-2 gap-3">
+        <Button variant="primary" onClick={() => navigate('/payment-plans')}>View Payment Plan Options</Button>
+        <Button variant="secondary" onClick={() => navigate('/')}>Back to Overview</Button>
+      </div>
+    </CustomerLayout>
   );
 }
