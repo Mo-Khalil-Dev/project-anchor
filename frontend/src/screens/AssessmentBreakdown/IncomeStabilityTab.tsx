@@ -3,7 +3,7 @@ import type { AssessmentDetailedDTO } from '../../types';
 import styles from './IncomeStabilityTab.module.css';
 
 export function IncomeStabilityTab({ assessment }: { assessment: AssessmentDetailedDTO }) {
-  const data = assessment.incomeHistory.map((record, idx) => ({
+  const data = assessment.incomeHistory.map((record) => ({
     month: record.month.split(' ')[0], // Show short month name
     amount: record.amount,
   }));

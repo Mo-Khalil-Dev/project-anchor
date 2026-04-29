@@ -53,7 +53,14 @@ export class CreateAssessmentUseCase {
         return Result.fail(new Error('Invalid assessment input data'));
       }
 
-      // Create assessment entity
+      // Calculate payment plans first (needed before creating entity)
+      const disposableIncome = input.monthlyIncome - input.monthlyExpenses;
+      const paymentPlans = this.paymentPlanService.calculatePlans(
+        disposableIncome,
+        input.arrears || 0,
+      );
+
+      // Create assessment entity with all JSON fields
       const assessment = Assessment.create({
         id: this.generateId(),
         customerId: input.customerId,
@@ -64,34 +71,13 @@ export class CreateAssessmentUseCase {
         arrears: input.arrears || 0,
         incomeBreakdown: input.incomeBreakdown ? JSON.stringify(input.incomeBreakdown) : null,
         expenseBreakdown: input.expenseBreakdown ? JSON.stringify(input.expenseBreakdown) : null,
+        expensesByCategory: input.expensesByCategory ? JSON.stringify(input.expensesByCategory) : null,
+        incomeHistory: input.incomeHistory ? JSON.stringify(input.incomeHistory) : null,
+        incomeSources: input.incomeSources ? JSON.stringify(input.incomeSources) : null,
+        factors: input.factors ? JSON.stringify(input.factors) : null,
+        paymentPlans: JSON.stringify(paymentPlans),
         status: 'COMPLETED',
       });
-
-      // Calculate payment plans
-      const disposableIncome = assessment.calculateDisposableIncome();
-      const paymentPlans = this.paymentPlanService.calculatePlans(
-        disposableIncome,
-        input.arrears || 0,
-      );
-
-      // Store breakdown data as JSON
-      const expensesByCategory = input.expensesByCategory || {};
-      const incomeHistory = input.incomeHistory || [];
-      const incomeSources = input.incomeSources || [];
-      const factors = input.factors || [];
-
-      // Create a modified assessment entity with all JSON fields
-      // Note: We need to persist these fields to the database
-      // Since Assessment entity doesn't have these getters/setters yet,
-      // we'll handle this in the repository save method
-      const assessmentData = {
-        ...assessment,
-        expensesByCategory: JSON.stringify(expensesByCategory),
-        incomeHistory: JSON.stringify(incomeHistory),
-        incomeSources: JSON.stringify(incomeSources),
-        factors: JSON.stringify(factors),
-        paymentPlans: JSON.stringify(paymentPlans),
-      };
 
       // Save assessment to repository
       const saveResult = await this.assessmentRepository.save(assessment);

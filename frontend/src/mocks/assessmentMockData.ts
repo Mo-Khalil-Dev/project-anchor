@@ -8,7 +8,7 @@
  * Swapped for real data via service when backend API is ready.
  */
 
-import type { AssessmentDetailedDTO } from '../types/assessment.types';
+import type { AssessmentDetailedDTO } from '../types';
 
 export const MOCK_ASSESSMENT_DETAILED: AssessmentDetailedDTO = {
   id: 'assess_mock_001',
