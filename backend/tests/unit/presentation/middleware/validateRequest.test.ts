@@ -9,8 +9,8 @@ import {
   validateQuery,
   composeValidators,
   ValidatedRequest,
-} from '../../../../src/presentation/middleware/validateRequest';
-import { ValidationError } from '../../../../src/shared/errors/ValidationError';
+} from '../../../../src/features/shared/middleware/validateRequest';
+import { ValidationError } from '../../../../src/features/shared/errors/ValidationError';
 
 describe('validateRequest Middleware', () => {
   let mockReq: Partial<Request> & { validated?: any };

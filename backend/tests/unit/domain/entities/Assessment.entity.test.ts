@@ -1,4 +1,4 @@
-import { Assessment } from '../../../../src/domain/entities/Assessment.entity';
+import { Assessment } from '../../../../src/features/assessment/types/assessment.types';
 
 describe('Assessment Entity', () => {
   const mockProps = {

@@ -20,7 +20,7 @@ export function initAuthProvider(config: AppConfig): IAuthProvider {
 export const createAuthProvider = initAuthProvider;
 
 function createMockAuthProvider(config: AppConfig): IAuthProvider {
-  const MockAuthProvider = require('../../auth/services/MockAuthProvider').MockAuthProvider;
+  const MockAuthProvider = require('../../../auth/services/MockAuthProvider').MockAuthProvider;
   return new MockAuthProvider(config);
 }
 
@@ -31,6 +31,6 @@ function createCognitoAuthProvider(config: AppConfig): IAuthProvider {
     throw new Error('COGNITO_USER_POOL_ID and COGNITO_CLIENT_ID are required for cognito provider');
   }
 
-  const CognitoAuthProvider = require('../../auth/services/CognitoAuthProvider').CognitoAuthProvider;
+  const CognitoAuthProvider = require('../../../auth/services/CognitoAuthProvider').CognitoAuthProvider;
   return new CognitoAuthProvider({ userPoolId, clientId, region });
 }

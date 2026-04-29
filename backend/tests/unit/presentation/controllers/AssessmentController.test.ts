@@ -1,8 +1,8 @@
-import { AssessmentController } from '../../../../src/presentation/controllers/AssessmentController';
-import { Assessment } from '../../../../src/domain/entities/Assessment.entity';
-import { Result } from '../../../../src/shared/result';
-import type { IAssessmentRepository } from '../../../../src/domain/repositories/IAssessmentRepository';
-import type { ILogger } from '../../../../src/shared/logging';
+import { AssessmentController } from '../../../../src/features/assessment/controllers/AssessmentController';
+import { Assessment } from '../../../../src/features/assessment/types/assessment.types';
+import { Result } from '../../../../src/features/shared/result';
+import type { IAssessmentRepository } from '../../../../src/features/assessment/types/assessment.types';
+import type { ILogger } from '../../../../src/features/shared/logging';
 
 describe('AssessmentController', () => {
   let controller: AssessmentController;

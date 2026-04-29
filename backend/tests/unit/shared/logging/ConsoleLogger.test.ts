@@ -1,5 +1,5 @@
-import { ConsoleLogger } from '../../../../src/shared/logging/ConsoleLogger';
-import type { LogEnvelope } from '../../../../src/shared/logging/log.types';
+import { ConsoleLogger } from '../../../../src/features/shared/logging/ConsoleLogger';
+import type { LogEnvelope } from '../../../../src/features/shared/logging/log.types';
 
 const BASE_META = {
   service: 'bridge-backend',

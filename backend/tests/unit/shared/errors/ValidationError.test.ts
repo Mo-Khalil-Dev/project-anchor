@@ -1,5 +1,5 @@
-import { ValidationError } from '../../../../src/shared/errors/ValidationError';
-import { ApplicationError } from '../../../../src/shared/errors/ApplicationError';
+import { ValidationError } from '../../../../src/features/shared/errors/ValidationError';
+import { ApplicationError } from '../../../../src/features/shared/errors/ApplicationError';
 
 describe('ValidationError', () => {
   describe('constructor', () => {

@@ -1,4 +1,4 @@
-import { ApplicationError } from '../../../../src/shared/errors/ApplicationError';
+import { ApplicationError } from '../../../../src/features/shared/errors/ApplicationError';
 
 describe('ApplicationError', () => {
   describe('constructor', () => {

@@ -1,7 +1,7 @@
-import { createConfig } from '../../../../src/shared/config/config.factory';
+import { createConfig } from '../../../../src/features/shared/config/config.factory';
 
-jest.mock('../../../../src/shared/config/providers/secrets-manager.provider');
-import { fetchSecretsFromManager } from '../../../../src/shared/config/providers/secrets-manager.provider';
+jest.mock('../../../../src/features/shared/config/providers/secrets-manager.provider');
+import { fetchSecretsFromManager } from '../../../../src/features/shared/config/providers/secrets-manager.provider';
 
 const mockedFetchSecrets = fetchSecretsFromManager as jest.MockedFunction<typeof fetchSecretsFromManager>;
 

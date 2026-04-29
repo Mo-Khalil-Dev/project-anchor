@@ -1,6 +1,6 @@
-import { createLogger } from '../../../../src/shared/logging/LoggerFactory';
-import { ConsoleLogger } from '../../../../src/shared/logging/ConsoleLogger';
-import type { AppConfig } from '../../../../src/shared/config';
+import { createLogger } from '../../../../src/features/shared/logging/LoggerFactory';
+import { ConsoleLogger } from '../../../../src/features/shared/logging/ConsoleLogger';
+import type { AppConfig } from '../../../../src/features/shared/config';
 
 const makeConfig = (overrides: Partial<AppConfig> = {}): AppConfig => ({
   env: 'development',

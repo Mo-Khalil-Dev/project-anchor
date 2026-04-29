@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-import { globalErrorHandler, asyncHandler } from '../../../../src/presentation/middleware/globalErrorHandler';
-import { DomainError } from '../../../../src/domain/errors/DomainError';
-import { ApplicationError } from '../../../../src/shared/errors/ApplicationError';
-import { ValidationError } from '../../../../src/shared/errors/ValidationError';
-import type { ILogger } from '../../../../src/shared/logging';
+import { globalErrorHandler, asyncHandler } from '../../../../src/features/shared/middleware/globalErrorHandler';
+import { DomainError } from '../../../../src/features/shared/errors/DomainError';
+import { ApplicationError } from '../../../../src/features/shared/errors/ApplicationError';
+import { ValidationError } from '../../../../src/features/shared/errors/ValidationError';
+import type { ILogger } from '../../../../src/features/shared/logging';
 
 const mockLogger: ILogger = {
   debug: jest.fn(),

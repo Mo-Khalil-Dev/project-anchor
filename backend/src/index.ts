@@ -1,8 +1,8 @@
 import 'dotenv/config';
-import { initConfig } from './shared/config';
-import { initLogger } from './shared/logging';
+import { initConfig } from './features/shared/config';
+import { initLogger } from './features/shared/logging';
 import { createApp } from './app';
-import { prisma } from './utils/db';
+import { prisma } from './features/shared/utils/db';
 
 async function main() {
   const config = await initConfig();
