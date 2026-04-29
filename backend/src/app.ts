@@ -2,13 +2,14 @@ import express, { Express, Request, Response, NextFunction } from 'express';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import { PrismaClient } from '@prisma/client';
-import { globalErrorHandler } from './presentation/middleware';
+import { globalErrorHandler } from './features/shared/middleware/globalErrorHandler';
 import { createBankConnectionRoutes } from './presentation/routes/bankConnection.routes';
 import { createAssessmentRoutes } from './presentation/routes/assessment.routes';
 import { createCustomerRoutes } from './presentation/routes/customer.routes';
-import { initializeAuthDependencies } from './infrastructure/auth/authDependencies';
-import type { AppConfig } from './shared/config';
-import type { ILogger } from './shared/logging';
+import { createAuthRouter } from './features/auth/router';
+import { initAuthProvider } from './features/shared/config/providers/auth-provider.factory';
+import type { AppConfig } from './features/shared/config';
+import type { ILogger } from './features/shared/logging';
 
 export function createApp(config: AppConfig, logger: ILogger, prisma: PrismaClient): Express {
   const app: Express = express();
@@ -66,19 +67,16 @@ export function createApp(config: AppConfig, logger: ILogger, prisma: PrismaClie
     res.json({ status: 'healthy', timestamp: new Date().toISOString() });
   });
 
-  // API Routes
-  const apiRouter = express.Router();
+  // ============ AUTH SETUP ============
+  const authProvider = initAuthProvider(config);
+  const authSetup = createAuthRouter(authProvider, prisma);
+  const authMiddleware = authSetup.authenticateRequest;
 
-  // Auth routes
-  const { authMiddleware } = initializeAuthDependencies(apiRouter, config, prisma);
-  
-
-
-  // Other routes
+  // ============ FEATURE ROUTES ============
+  app.use('/api', authSetup.router);
   app.use('/api/bank-connections', createBankConnectionRoutes(config, logger, authMiddleware));
   app.use('/api', createAssessmentRoutes());
   app.use('/api/customer', createCustomerRoutes(logger, authMiddleware));
-  app.use('/api', apiRouter);
 
   // ============ ERROR HANDLING ============
 

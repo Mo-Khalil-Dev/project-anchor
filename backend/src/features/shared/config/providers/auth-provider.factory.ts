@@ -1,8 +1,7 @@
-import type { IAuthProvider } from '../../../domain/auth/IAuthProvider';
+import type { IAuthProvider } from '../../../auth/types/auth.types';
 import type { AppConfig } from '../config.types';
-import { ProviderConfigError } from '../../../domain/auth/AuthErrors';
 
-export function createAuthProvider(config: AppConfig): IAuthProvider {
+export function initAuthProvider(config: AppConfig): IAuthProvider {
   const provider = config.auth.provider;
 
   switch (provider) {
@@ -11,14 +10,17 @@ export function createAuthProvider(config: AppConfig): IAuthProvider {
     case 'cognito':
       return createCognitoAuthProvider(config);
     case 'auth0':
-      throw new ProviderConfigError('Auth0 provider not yet implemented');
+      throw new Error('Auth0 provider not yet implemented');
     default:
-      throw new ProviderConfigError(`Unknown auth provider: ${provider}`);
+      throw new Error(`Unknown auth provider: ${provider}`);
   }
 }
 
+// Alias for backwards compatibility
+export const createAuthProvider = initAuthProvider;
+
 function createMockAuthProvider(config: AppConfig): IAuthProvider {
-  const MockAuthProvider = require('../../../infrastructure/auth/MockAuthProvider').MockAuthProvider;
+  const MockAuthProvider = require('../../auth/services/MockAuthProvider').MockAuthProvider;
   return new MockAuthProvider(config);
 }
 
@@ -26,11 +28,9 @@ function createCognitoAuthProvider(config: AppConfig): IAuthProvider {
   const { userPoolId, clientId, region } = config.auth.cognito;
 
   if (!userPoolId || !clientId) {
-    throw new ProviderConfigError(
-      'COGNITO_USER_POOL_ID and COGNITO_CLIENT_ID are required for cognito provider'
-    );
+    throw new Error('COGNITO_USER_POOL_ID and COGNITO_CLIENT_ID are required for cognito provider');
   }
 
-  const CognitoAuthProvider = require('../../../infrastructure/auth/CognitoAuthProvider').CognitoAuthProvider;
+  const CognitoAuthProvider = require('../../auth/services/CognitoAuthProvider').CognitoAuthProvider;
   return new CognitoAuthProvider({ userPoolId, clientId, region });
 }
