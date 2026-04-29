@@ -8,6 +8,8 @@ import { Home } from '@/journeys/Home';
 import { BankConnectionRoot } from '@/journeys/BankConnection';
 import { AssessmentOverview } from '@/journeys/Assessment/screens/overview/Overview';
 import { AccountSetupPage } from '@/journeys/AccountSetup/AccountSetupPage';
+import { AssessmentBreakdown } from '@/screens/AssessmentBreakdown/AssessmentBreakdown';
+import { PaymentPlanOptionsRoute } from '@/screens/PaymentPlanOptions/PaymentPlanOptionsRoute';
 
 function App() {
   return (
@@ -20,7 +22,9 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/account-setup" element={<AccountSetupPage />} />
             <Route path="/bank-connection" element={<BankConnectionRoot />} />
+            <Route path="/assessment/breakdown" element={<AssessmentBreakdown />} />
             <Route path="/assessment/:assessmentId" element={<AssessmentOverview />} />
+            <Route path="/payment-plans" element={<PaymentPlanOptionsRoute />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
