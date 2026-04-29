@@ -83,6 +83,195 @@ All SVG icons live in `src/components/core/icons.tsx`. No inline SVGs elsewhere.
 Test files are co-located beside the source file (`Component.test.tsx`).  
 Mock at the service boundary — hooks test against mocked services, never mocked axios.
 
+## Backend Architecture Rules
+
+### Organization: Vertical Slice by Feature
+
+The backend uses **vertical slice architecture** where each feature owns all its code:
+
+```
+src/features/
+├── auth/                  # Auth feature (login, tokens, validation)
+├── customer/              # Customer management
+├── bankConnection/        # Bank OAuth & data extraction
+├── assessment/            # Assessment calculation & jobs
+└── shared/                # Cross-feature code only
+    ├── middleware/
+    ├── config/
+    ├── logging/
+    ├── errors/
+    ├── result/
+    ├── validators/
+    ├── utils/
+    └── types/
+```
+
+### Feature Folder Structure
+
+Each feature contains exactly 4 directories:
+
+```
+features/{feature}/
+├── controllers/
+│   └── {Feature}Controller.ts       # HTTP handlers; depends on use cases
+├── services/
+│   ├── {Operation}UseCase.ts        # Individual use case (separate class)
+│   ├── {Operation}UseCase.ts        # Keep use cases as separate classes
+│   └── ExternalService.ts           # External integrations (optional)
+├── repositories/
+│   ├── I{Feature}Repository.ts      # Interface definition
+│   └── Prisma{Feature}Repository.ts # Implementation
+├── types/
+│   └── {feature}.types.ts           # DTOs, interfaces, enums
+└── router.ts                        # Route setup + dependency injection
+```
+
+### Routing & Dependency Injection
+
+Each feature router owns all DI for that feature:
+
+```ts
+// features/auth/router.ts
+export function createAuthRouter(
+  authProvider: IAuthProvider,
+  prisma: PrismaClient,
+  logger: ILogger
+): Router {
+  const router = Router();
+  
+  // Create use cases (keep separate classes)
+  const initiateLoginUseCase = new InitiateLoginUseCase(authProvider);
+  const handleCallbackUseCase = new HandleAuthCallbackUseCase(authProvider, prisma);
+  
+  // Create controller, pass use cases individually
+  const controller = new AuthController(initiateLoginUseCase, handleCallbackUseCase);
+  
+  // Register routes
+  router.get('/initiate-login', (req, res) => controller.initiateLogin(req, res));
+  
+  return router;
+}
+```
+
+`app.ts` mounts all features:
+
+```ts
+const authProvider = initAuthProvider(config);
+app.use('/api', createAuthRouter(authProvider, prisma, logger));
+app.use('/api/customer', createCustomerRouter(prisma, logger, authMiddleware));
+app.use('/api/bank-connections', createBankConnectionRouter(config, logger, authMiddleware, prisma));
+```
+
+### Use Cases Remain Separate Classes
+
+**DO:** Create individual use case classes, keep them separate
+```ts
+// ✅ CORRECT
+export class InitiateLoginUseCase {
+  execute(input): Promise<Result<Output, Error>> { ... }
+}
+
+export class HandleAuthCallbackUseCase {
+  execute(input): Promise<Result<Output, Error>> { ... }
+}
+```
+
+**DON'T:** Consolidate into monolithic service
+```ts
+// ❌ WRONG — consolidate into one service class
+export class AuthService {
+  initiateLogin() { ... }
+  handleCallback() { ... }
+}
+```
+
+### Adding a New Endpoint
+
+1. Create the use case class in `features/{feature}/services/`
+2. Add method to controller in `features/{feature}/controllers/`
+3. Import use case in `features/{feature}/router.ts`
+4. Instantiate use case in DI section
+5. Pass to controller constructor
+6. Add route handler in router
+
+**Example:**
+```ts
+// 1. Create use case
+export class SendNotificationUseCase {
+  constructor(private notificationService: NotificationService) {}
+  execute(userId: string): Promise<Result<void, Error>> { ... }
+}
+
+// 2. Add controller method
+class UserController {
+  constructor(private sendNotification: SendNotificationUseCase) {}
+  async notify(req: AuthenticatedRequest, res: Response) {
+    const result = await this.sendNotification.execute(req.user.id);
+    result.match(
+      () => res.json({ success: true }),
+      (err) => res.status(400).json({ error: err.message })
+    );
+  }
+}
+
+// 3. Wire in router.ts
+const sendNotificationUseCase = new SendNotificationUseCase(notificationService);
+const controller = new UserController(sendNotificationUseCase);
+
+// 4. Register route
+router.post('/notify', authMiddleware, asyncHandler(
+  controller.notify.bind(controller)
+));
+```
+
+### Adding a New Feature
+
+1. Create `features/{newFeature}/` with 4 subdirectories
+2. Create controller, use cases, repository (if needed)
+3. Create `router.ts` with complete DI setup
+4. Add feature types in `features/{newFeature}/types/`
+5. Import router in `app.ts` and mount it
+
+The new feature is now isolated from others.
+
+### Repository Pattern
+
+Repositories have two parts — interface and implementation:
+
+```ts
+// features/{feature}/repositories/I{Feature}Repository.ts
+export interface I{Feature}Repository {
+  find(id: string): Promise<Result<Entity, Error>>;
+  save(entity: Entity): Promise<Result<void, Error>>;
+}
+
+// features/{feature}/repositories/Prisma{Feature}Repository.ts
+export class Prisma{Feature}Repository implements I{Feature}Repository {
+  constructor(private prisma: PrismaClient) {}
+  
+  async find(id: string): Promise<Result<Entity, Error>> {
+    // Prisma implementation
+  }
+}
+```
+
+Use cases depend on **the interface**, not the concrete class:
+```ts
+export class MyUseCase {
+  constructor(private repo: I{Feature}Repository) {}
+}
+```
+
+### Deleting a Feature
+
+All feature code is self-contained — deletion is simple:
+
+1. Delete `features/{feature}/` directory
+2. Remove its router import from `app.ts`
+3. Remove router mount from `app.ts`
+
+No scattered files across multiple layers to clean up.
+
 ## Known Tech Debt
 
 These are tracked TODO comments in the codebase — do not fix inline unless the task is specifically about them.
