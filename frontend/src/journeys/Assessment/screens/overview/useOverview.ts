@@ -69,7 +69,7 @@ export function useOverview() {
 
   const handleExplorePaymentPlans = () => {
     dispatch(setCurrentStep('plan-select'));
-    navigate('/plan-select');
+    navigate('/payment-plans');
   };
 
   const handleViewBreakdown = () => {
