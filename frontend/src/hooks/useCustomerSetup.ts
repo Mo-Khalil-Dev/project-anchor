@@ -32,6 +32,9 @@ export interface UseCustomerSetupReturn {
  */
 export function useCustomerSetup(): UseCustomerSetupReturn {
   const [loading, setLoading] = useState(false);
+  // TODO: `customer` state is never consumed by callers — they use the { data, error } direct
+  // return instead. Either remove this state + the `customer` field from the return type,
+  // or promote it to a global customer context if broader access is needed later.
   const [customer, setCustomer] = useState<LinkUserToCustomerResponse | null>(null);
 
   const linkCustomer = useCallback(

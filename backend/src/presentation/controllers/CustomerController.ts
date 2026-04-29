@@ -65,6 +65,9 @@ export class CustomerController {
         }
       );
     } catch (error) {
+      // TODO: This outer try/catch is redundant — the use case returns Result.fail instead of
+      // throwing, and result.match() routes errors to next(). Remove once confident no
+      // unexpected throws can escape the use case boundary.
       const message = error instanceof Error ? error.message : String(error);
       next(new ApplicationError('INTERNAL_ERROR', `Account setup error: ${message}`, 500));
     }

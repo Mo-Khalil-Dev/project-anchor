@@ -5,7 +5,7 @@ import type { ILogger } from '../../shared/logging';
 import type { TinkOAuthService } from '../../infrastructure/services/TinkOAuthService';
 import { BankDataExtractionService, IncomeBreakdown, ExpenseBreakdown } from '../../infrastructure/services/BankDataExtractionService';
 import { Assessment } from '../../domain/entities/Assessment.entity';
-import { ProcessAssessmentJobService } from '../services/ProcessAssessmentJobService';
+import type { IJobDispatcher } from '../jobs/IJobDispatcher';
 
 export class HandleBankOAuthCallbackUseCase {
   constructor(
@@ -13,7 +13,7 @@ export class HandleBankOAuthCallbackUseCase {
     private tinkService: TinkOAuthService,
     private prisma: PrismaClient,
     private logger: ILogger,
-    private processJobService?: ProcessAssessmentJobService
+    private jobDispatcher: IJobDispatcher,
   ) { }
 
   async execute(
@@ -152,17 +152,8 @@ export class HandleBankOAuthCallbackUseCase {
         );
       }
 
-      // Process job synchronously if flag is set
-      const processSynchronously = process.env.PROCESS_JOBS_SYNCHRONOUSLY === 'true';
-      if (processSynchronously && this.processJobService) {
-        const jobProcessResult = await this.processJobService.execute(jobId);
-        if (jobProcessResult.isFail) {
-          this.logger.warn('Job processing failed during callback', {
-            jobId,
-            error: jobProcessResult.getError()?.message,
-          });
-        }
-      }
+      // Dispatch job for background processing — returns immediately
+      await this.jobDispatcher.dispatch(jobId);
 
       this.logger.info('OAuth callback handled and assessment created', {
         connectionId: connection.id,

@@ -83,6 +83,20 @@ All SVG icons live in `src/components/core/icons.tsx`. No inline SVGs elsewhere.
 Test files are co-located beside the source file (`Component.test.tsx`).  
 Mock at the service boundary — hooks test against mocked services, never mocked axios.
 
+## Known Tech Debt
+
+These are tracked TODO comments in the codebase — do not fix inline unless the task is specifically about them.
+
+| # | File | Issue | Priority |
+|---|------|-------|----------|
+| 1 | `backend/.../PrismaCustomerRepository.ts` | `isUserAlreadyLinked` duplicates `findCustomerIdByUserId` — refactor to a thin wrapper | Low |
+| 2 | `backend/.../LinkUserToCustomerUseCase.ts` | Postcode regex too permissive (`[A-Za-z0-9\s]+`). Tighten to full UK format: `/^[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2}$/i` | Medium |
+| 3 | `backend/.../LinkUserToCustomerUseCase.ts` | `utilityType` from form is not cross-validated against the found customer record — a user can link to a Gas account by claiming it's Electricity | Medium |
+| 4 | `backend/.../LinkUserToCustomerUseCase.ts` | `const customer = existingCustomer` is a redundant alias — remove it | Low |
+| 5 | `backend/.../CustomerController.ts` | Outer `try/catch` in `linkUserToCustomer` is redundant given `result.match` error routing — remove once confident | Low |
+| 6 | `frontend/.../useCustomerSetup.ts` | `customer` state is set but never consumed by callers — remove or promote to a global customer context | Low |
+| 7 | `frontend/.../useLinkingState.ts` | Utility type capitalisation uses `charAt(0).toUpperCase()` — replace with an explicit `{ water: 'Water', ... }` map | Low |
+
 ## Preferences
 - Working with visual mockups as reference during development
 - Screens follow Claude.ai design system (CSS variables for light/dark mode)

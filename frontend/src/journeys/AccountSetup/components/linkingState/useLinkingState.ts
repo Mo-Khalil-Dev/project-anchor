@@ -30,6 +30,9 @@ export function useLinkingState({ onSuccess, onError, submitDelayMs = 0 }: UseLi
     const details: LinkDetails = { utilityType, postcode: form.postcode, accountRef: form.accountRef };
 
     // Convert frontend utility type (lowercase) to backend format (capitalized)
+    // TODO: Replace with an explicit map to remove the case-sensitivity assumption:
+    //   const MAP = { water: 'Water', gas: 'Gas', electricity: 'Electricity' } as const;
+    //   const backendUtilityType = MAP[utilityType];
     const backendUtilityType = utilityType.charAt(0).toUpperCase() + utilityType.slice(1);
 
     // Error is returned directly in the result — no stale React state risk

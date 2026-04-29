@@ -21,6 +21,8 @@ const LinkUserToCustomerSchema = z.object({
   postcode: z.string()
     .min(6, 'Postcode must be at least 6 characters')
     .max(8, 'Postcode must be at most 8 characters')
+    // TODO: Tighten to full UK postcode format: /^[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2}$/i
+    // Current regex accepts invalid values like "AAAAAAA1"
     .regex(/^[A-Za-z0-9\s]+$/, 'Postcode contains invalid characters'),
   accountReference: z.string()
     .min(1, 'Account reference is required')
@@ -71,6 +73,10 @@ export class LinkUserToCustomerUseCase {
       }
 
       // Step 3: Find existing customer by utility account number (must exist in system)
+      // TODO: Cross-validate utilityType against the found customer record.
+      // Currently a user submitting accountRef "ACC-001" with utilityType "Gas" will
+      // successfully link even if the customer record says "Electricity".
+      // Add: if (customer.utilityType !== utilityType) return Result.fail(new Error('Account details do not match our records'))
       const existingCustomerResult = await this.customerRepository.findByUtilityAccountNumber(
         accountReference,
       );
@@ -94,6 +100,7 @@ export class LinkUserToCustomerUseCase {
         return Result.fail(new Error('Customer cannot be found, please try again'));
       }
 
+      // TODO: Remove redundant alias — use existingCustomer directly below
       const customer = existingCustomer;
 
       // Step 4: Link customer to user

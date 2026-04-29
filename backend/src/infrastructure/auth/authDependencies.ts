@@ -36,4 +36,7 @@ export function initializeAuthDependencies(router: Router, config: AppConfig, pr
     getRedirectToJourneyUseCase,
     authMiddleware
   );
+  return {
+    authMiddleware,
+  };
 }

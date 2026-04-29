@@ -1,5 +1,4 @@
 import { Router, RequestHandler } from 'express';
-import { PrismaClient } from '@prisma/client';
 import type { ILogger } from '../../shared/logging';
 import type { AppConfig } from '../../shared/config';
 import { asyncHandler } from '../middleware';
@@ -11,19 +10,21 @@ import { PrismaBankConnectionRepository } from '../../infrastructure/persistence
 import { PrismaCustomerRepository } from '../../infrastructure/persistence/PrismaCustomerRepository';
 import { PrismaAssessmentRepository } from '../../infrastructure/persistence/PrismaAssessmentRepository';
 import { ProcessAssessmentJobService } from '../../application/services/ProcessAssessmentJobService';
+import { LocalJobDispatcher } from '../../application/jobs/LocalJobDispatcher';
+import { prisma } from '../../utils/db';
 
 export function createBankConnectionRoutes(config: AppConfig, logger: ILogger, authMiddleware: RequestHandler) {
   const router = Router();
-
-  const prisma = new PrismaClient();
   const tinkService = new TinkOAuthService(config, logger);
   const bankConnectionRepository = new PrismaBankConnectionRepository();
   const customerRepository = new PrismaCustomerRepository();
   const assessmentRepository = new PrismaAssessmentRepository(prisma);
   const processJobService = new ProcessAssessmentJobService(prisma, assessmentRepository, logger);
+  const delayMs = parseInt(process.env.JOB_DISPATCH_DELAY_MS ?? '35000', 10);
+  const jobDispatcher = new LocalJobDispatcher(processJobService, logger, delayMs);
 
   const initiateOAuth = new InitiateBankOAuthUseCase(bankConnectionRepository, customerRepository, tinkService, logger);
-  const handleCallback = new HandleBankOAuthCallbackUseCase(bankConnectionRepository, tinkService, prisma, logger, processJobService);
+  const handleCallback = new HandleBankOAuthCallbackUseCase(bankConnectionRepository, tinkService, prisma, logger, jobDispatcher);
 
   const controller = new BankConnectionController(initiateOAuth, handleCallback, customerRepository);
 

@@ -1,13 +1,11 @@
 import { Router } from 'express';
-import { PrismaClient } from '@prisma/client';
 import { AssessmentController } from '../controllers/AssessmentController';
 import { PrismaAssessmentRepository } from '../../infrastructure/persistence/PrismaAssessmentRepository';
 import { getLogger } from '../../shared/logging';
+import { prisma } from '../../utils/db';
 
 export function createAssessmentRoutes() {
   const router = Router();
-
-  const prisma = new PrismaClient();
   const assessmentRepository = new PrismaAssessmentRepository(prisma);
   const logger = getLogger();
   const controller = new AssessmentController(assessmentRepository, logger);

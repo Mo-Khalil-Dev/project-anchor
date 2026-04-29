@@ -88,6 +88,9 @@ export class PrismaCustomerRepository {
 
   /**
    * Check if a user is already linked to a customer
+   * TODO: Refactor — this duplicates findCustomerIdByUserId. Replace with:
+   *   const result = await this.findCustomerIdByUserId(userId);
+   *   return result.map(id => !!id);
    */
   async isUserAlreadyLinked(userId: string): Promise<Result<boolean, Error>> {
     try {
