@@ -1,6 +1,7 @@
 export const API = {
   assessments: {
     get: (assessmentId: string) => `/assessments/${assessmentId}`,
+    current: '/me/assessment',
   },
   bankConnections: {
     initiate: '/bank-connections/initiate',

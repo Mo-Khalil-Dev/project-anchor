@@ -1,15 +1,18 @@
 /**
  * useAssessmentBreakdown Hook
  *
- * Manages assessment breakdown data and tab state.
- * Auto-loads latest assessment for current user.
- * Handles redirect if no assessment exists.
+ * Fetches latest assessment via assessmentService.getCurrent().
+ * Falls back to MOCK_ASSESSMENT_DETAILED if VITE_USE_MOCK_ASSESSMENT=true
+ * or if backend is unreachable in development.
+ *
+ * Redirects to /account-setup if no assessment exists.
  */
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { AssessmentDetailedDTO } from '../types';
 import { MOCK_ASSESSMENT_DETAILED } from '../mocks/assessmentMockData';
+import { assessmentService } from '../services/assessmentService';
 
 export type AssessmentTab = 'overview' | 'expenses' | 'income' | 'factors';
 
@@ -21,15 +24,8 @@ export interface UseAssessmentBreakdownReturn {
   error: string | null;
 }
 
-/**
- * Hook to fetch and manage assessment breakdown data
- *
- * Currently uses mock data. Will swap to real service call when
- * backend API `/api/me/assessment` is available:
- *
- * @example
- * const { assessment, activeTab, setActiveTab, isLoading, error } = useAssessmentBreakdown();
- */
+const USE_MOCK = import.meta.env.VITE_USE_MOCK_ASSESSMENT === 'true';
+
 export function useAssessmentBreakdown(): UseAssessmentBreakdownReturn {
   const navigate = useNavigate();
   const [assessment, setAssessment] = useState<AssessmentDetailedDTO | null>(null);
@@ -43,26 +39,28 @@ export function useAssessmentBreakdown(): UseAssessmentBreakdownReturn {
         setIsLoading(true);
         setError(null);
 
-        // TODO: Replace with real service call when backend API is ready:
-        // const assessmentService = useAssessmentService();
-        // const response = await assessmentService.getCurrentAssessment();
-
-        // For now: Use mock data
-        await new Promise(resolve => setTimeout(resolve, 300)); // Simulate network delay
-        const mockData = MOCK_ASSESSMENT_DETAILED;
-
-        if (!mockData) {
-          // No assessment found - redirect to account setup or bank connection
-          navigate('/account-setup');
+        if (USE_MOCK) {
+          await new Promise(resolve => setTimeout(resolve, 200));
+          setAssessment(MOCK_ASSESSMENT_DETAILED);
           return;
         }
 
-        setAssessment(mockData);
-        setActiveTab('overview');
-      } catch (err) {
+        const data = await assessmentService.getCurrent();
+        setAssessment(data);
+      } catch (err: any) {
+        const status = err?.response?.status;
+        if (status === 404) {
+          navigate('/account-setup');
+          return;
+        }
+        // Dev fallback: if backend unavailable, show mock so the UI is testable
+        if (import.meta.env.DEV) {
+          console.warn('Assessment API unavailable, using mock data:', err?.message);
+          setAssessment(MOCK_ASSESSMENT_DETAILED);
+          return;
+        }
         const message = err instanceof Error ? err.message : 'Failed to load assessment';
         setError(message);
-        console.error('Failed to load assessment:', err);
       } finally {
         setIsLoading(false);
       }

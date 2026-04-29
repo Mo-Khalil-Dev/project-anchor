@@ -4,8 +4,11 @@ import { BankDataExtractionService } from '../../bankConnection/services/BankDat
 import type { IAssessmentRepository } from '../types/assessment.types';
 import { Assessment } from '../types/assessment.types';
 import type { ILogger } from '../../shared/logging';
+import { PaymentPlanCalculationService } from './PaymentPlanCalculationService';
 
 export class ProcessAssessmentJobService {
+  private paymentPlanService = new PaymentPlanCalculationService();
+
   constructor(
     private prisma: PrismaClient,
     private assessmentRepository: IAssessmentRepository,
@@ -81,6 +84,28 @@ export class ProcessAssessmentJobService {
       const income = incomeResult.getOrThrow();
       const expenses = expenseResult.getOrThrow();
 
+      const disposableIncome = income.total - expenses.total;
+      const arrears = assessment.getArrears() ?? 0;
+
+      // Calculate payment plans (Conservative 14%, Balanced 18%, Aggressive 20%)
+      const paymentPlans = this.paymentPlanService.calculatePlans(disposableIncome, arrears);
+
+      // Build breakdown JSON fields for the Reference Data endpoint
+      const expensesByCategory: Record<string, number> = {
+        Housing: expenses.housing ?? 0,
+        'Food & groceries': expenses.food ?? 0,
+        Transport: expenses.transport ?? 0,
+        Utilities: expenses.utilities ?? 0,
+        Other: expenses.other ?? 0,
+      };
+
+      const incomeSources = [
+        income.salary && { type: 'Salary (regular)', amount: income.salary, frequency: 'Monthly' },
+        income.benefits && { type: 'Benefits', amount: income.benefits, frequency: 'Monthly' },
+        income.pension && { type: 'Pension', amount: income.pension, frequency: 'Monthly' },
+        income.other && { type: 'Other income', amount: income.other, frequency: 'Monthly' },
+      ].filter(Boolean);
+
       const updatedAssessment = new Assessment({
         id: assessment.getId(),
         customerId: assessment.getCustomerId(),
@@ -91,6 +116,11 @@ export class ProcessAssessmentJobService {
         arrears: assessment.getArrears(),
         incomeBreakdown: JSON.stringify(income),
         expenseBreakdown: JSON.stringify(expenses),
+        expensesByCategory: JSON.stringify(expensesByCategory),
+        incomeHistory: assessment.getIncomeHistory(),
+        incomeSources: JSON.stringify(incomeSources),
+        factors: assessment.getFactors(),
+        paymentPlans: JSON.stringify(paymentPlans),
         status: 'COMPLETED',
         createdAt: assessment.getCreatedAt(),
         updatedAt: new Date(),
@@ -115,6 +145,8 @@ export class ProcessAssessmentJobService {
         assessmentId: job.assessmentId,
         monthlyIncome: income.total,
         monthlyExpenses: expenses.total,
+        disposableIncome,
+        paymentPlanCount: paymentPlans.length,
       });
 
       return Result.ok(undefined);
