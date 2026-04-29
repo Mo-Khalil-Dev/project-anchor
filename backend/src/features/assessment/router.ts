@@ -5,6 +5,7 @@ import { asyncHandler } from '../shared/middleware/globalErrorHandler';
 import { AssessmentController } from './controllers/AssessmentController';
 import { PrismaAssessmentRepository } from './repositories/PrismaAssessmentRepository';
 import { GetCurrentAssessmentUseCase } from './services/GetCurrentAssessmentUseCase';
+import { PrismaCustomerRepository } from '../customer/repositories/PrismaCustomerRepository';
 
 export function createAssessmentRouter(
   prisma: PrismaClient,
@@ -15,8 +16,10 @@ export function createAssessmentRouter(
 
   // ============ DEPENDENCY INJECTION ============
   const assessmentRepository = new PrismaAssessmentRepository(prisma);
+  const customerRepository = new PrismaCustomerRepository();
   const getCurrentAssessmentUseCase = new GetCurrentAssessmentUseCase(
     assessmentRepository,
+    customerRepository,
     logger,
   );
   const controller = new AssessmentController(

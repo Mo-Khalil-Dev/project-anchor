@@ -2,27 +2,28 @@ import { Result } from '../../shared/result';
 import type { ILogger } from '../../shared/logging';
 import type { IAssessmentRepository } from '../types/assessment.types';
 import { Assessment } from '../types/assessment.types';
+import type { ICustomerRepository } from '../../customer/types/customer.types';
 
 export interface GetCurrentAssessmentInput {
-  customerId: string;
+  userId: string;
 }
 
 /**
  * GetCurrentAssessmentUseCase
  *
- * Fetches the latest assessment for an authenticated customer.
- * Used by the Reference Data endpoint (`GET /api/me/assessment`).
+ * Fetches the latest assessment for the authenticated user.
  *
- * Returns the full assessment with all breakdown data:
- * - expensesByCategory
- * - incomeHistory
- * - incomeSources
- * - factors
- * - paymentPlans
+ * Flow:
+ *   1. Receive userId from the auth token
+ *   2. Look up the linked customerId via the User → Customer relation
+ *   3. Fetch the latest assessment for that customerId
+ *
+ * Used by: GET /api/me/assessment (Reference Data endpoint)
  */
 export class GetCurrentAssessmentUseCase {
   constructor(
     private assessmentRepository: IAssessmentRepository,
+    private customerRepository: ICustomerRepository,
     private logger: ILogger,
   ) {}
 
@@ -30,26 +31,45 @@ export class GetCurrentAssessmentUseCase {
     input: GetCurrentAssessmentInput,
   ): Promise<Result<Assessment | null, Error>> {
     try {
-      const { customerId } = input;
+      const { userId } = input;
 
-      if (!customerId) {
-        return Result.fail(new Error('Customer ID is required'));
+      if (!userId) {
+        return Result.fail(new Error('User ID is required'));
       }
 
-      const result = await this.assessmentRepository.findLatestByCustomerId(customerId);
+      // Step 1: Resolve userId → customerId via Users table
+      const customerIdResult = await this.customerRepository.findCustomerIdByUserId(userId);
+      if (customerIdResult.isFail) {
+        this.logger.error('Failed to resolve customerId from userId', {
+          userId,
+          error: customerIdResult.getError()?.message,
+        });
+        return Result.fail(new Error('Failed to resolve customer'));
+      }
 
-      if (result.isFail) {
+      const customerId = customerIdResult.getOrElse(null);
+      if (!customerId) {
+        // User exists but is not linked to a customer record yet
+        this.logger.info('No customer linked to user', { userId });
+        return Result.ok(null);
+      }
+
+      // Step 2: Fetch the latest assessment for that customer
+      const assessmentResult = await this.assessmentRepository.findLatestByCustomerId(customerId);
+      if (assessmentResult.isFail) {
         this.logger.error('Failed to fetch current assessment', {
+          userId,
           customerId,
-          error: result.getError()?.message,
+          error: assessmentResult.getError()?.message,
         });
         return Result.fail(new Error('Failed to fetch assessment'));
       }
 
-      const assessment = result.getOrElse(null);
+      const assessment = assessmentResult.getOrElse(null);
 
       if (assessment) {
         this.logger.info('Current assessment retrieved', {
+          userId,
           customerId,
           assessmentId: assessment.getId(),
           hardshipLevel: assessment.getHardshipLevel(),
@@ -61,7 +81,7 @@ export class GetCurrentAssessmentUseCase {
       const message = error instanceof Error ? error.message : 'Unknown error';
       this.logger.error('GetCurrentAssessment use case error', {
         error: message,
-        customerId: input.customerId,
+        userId: input.userId,
       });
       return Result.fail(new Error(`Failed to fetch assessment: ${message}`));
     }

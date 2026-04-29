@@ -3,10 +3,7 @@ import type { IAssessmentRepository } from '../types/assessment.types';
 import type { ILogger } from '../../shared/logging';
 import type { GetCurrentAssessmentUseCase } from '../services/GetCurrentAssessmentUseCase';
 import type { AssessmentDetailedDTO } from '../types/assessment.dto';
-
-interface AuthenticatedRequest extends Request {
-  user?: { customerId: string; id: string };
-}
+import type { AuthenticatedRequest } from '../../shared/middleware/authenticateRequest';
 
 export class AssessmentController {
   constructor(
@@ -83,17 +80,17 @@ export class AssessmentController {
         return;
       }
 
-      const customerId = req.user?.customerId;
-      if (!customerId) {
+      const userId = req.user?.id;
+      if (!userId) {
         res.status(401).json({ success: false, error: 'User not authenticated' });
         return;
       }
 
-      const result = await this.getCurrentAssessmentUseCase.execute({ customerId });
+      const result = await this.getCurrentAssessmentUseCase.execute({ userId });
 
       if (result.isFail) {
         this.logger.error('Failed to fetch current assessment', {
-          customerId,
+          userId,
           error: result.getError()?.message,
         });
         res.status(500).json({ success: false, error: 'Failed to fetch assessment' });
