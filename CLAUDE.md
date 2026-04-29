@@ -272,6 +272,64 @@ All feature code is self-contained — deletion is simple:
 
 No scattered files across multiple layers to clean up.
 
+## Current Sprint: Assessment Breakdown & Payment Plans
+
+**Sprint Dates:** Apr 29 — May 3, 2026 (1 week, solo)  
+**Goal:** Ship Assessment Detailed Breakdown (4-tab screen) + Payment Plan Options screen  
+**Status:** Planning complete — Ready for implementation (Apr 29)
+
+### Implementation Plan
+**See:** `/Users/mohamedkhalil/.claude/plans/this-is-the-plan-crystalline-backus.md` (detailed implementation plan with 18 tasks, data contracts, verification steps)
+
+**Also see:** `/Users/mohamedkhalil/.claude/plans/for-project-bridge-what-snuggly-turing.md` (sprint overview with API specs + wireframe references)
+
+### Implementation Approach
+- **Parallel development:** Frontend and backend work independently using mocks as API contract
+- **Frontend tools:** Recharts (charts), shadcn/ui (components), CSS modules for styling
+- **Backend tools:** Vertical slice pattern, Result type for error handling
+- **Unblocking:** Prisma schema update first, then both teams proceed in parallel
+- **Integration:** Frontend swaps mock file (`src/mocks/assessmentMockData.ts`) for real service call when backend APIs ready
+
+### Architecture Changes (Apr 29 decision)
+
+**1. Reference Data Endpoint**
+- **Old:** Assessment Journey required `assessmentId` parameter; navigated to `/assessment/:id`
+- **New:** Reference Data endpoint (`GET /api/me/assessment`) loads current user's latest assessment automatically
+- **Routes:** `/assessment/breakdown` (no ID needed) — auto-loads, redirects if none exists
+- **Data:** All breakdown data strongly typed: `AssessmentDetailedDTO`
+- **UX:** Simpler routing, auto-redirect to Account Setup or Bank Connection if no assessment
+
+**2. Payment Plans as Assessment Aggregate**
+- **Decision:** Calculate 3 payment plans (Conservative/Balanced/Aggressive) as value objects within the Assessment aggregate
+- **When:** Calculated during assessment creation (not on-demand)
+- **Formula:** (FORMULA 5, HARDSHIP_CALCULATION_RULES.md)
+  - Conservative: Disposable Income × 14% (high safety margin)
+  - Balanced: Disposable Income × 18% (medium safety margin)
+  - Aggressive: Disposable Income × 20% (low safety margin)
+- **Included in:** Reference Data endpoint response — payment plans returned with assessment, no separate API call
+- **Storage:** 5 new JSON columns on Assessment table: `expensesByCategory`, `incomeHistory`, `incomeSources`, `factors`, `paymentPlans`
+
+**3. Seed Data**
+- Prisma seed script includes realistic UK assessment data for local development/testing
+- Run: `npm run prisma:seed`
+
+### What's Being Built
+- **Backend:** Create Reference Data endpoint (`GET /api/me/assessment`) with strongly typed breakdown data + payment plans
+- **Frontend:** Assessment Breakdown (screens 2.1.2-5): 4 tabs (Overview, Expenses, Income Stability, Why This Happened) + auto-load + redirect
+- **Frontend:** Payment Plan Options screen (screen 2.2.1) — loads from same Reference Data endpoint
+
+### P0 (Must Ship)
+- Reference Data API (`GET /api/me/assessment`) with typed DTOs
+- Assessment Breakdown — all 4 tabs with charts + comparisons
+- Auto-load + redirect logic (Account Setup → Bank Connection)
+- Payment plan calculation service + integration into assessment creation
+
+### P1 (Should Ship)
+- Payment Plan Options screen + selection logic
+
+### P2 (Stretch)
+- Payment Plan detail screens (defer to next sprint likely)
+
 ## Known Tech Debt
 
 These are tracked TODO comments in the codebase — do not fix inline unless the task is specifically about them.

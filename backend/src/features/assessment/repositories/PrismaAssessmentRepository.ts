@@ -21,8 +21,13 @@ export class PrismaAssessmentRepository implements IAssessmentRepository {
           hardshipLevel: assessment.getHardshipLevel(),
           sustainabilityScore: assessment.getSustainabilityScore(),
           status: assessment.getStatus(),
-          incomeBreakdown: null,
-          expenseBreakdown: null,
+          incomeBreakdown: assessment.getIncomeBreakdown(),
+          expenseBreakdown: assessment.getExpenseBreakdown(),
+          expensesByCategory: assessment.getExpensesByCategory(),
+          incomeHistory: assessment.getIncomeHistory(),
+          incomeSources: assessment.getIncomeSources(),
+          factors: assessment.getFactors(),
+          paymentPlans: assessment.getPaymentPlans(),
           createdAt: assessment.getCreatedAt(),
           updatedAt: assessment.getUpdatedAt(),
         },
@@ -67,6 +72,24 @@ export class PrismaAssessmentRepository implements IAssessmentRepository {
     }
   }
 
+  async findLatestByCustomerId(customerId: string): Promise<Result<Assessment | null, Error>> {
+    try {
+      const record = await this.prisma.assessment.findFirst({
+        where: { customerId },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      if (!record) {
+        return Result.ok(null);
+      }
+
+      return Result.ok(this.toDomain(record));
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to find assessment';
+      return Result.fail(new Error(`Assessment lookup failed: ${message}`));
+    }
+  }
+
   async update(assessment: Assessment): Promise<Result<Assessment, Error>> {
     try {
       const updated = await this.prisma.assessment.update({
@@ -83,6 +106,11 @@ export class PrismaAssessmentRepository implements IAssessmentRepository {
           sustainabilityScore: assessment.getSustainabilityScore(),
           incomeBreakdown: assessment.getIncomeBreakdown(),
           expenseBreakdown: assessment.getExpenseBreakdown(),
+          expensesByCategory: assessment.getExpensesByCategory(),
+          incomeHistory: assessment.getIncomeHistory(),
+          incomeSources: assessment.getIncomeSources(),
+          factors: assessment.getFactors(),
+          paymentPlans: assessment.getPaymentPlans(),
           status: assessment.getStatus(),
           updatedAt: new Date(),
         },
@@ -106,6 +134,11 @@ export class PrismaAssessmentRepository implements IAssessmentRepository {
       arrears: record.arrears,
       incomeBreakdown: record.incomeBreakdown,
       expenseBreakdown: record.expenseBreakdown,
+      expensesByCategory: record.expensesByCategory,
+      incomeHistory: record.incomeHistory,
+      incomeSources: record.incomeSources,
+      factors: record.factors,
+      paymentPlans: record.paymentPlans,
       status: record.status,
       createdAt: record.createdAt,
       updatedAt: record.updatedAt,

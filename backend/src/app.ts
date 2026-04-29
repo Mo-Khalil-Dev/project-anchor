@@ -75,7 +75,7 @@ export function createApp(config: AppConfig, logger: ILogger, prisma: PrismaClie
   // ============ FEATURE ROUTES ============
   app.use('/api', authSetup.router);
   app.use('/api/bank-connections', createBankConnectionRouter(config, logger, authMiddleware, prisma));
-  app.use('/api', createAssessmentRouter(prisma, logger));
+  app.use('/api', createAssessmentRouter(prisma, logger, authMiddleware));
   app.use('/api/customer', createCustomerRouter(prisma, logger, authMiddleware));
 
   // ============ ERROR HANDLING ============

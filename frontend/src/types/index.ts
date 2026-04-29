@@ -83,6 +83,51 @@ export interface PaymentPlan {
   recommended: boolean;
 }
 
+// ── Assessment Breakdown (Reference Data) ──────────────────────
+export interface PaymentPlanDTO {
+  type: 'Conservative' | 'Balanced' | 'Aggressive';
+  monthlyAmount: number;
+  duration: number;
+  totalRepayment: number;
+  sustainability: 'HIGH' | 'MEDIUM' | 'LOW';
+}
+
+export interface IncomeRecordDTO {
+  month: string;
+  amount: number;
+}
+
+export interface IncomeSourceDTO {
+  type: string;
+  amount: number;
+  frequency: string;
+}
+
+export interface AssessmentFactorDTO {
+  title: string;
+  description: string;
+}
+
+export interface AssessmentDetailedDTO {
+  id: string;
+  customerId: string;
+  hardshipLevel: HardshipLevel;
+  disposableIncome: number;
+  billRatio: number;
+  monthlyBill: number;
+  monthlyIncome: number;
+  monthlyExpenses: number;
+  arrears: number;
+  expensesByCategory: Record<string, number>;
+  incomeHistory: IncomeRecordDTO[];
+  incomeSources: IncomeSourceDTO[];
+  factors: AssessmentFactorDTO[];
+  paymentPlans: PaymentPlanDTO[];
+  createdAt: string;
+  updatedAt: string;
+  status: 'COMPLETED' | 'PENDING' | 'FAILED';
+}
+
 export interface Customer {
   id: string;
   name: string;

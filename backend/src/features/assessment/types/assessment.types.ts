@@ -14,6 +14,11 @@ export interface AssessmentProps {
   arrears?: number | null;
   incomeBreakdown?: string | null;
   expenseBreakdown?: string | null;
+  expensesByCategory?: string | null;
+  incomeHistory?: string | null;
+  incomeSources?: string | null;
+  factors?: string | null;
+  paymentPlans?: string | null;
   status: AssessmentStatus;
   createdAt: Date;
   updatedAt: Date;
@@ -29,6 +34,11 @@ export class Assessment {
   private readonly arrears: number | null;
   private readonly incomeBreakdown: string | null;
   private readonly expenseBreakdown: string | null;
+  private readonly expensesByCategory: string | null;
+  private readonly incomeHistory: string | null;
+  private readonly incomeSources: string | null;
+  private readonly factors: string | null;
+  private readonly paymentPlans: string | null;
   private readonly createdAt: Date;
   private updatedAt: Date;
   private status: AssessmentStatus;
@@ -43,6 +53,11 @@ export class Assessment {
     this.arrears = props.arrears ?? null;
     this.incomeBreakdown = props.incomeBreakdown ?? null;
     this.expenseBreakdown = props.expenseBreakdown ?? null;
+    this.expensesByCategory = props.expensesByCategory ?? null;
+    this.incomeHistory = props.incomeHistory ?? null;
+    this.incomeSources = props.incomeSources ?? null;
+    this.factors = props.factors ?? null;
+    this.paymentPlans = props.paymentPlans ?? null;
     this.status = props.status;
     this.createdAt = props.createdAt;
     this.updatedAt = props.updatedAt;
@@ -91,6 +106,26 @@ export class Assessment {
 
   getExpenseBreakdown(): string | null {
     return this.expenseBreakdown;
+  }
+
+  getExpensesByCategory(): string | null {
+    return this.expensesByCategory;
+  }
+
+  getIncomeHistory(): string | null {
+    return this.incomeHistory;
+  }
+
+  getIncomeSources(): string | null {
+    return this.incomeSources;
+  }
+
+  getFactors(): string | null {
+    return this.factors;
+  }
+
+  getPaymentPlans(): string | null {
+    return this.paymentPlans;
   }
 
   getStatus(): AssessmentStatus {
@@ -183,5 +218,6 @@ export interface IAssessmentRepository {
   save(assessment: Assessment): Promise<Result<Assessment, Error>>;
   findById(id: string): Promise<Result<Assessment | null, Error>>;
   findByCustomerId(customerId: string): Promise<Result<Assessment[], Error>>;
+  findLatestByCustomerId(customerId: string): Promise<Result<Assessment | null, Error>>;
   update(assessment: Assessment): Promise<Result<Assessment, Error>>;
 }

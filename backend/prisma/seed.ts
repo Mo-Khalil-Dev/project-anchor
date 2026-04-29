@@ -246,6 +246,111 @@ const customers = [
   },
 ];
 
+function createMockAssessment(customerId: string, monthlyBill: number) {
+  // Realistic UK household: disposable income £2,100/month
+  const disposableIncome = 2100;
+
+  // Expenses breakdown (realistic UK values)
+  const expensesByCategory = {
+    Housing: 1200,
+    Utilities: 280,
+    Food: 300,
+    Transport: 150,
+    Other: 170,
+  };
+
+  // 6-month income history (varying slightly)
+  const incomeHistory = [
+    { month: 'Oct 2025', amount: 1950 },
+    { month: 'Nov 2025', amount: 2100 },
+    { month: 'Dec 2025', amount: 1800 },
+    { month: 'Jan 2026', amount: 2050 },
+    { month: 'Feb 2026', amount: 2200 },
+    { month: 'Mar 2026', amount: 2100 },
+  ];
+
+  // Income sources
+  const incomeSources = [
+    { type: 'Employment', amount: 1950, frequency: 'Monthly' },
+    { type: 'Benefits', amount: 150, frequency: 'Monthly' },
+  ];
+
+  // Assessment factors
+  const factors = [
+    {
+      title: 'Household size: 4 dependents',
+      description: 'Four dependents increases essential expenses (food, transport).',
+    },
+    {
+      title: 'Recent illness (3 months)',
+      description: 'Recent medical costs impacted disposable income during recovery period.',
+    },
+    {
+      title: 'Utility bill high for postcode',
+      description: 'Your utility bill is 15% above average for your area (M1).',
+    },
+  ];
+
+  // Calculate payment plans (Formula 5)
+  const conservativeAmount = Math.round(disposableIncome * 0.14);
+  const balancedAmount = Math.round(disposableIncome * 0.18);
+  const aggressiveAmount = Math.round(disposableIncome * 0.20);
+
+  // Assuming £3,000 in arrears
+  const arrears = 3000;
+
+  const paymentPlans = [
+    {
+      type: 'Conservative',
+      monthlyAmount: conservativeAmount,
+      duration: Math.ceil(arrears / conservativeAmount),
+      totalRepayment: arrears,
+      sustainability: 'HIGH',
+    },
+    {
+      type: 'Balanced',
+      monthlyAmount: balancedAmount,
+      duration: Math.ceil(arrears / balancedAmount),
+      totalRepayment: arrears,
+      sustainability: 'MEDIUM',
+    },
+    {
+      type: 'Aggressive',
+      monthlyAmount: aggressiveAmount,
+      duration: Math.ceil(arrears / aggressiveAmount),
+      totalRepayment: arrears,
+      sustainability: 'MEDIUM',
+    },
+  ];
+
+  // Determine hardship level based on bill ratio
+  const billRatio = (monthlyBill / disposableIncome) * 100;
+  let hardshipLevel = 'NONE';
+  if (billRatio > 25) hardshipLevel = 'SEVERE';
+  else if (billRatio > 10) hardshipLevel = 'MODERATE';
+  else if (billRatio > 0) hardshipLevel = 'LOW';
+
+  return {
+    customerId,
+    monthlyIncome: 2100,
+    monthlyExpenses: 2100,
+    monthlyBill,
+    arrears: 3000,
+    disposableIncome,
+    billRatio,
+    hardshipLevel,
+    sustainabilityScore: 'MEDIUM',
+    incomeBreakdown: JSON.stringify({}),
+    expenseBreakdown: JSON.stringify({}),
+    expensesByCategory: JSON.stringify(expensesByCategory),
+    incomeHistory: JSON.stringify(incomeHistory),
+    incomeSources: JSON.stringify(incomeSources),
+    factors: JSON.stringify(factors),
+    paymentPlans: JSON.stringify(paymentPlans),
+    status: 'COMPLETED',
+  };
+}
+
 async function main() {
   console.log('🌱 Seeding database with 20 test customers...');
 
@@ -256,16 +361,39 @@ async function main() {
 
     if (existing) {
       console.log(`  ✅ ${customer.email} (already exists)`);
+
+      // Create assessment for existing customer if not already present
+      const existingAssessment = await prisma.assessment.findFirst({
+        where: { customerId: existing.id },
+      });
+
+      if (!existingAssessment) {
+        const assessment = createMockAssessment(existing.id, customer.monthlyBill);
+        await prisma.assessment.create({ data: assessment });
+        console.log(`     └─ Assessment created (breakdown data included)`);
+      }
     } else {
-      await prisma.customer.create({
+      const newCustomer = await prisma.customer.create({
         data: customer,
       });
       console.log(`  ✅ ${customer.email} (created)`);
+
+      // Create assessment for new customer
+      const assessment = createMockAssessment(newCustomer.id, customer.monthlyBill);
+      await prisma.assessment.create({ data: assessment });
+      console.log(`     └─ Assessment created (breakdown data included)`);
     }
   }
 
   console.log('');
   console.log('✅ Seeding complete!');
+  console.log('');
+  console.log('Assessment data includes:');
+  console.log('  • expensesByCategory (5 categories with realistic UK values)');
+  console.log('  • incomeHistory (6 months of income data)');
+  console.log('  • incomeSources (employment + benefits)');
+  console.log('  • factors (3 assessment factors explaining hardship)');
+  console.log('  • paymentPlans (3 plans: Conservative, Balanced, Aggressive)');
   console.log('');
   console.log('Next steps:');
   console.log('  1. Run: ./scripts/link-users-to-customers.sh');

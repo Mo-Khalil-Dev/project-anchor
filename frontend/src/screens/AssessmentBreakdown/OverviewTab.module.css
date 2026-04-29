@@ -1,0 +1,85 @@
+.container {
+  padding: 20px 0;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.badge {
+  padding: 8px 16px;
+  border-radius: 24px;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 16px;
+  color: var(--color-text, #1f2937);
+}
+
+.metrics div {
+  font-weight: 500;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 14px;
+}
+
+.table thead {
+  background-color: var(--color-bg-secondary, #f9fafb);
+  border-bottom: 1px solid var(--color-border, #e5e7eb);
+}
+
+.table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  color: var(--color-text, #1f2937);
+}
+
+.table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-border, #e5e7eb);
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table tr.total {
+  background-color: var(--color-bg-secondary, #f9fafb);
+  font-weight: 600;
+  border-top: 2px solid var(--color-border, #e5e7eb);
+}
+
+@media (max-width: 640px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .table {
+    font-size: 13px;
+  }
+
+  .table th,
+  .table td {
+    padding: 10px 12px;
+  }
+}

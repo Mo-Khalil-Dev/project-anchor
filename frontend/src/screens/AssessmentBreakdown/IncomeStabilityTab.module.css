@@ -1,0 +1,42 @@
+.container {
+  padding: 20px 0;
+}
+
+.container h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: var(--color-text, #1f2937);
+}
+
+.stats {
+  display: flex;
+  gap: 24px;
+  margin-top: 16px;
+  padding: 12px;
+  background-color: var(--color-bg-secondary, #f9fafb);
+  border-radius: 8px;
+}
+
+.stats p {
+  font-size: 14px;
+  color: var(--color-text-secondary, #6b7280);
+  margin: 0;
+  flex: 1;
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 12px 0;
+  }
+
+  .container h3 {
+    font-size: 16px;
+    margin-bottom: 16px;
+  }
+
+  .stats {
+    flex-direction: column;
+    gap: 8px;
+  }
+}

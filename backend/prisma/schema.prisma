@@ -205,6 +205,12 @@ model Assessment {
   incomeBreakdown   String?         // JSON: { salary, pension, benefits, cashDeposits, other, total }
   expenseBreakdown  String?         // JSON: { housing, food, utilities, transport, other, total }
 
+  expensesByCategory String?        // JSON: { Housing: 1200, Utilities: 280, Food: 300, Transport: 150, Other: 170 }
+  incomeHistory     String?         // JSON: [{ month: "Mar 2026", amount: 1950 }, ...]
+  incomeSources     String?         // JSON: [{ type: "Employment", amount: 1950, frequency: "Monthly" }, ...]
+  factors           String?         // JSON: [{ title: "Household size 4", description: "..." }, ...]
+  paymentPlans      String?         // JSON: [{ type: "Conservative", monthlyAmount: 185, duration: 36, totalRepayment: 6660, sustainability: "HIGH" }, ...]
+
   status            String          @default("PENDING")
 
   assessmentJob     AssessmentJob?
