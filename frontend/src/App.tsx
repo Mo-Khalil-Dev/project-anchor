@@ -8,8 +8,8 @@ import { Home } from '@/journeys/Home';
 import { BankConnectionRoot } from '@/journeys/BankConnection';
 import { AssessmentOverview } from '@/journeys/Assessment/screens/overview/Overview';
 import { AccountSetupPage } from '@/journeys/AccountSetup/AccountSetupPage';
-import { AssessmentBreakdown } from '@/screens/AssessmentBreakdown/AssessmentBreakdown';
-import { PaymentPlanOptionsRoute } from '@/screens/PaymentPlanOptions/PaymentPlanOptionsRoute';
+import { AssessmentBreakdown } from '@/journeys/AssessmentBreakdown/AssessmentBreakdown';
+import { PaymentPlanOptionsRoute } from '@/journeys/PaymentPlanOptions/PaymentPlanOptionsRoute';
 
 function App() {
   return (
