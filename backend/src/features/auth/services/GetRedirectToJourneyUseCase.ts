@@ -46,19 +46,13 @@ export class GetRedirectToJourneyUseCase {
       return { nextPage: '/bank-connection', reason: 'bank_not_connected' };
     }
 
-    // 3. Must have completed assessment
+    // 3. Has bank connection + assessment → land them on Assessment Overview
     const hasAssessment = user.customer.assessments && user.customer.assessments.length > 0;
-    if (!hasAssessment) {
-      return { nextPage: '/assessment', reason: 'assessment_not_completed' };
+    if (hasAssessment) {
+      return { nextPage: '/assessment', reason: 'assessment_available' };
     }
 
-    // 4. Check if payment plan is selected (optional for now)
-    // const hasPaymentPlan = user.customer.paymentPlan !== null;
-    // if (!hasPaymentPlan) {
-    //   return { nextPage: '/payment-plan', reason: 'payment_plan_not_selected' };
-    // }
-
-    // All done, go to payment portal
-    return { nextPage: '/payment-portal', reason: 'all_steps_complete' };
+    // 4. Bank connected but no assessment yet (still being processed)
+    return { nextPage: '/assessment', reason: 'assessment_not_completed' };
   }
 }
