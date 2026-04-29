@@ -6,7 +6,7 @@ import { useOverview } from './useOverview';
 import { useJourneyGuard } from '@/hooks/useJourneyGuard';
 
 export function AssessmentOverview() {
-  const { assessment, loading, error, isPending, isFailed, isCompleted, assessmentDate, handleExplorePaymentPlans, handleGoBack } = useOverview();
+  const { assessment, loading, error, isPending, isFailed, isCompleted, assessmentDate, handleExplorePaymentPlans, handleViewBreakdown, handleGoBack } = useOverview();
 
   // Redirect if account setup or bank connection not yet complete
   const { status: guardStatus } = useJourneyGuard({
@@ -32,6 +32,7 @@ export function AssessmentOverview() {
           isFailed={isFailed}
           isCompleted={isCompleted}
           onExplorePaymentPlans={handleExplorePaymentPlans}
+          onViewBreakdown={handleViewBreakdown}
         />
       )}
     </CustomerLayout>

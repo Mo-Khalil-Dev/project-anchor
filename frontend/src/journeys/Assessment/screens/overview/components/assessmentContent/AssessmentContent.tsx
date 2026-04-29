@@ -11,9 +11,10 @@ interface Props {
   isFailed: boolean;
   isCompleted: boolean;
   onExplorePaymentPlans: () => void;
+  onViewBreakdown: () => void;
 }
 
-export function AssessmentContent({ assessment, assessmentDate, isPending, isFailed, isCompleted, onExplorePaymentPlans }: Props) {
+export function AssessmentContent({ assessment, assessmentDate, isPending, isFailed, isCompleted, onExplorePaymentPlans, onViewBreakdown }: Props) {
   return (
     <div className={styles.page}>
       {!isPending && (
@@ -24,7 +25,7 @@ export function AssessmentContent({ assessment, assessmentDate, isPending, isFai
       )}
       {isPending && <AssessmentPendingView calculatedAt={assessment.calculatedAt} />}
       {isFailed && <FailedBanner />}
-      {isCompleted && <CompletedAssessmentView assessment={assessment} onExplorePaymentPlans={onExplorePaymentPlans} />}
+      {isCompleted && <CompletedAssessmentView assessment={assessment} onExplorePaymentPlans={onExplorePaymentPlans} onViewBreakdown={onViewBreakdown} />}
     </div>
   );
 }

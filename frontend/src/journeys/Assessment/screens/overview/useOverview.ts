@@ -72,6 +72,10 @@ export function useOverview() {
     navigate('/plan-select');
   };
 
+  const handleViewBreakdown = () => {
+    navigate('/assessment/breakdown');
+  };
+
   const handleGoBack = () => navigate(-1);
 
   const assessmentDate = assessment
@@ -95,6 +99,7 @@ export function useOverview() {
     isCompleted,
     assessmentDate,
     handleExplorePaymentPlans,
+    handleViewBreakdown,
     handleGoBack,
   };
 }
