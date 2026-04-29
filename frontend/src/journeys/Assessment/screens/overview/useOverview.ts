@@ -25,13 +25,26 @@ export function useOverview() {
 
   const fetchAssessment = useCallback(async () => {
     try {
-      if (!assessmentId) {
-        setError('Assessment ID is required');
-        setLoading(false);
-        return;
+      let data: Assessment;
+      if (assessmentId) {
+        data = await assessmentService.get(assessmentId);
+      } else {
+        // No ID in URL: fetch the current logged-in user's latest assessment
+        const dto = await assessmentService.getCurrent();
+        data = {
+          id: dto.id,
+          customerId: dto.customerId,
+          monthlyIncome: dto.monthlyIncome,
+          monthlyExpenses: dto.monthlyExpenses,
+          disposableIncome: dto.disposableIncome,
+          monthlyBill: dto.monthlyBill,
+          billRatio: dto.billRatio,
+          hardshipLevel: dto.hardshipLevel,
+          status: dto.status,
+          arrears: dto.arrears,
+          calculatedAt: dto.updatedAt,
+        };
       }
-
-      const data = await assessmentService.get(assessmentId);
 
       setAssessment(data);
       setError(null);
