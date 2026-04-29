@@ -22,6 +22,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/account-setup" element={<AccountSetupPage />} />
             <Route path="/bank-connection" element={<BankConnectionRoot />} />
+            <Route path="/assessment" element={<AssessmentBreakdown />} />
             <Route path="/assessment/breakdown" element={<AssessmentBreakdown />} />
             <Route path="/assessment/:assessmentId" element={<AssessmentOverview />} />
             <Route path="/payment-plans" element={<PaymentPlanOptionsRoute />} />

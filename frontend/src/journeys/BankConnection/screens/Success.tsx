@@ -11,10 +11,8 @@ export function Success() {
   const data = useAppSelector((s) => s.customer.bankConnectionData);
 
   const handleViewAssessment = () => {
-    if (data?.assessmentId) {
-      dispatch(setCurrentStep('assessment'));
-      navigate(`/assessment/${data.assessmentId}`);
-    }
+    dispatch(setCurrentStep('assessment'));
+    navigate('/assessment');
   };
 
   const summaryData = [
