@@ -1,4 +1,5 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useState, useEffect } from 'react';
+import { useAuth } from '../hooks/useAuth';
 import { useReferenceData } from '../hooks/useReferenceData';
 import type { ReferenceData } from '../types/referenceData.types';
 
@@ -9,13 +10,30 @@ interface ReferenceDataContextValue {
   refetch: () => Promise<void>;
 }
 
-const ReferenceDataContext = React.createContext<ReferenceDataContextValue | undefined>(undefined);
+const defaultContextValue: ReferenceDataContextValue = {
+  data: null,
+  isLoading: false,
+  error: null,
+  refetch: async () => {},
+};
+
+const ReferenceDataContext = React.createContext<ReferenceDataContextValue>(defaultContextValue);
 
 export function ReferenceDataProvider({ children }: { children: ReactNode }) {
-  const referenceData = useReferenceData();
+  const { isAuthenticated } = useAuth();
+  const referenceData = useReferenceData(isAuthenticated);
+  const [contextValue, setContextValue] = useState<ReferenceDataContextValue>(defaultContextValue);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      setContextValue(referenceData);
+    } else {
+      setContextValue(defaultContextValue);
+    }
+  }, [isAuthenticated, referenceData]);
 
   return (
-    <ReferenceDataContext.Provider value={referenceData}>
+    <ReferenceDataContext.Provider value={contextValue}>
       {children}
     </ReferenceDataContext.Provider>
   );
@@ -23,8 +41,5 @@ export function ReferenceDataProvider({ children }: { children: ReactNode }) {
 
 export function useReferenceDataContext(): ReferenceDataContextValue {
   const context = React.useContext(ReferenceDataContext);
-  if (context === undefined) {
-    throw new Error('useReferenceDataContext must be used within ReferenceDataProvider');
-  }
-  return context;
+  return context || defaultContextValue;
 }

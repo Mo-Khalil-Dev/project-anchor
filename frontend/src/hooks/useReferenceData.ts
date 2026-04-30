@@ -9,12 +9,17 @@ interface UseReferenceDataState {
   refetch: () => Promise<void>;
 }
 
-export function useReferenceData(): UseReferenceDataState {
+export function useReferenceData(isAuthenticated: boolean): UseReferenceDataState {
   const [data, setData] = useState<ReferenceData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(isAuthenticated);
   const [error, setError] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
+    if (!isAuthenticated) {
+      setIsLoading(false);
+      return;
+    }
+
     try {
       setIsLoading(true);
       setError(null);
@@ -27,15 +32,22 @@ export function useReferenceData(): UseReferenceDataState {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [isAuthenticated]);
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      setData(null);
+      setError(null);
+      setIsLoading(false);
+      return;
+    }
+
     fetchData();
 
     // Auto-refetch every 5 minutes
     const interval = setInterval(fetchData, 5 * 60 * 1000);
     return () => clearInterval(interval);
-  }, [fetchData]);
+  }, [isAuthenticated, fetchData]);
 
   return {
     data,
