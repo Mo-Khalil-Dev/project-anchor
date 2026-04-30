@@ -70,7 +70,6 @@ export class GetReferenceDataUseCase {
       const accountSetup = accountSetupResult.isFail ? null : accountSetupResult.getOrElse(null);
       const bankConnection = bankConnectionResult.isFail ? null : bankConnectionResult.getOrElse(null);
       const assessment = assessmentResult.isFail ? null : assessmentResult.getOrElse(null);
-      const paymentPlans = assessment?.status === 'COMPLETED' ? assessment : null;
 
       const nextStep = this.determineNextStep(accountSetup, bankConnection, assessment);
       this.logger.info('Determined next step', { userId, customerId, nextStep });

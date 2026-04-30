@@ -1,6 +1,5 @@
 import type { Router, RequestHandler } from 'express';
 import { Router as ExpressRouter } from 'express';
-import type { PrismaClient } from '@prisma/client';
 import type { ILogger } from '../logging';
 import { PrismaCustomerRepository } from '../../customer/repositories/PrismaCustomerRepository';
 import { PrismaBankConnectionRepository } from '../../bankConnection/repositories/PrismaBankConnectionRepository';
@@ -10,7 +9,6 @@ import { GetReferenceDataUseCase } from '../services/GetReferenceDataUseCase';
 import { asyncHandler } from '../middleware/globalErrorHandler';
 
 export function createReferenceDataRouter(
-  prisma: PrismaClient,
   logger: ILogger,
   authenticateRequest: RequestHandler,
 ): Router {
@@ -19,8 +17,8 @@ export function createReferenceDataRouter(
   // ============ DEPENDENCY INJECTION ============
   // Create repositories
   const customerRepository = new PrismaCustomerRepository();
-  const bankConnectionRepository = new PrismaBankConnectionRepository(prisma);
-  const assessmentRepository = new PrismaAssessmentRepository(prisma);
+  const bankConnectionRepository = new PrismaBankConnectionRepository();
+  const assessmentRepository = new PrismaAssessmentRepository();
 
   // Create use case
   const getReferenceDataUseCase = new GetReferenceDataUseCase(

@@ -8,14 +8,14 @@ import { GetCurrentAssessmentUseCase } from './services/GetCurrentAssessmentUseC
 import { PrismaCustomerRepository } from '../customer/repositories/PrismaCustomerRepository';
 
 export function createAssessmentRouter(
-  prisma: PrismaClient,
+  _prisma: PrismaClient,
   logger: ILogger,
   authMiddleware?: any, // Auth middleware for protected routes
 ): Router {
   const router = Router();
 
   // ============ DEPENDENCY INJECTION ============
-  const assessmentRepository = new PrismaAssessmentRepository(prisma);
+  const assessmentRepository = new PrismaAssessmentRepository();
   const customerRepository = new PrismaCustomerRepository();
   const getCurrentAssessmentUseCase = new GetCurrentAssessmentUseCase(
     assessmentRepository,

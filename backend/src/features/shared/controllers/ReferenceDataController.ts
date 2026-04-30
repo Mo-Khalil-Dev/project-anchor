@@ -13,7 +13,7 @@ export class ReferenceDataController {
 
   async getReferenceData(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      const userId = req.user?.id;
+      const userId = req.user?.id ?? '';
 
       if (!userId) {
         res.status(401).json({ error: 'Unauthorized' });
@@ -23,11 +23,13 @@ export class ReferenceDataController {
       const result = await this.getReferenceDataUseCase.execute({ userId });
 
       if (result.isFail) {
-        res.status(400).json({ error: result.getError().message });
+        const error = result.getError();
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        res.status(400).json({ error: errorMessage });
         return;
       }
 
-      const data = result.getOrElse(null);
+      const data = result.getOrElse({} as any);
       res.status(200).json({ success: true, data });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);

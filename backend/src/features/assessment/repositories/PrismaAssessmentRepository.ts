@@ -1,13 +1,13 @@
-import { PrismaClient } from '@prisma/client';
 import { Result } from '../../shared/result';
 import { Assessment, type IAssessmentRepository } from '../types/assessment.types';
+import { prisma } from '../../shared/utils/db';
+
 
 export class PrismaAssessmentRepository implements IAssessmentRepository {
-  constructor(private prisma: PrismaClient) {}
 
   async save(assessment: Assessment): Promise<Result<Assessment, Error>> {
     try {
-      const created = await this.prisma.assessment.create({
+      const created = await prisma.assessment.create({
         data: {
           id: assessment.getId(),
           customerId: assessment.getCustomerId(),
@@ -42,7 +42,7 @@ export class PrismaAssessmentRepository implements IAssessmentRepository {
 
   async findById(id: string): Promise<Result<Assessment | null, Error>> {
     try {
-      const record = await this.prisma.assessment.findUnique({
+      const record = await prisma.assessment.findUnique({
         where: { id },
       });
 
@@ -59,7 +59,7 @@ export class PrismaAssessmentRepository implements IAssessmentRepository {
 
   async findByCustomerId(customerId: string): Promise<Result<Assessment[], Error>> {
     try {
-      const records = await this.prisma.assessment.findMany({
+      const records = await prisma.assessment.findMany({
         where: { customerId },
         orderBy: { createdAt: 'desc' },
       });
@@ -74,7 +74,7 @@ export class PrismaAssessmentRepository implements IAssessmentRepository {
 
   async findLatestByCustomerId(customerId: string): Promise<Result<Assessment | null, Error>> {
     try {
-      const record = await this.prisma.assessment.findFirst({
+      const record = await prisma.assessment.findFirst({
         where: { customerId },
         orderBy: { createdAt: 'desc' },
       });
@@ -92,7 +92,7 @@ export class PrismaAssessmentRepository implements IAssessmentRepository {
 
   async update(assessment: Assessment): Promise<Result<Assessment, Error>> {
     try {
-      const updated = await this.prisma.assessment.update({
+      const updated = await prisma.assessment.update({
         where: { id: assessment.getId() },
         data: {
           bankConnectionId: assessment.getBankConnectionId(),

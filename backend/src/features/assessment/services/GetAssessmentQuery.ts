@@ -1,7 +1,7 @@
 import { Result } from '../../shared/result';
 import type { ILogger } from '../../shared/logging';
 import type { IAssessmentRepository } from '../types/assessment.types';
-import type { AssessmentData, PaymentPlan } from '../../shared/types/referenceData.types';
+import type { AssessmentData } from '../../shared/types/referenceData.types';
 
 export class GetAssessmentQuery {
   constructor(
@@ -34,7 +34,6 @@ export class GetAssessmentQuery {
       let incomeSources: any[] = [];
       let incomeHistory: any[] = [];
       let factors: any[] = [];
-      let paymentPlans: PaymentPlan[] = [];
 
       try {
         const expensesCategoryJson = assessment.getExpensesByCategory();
@@ -70,15 +69,6 @@ export class GetAssessmentQuery {
         }
       } catch (e) {
         this.logger.warn('Failed to parse factors', { customerId });
-      }
-
-      try {
-        const plansJson = assessment.getPaymentPlans();
-        if (plansJson) {
-          paymentPlans = JSON.parse(plansJson);
-        }
-      } catch (e) {
-        this.logger.warn('Failed to parse paymentPlans', { customerId });
       }
 
       const assessmentData: AssessmentData = {
