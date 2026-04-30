@@ -1,7 +1,7 @@
 /**
  * useAssessmentBreakdown Hook
  *
- * Fetches latest assessment via assessmentService.getCurrent().
+ * Fetches latest assessment from reference data context.
  * Falls back to MOCK_ASSESSMENT_DETAILED if VITE_USE_MOCK_ASSESSMENT=true
  * or if backend is unreachable in development.
  *
@@ -10,9 +10,9 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useReferenceDataContext } from '@/context/ReferenceDataContext';
 import type { AssessmentDetailedDTO } from '../types';
 import { MOCK_ASSESSMENT_DETAILED } from '../mocks/assessmentMockData';
-import { assessmentService } from '../services/assessmentService';
 
 export type AssessmentTab = 'overview' | 'expenses' | 'income' | 'factors';
 
@@ -28,46 +28,49 @@ const USE_MOCK = import.meta.env.VITE_USE_MOCK_ASSESSMENT === 'true';
 
 export function useAssessmentBreakdown(): UseAssessmentBreakdownReturn {
   const navigate = useNavigate();
+  const { data: referenceData, isLoading: contextLoading, error: contextError } = useReferenceDataContext();
   const [assessment, setAssessment] = useState<AssessmentDetailedDTO | null>(null);
   const [activeTab, setActiveTab] = useState<AssessmentTab>('overview');
-  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const loadAssessment = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
+    if (USE_MOCK) {
+      setAssessment(MOCK_ASSESSMENT_DETAILED);
+      return;
+    }
 
-        if (USE_MOCK) {
-          await new Promise(resolve => setTimeout(resolve, 200));
-          setAssessment(MOCK_ASSESSMENT_DETAILED);
-          return;
-        }
+    if (contextError) {
+      setError(contextError);
+      return;
+    }
 
-        const data = await assessmentService.getCurrent();
-        setAssessment(data);
-      } catch (err: any) {
-        const status = err?.response?.status;
-        if (status === 404) {
-          navigate('/account-setup');
-          return;
-        }
-        // Dev fallback: if backend unavailable, show mock so the UI is testable
-        if (import.meta.env.DEV) {
-          console.warn('Assessment API unavailable, using mock data:', err?.message);
-          setAssessment(MOCK_ASSESSMENT_DETAILED);
-          return;
-        }
-        const message = err instanceof Error ? err.message : 'Failed to load assessment';
-        setError(message);
-      } finally {
-        setIsLoading(false);
+    if (!referenceData?.assessment) {
+      if (!contextLoading) {
+        navigate('/account-setup');
       }
+      return;
+    }
+
+    const assessmentData = referenceData.assessment;
+    const detailedAssessment: AssessmentDetailedDTO = {
+      id: assessmentData.id,
+      customerId: '',
+      status: assessmentData.status,
+      hardshipLevel: assessmentData.hardshipLevel,
+      disposableIncome: assessmentData.disposableIncome,
+      monthlyBill: assessmentData.monthlyBill,
+      billRatio: assessmentData.billRatio,
+      expensesByCategory: assessmentData.expensesByCategory,
+      incomeSources: assessmentData.incomeSources,
+      incomeHistory: assessmentData.incomeHistory,
+      factors: assessmentData.factors,
+      createdAt: assessmentData.createdAt,
+      updatedAt: assessmentData.createdAt,
     };
 
-    loadAssessment();
-  }, [navigate]);
+    setAssessment(detailedAssessment);
+    setError(null);
+  }, [referenceData?.assessment, contextLoading, contextError, navigate]);
 
   return {
     assessment,
