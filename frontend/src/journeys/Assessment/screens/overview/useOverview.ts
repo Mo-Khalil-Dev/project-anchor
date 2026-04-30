@@ -1,18 +1,15 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppDispatch } from '@/store';
 import { setCurrentStep } from '@/store/slices/customerSlice';
-import { assessmentService } from '@/services/assessmentService';
+import { useReferenceDataContext } from '@/context/ReferenceDataContext';
 import { Assessment } from '@/journeys/Assessment/models/assessment';
 
 export function useOverview() {
   const { assessmentId } = useParams<{ assessmentId: string }>();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-
-  const [assessment, setAssessment] = useState<Assessment | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: referenceData, isLoading: loading, error, refetch } = useReferenceDataContext();
 
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -23,49 +20,20 @@ export function useOverview() {
     }
   };
 
-  const fetchAssessment = useCallback(async () => {
-    try {
-      let data: Assessment;
-      if (assessmentId) {
-        data = await assessmentService.get(assessmentId);
-      } else {
-        // No ID in URL: fetch the current logged-in user's latest assessment
-        const dto = await assessmentService.getCurrent();
-        data = {
-          id: dto.id,
-          customerId: dto.customerId,
-          monthlyIncome: dto.monthlyIncome,
-          monthlyExpenses: dto.monthlyExpenses,
-          disposableIncome: dto.disposableIncome,
-          monthlyBill: dto.monthlyBill,
-          billRatio: dto.billRatio,
-          hardshipLevel: dto.hardshipLevel,
-          status: dto.status,
-          arrears: dto.arrears,
-          calculatedAt: dto.updatedAt,
-        };
-      }
-
-      setAssessment(data);
-      setError(null);
-
-      if (data.status === 'COMPLETED' || data.status === 'FAILED') {
-        setLoading(false);
-        stopPolling();
-      }
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to fetch assessment';
-      setError(message);
-      setLoading(false);
-      stopPolling();
-    }
-  }, [assessmentId]);
-
   useEffect(() => {
-    fetchAssessment();
-    pollRef.current = setInterval(fetchAssessment, 3000);
+    const assessment = referenceData?.assessment;
+
+    if (assessment && (assessment.status === 'COMPLETED')) {
+      stopPolling();
+    } else if (assessment && (assessment.status === 'PENDING' || assessment.status === 'IN_PROGRESS')) {
+      // Poll for assessment updates while pending
+      if (!pollRef.current) {
+        pollRef.current = setInterval(refetch, 3000);
+      }
+    }
+
     return () => stopPolling();
-  }, [fetchAssessment]);
+  }, [referenceData?.assessment?.status, refetch]);
 
   const handleExplorePaymentPlans = () => {
     dispatch(setCurrentStep('plan-select'));
@@ -77,6 +45,22 @@ export function useOverview() {
   };
 
   const handleGoBack = () => navigate(-1);
+
+  const assessment: Assessment | null = referenceData?.assessment
+    ? {
+        id: referenceData.assessment.id,
+        customerId: '', // Not in reference data
+        monthlyIncome: referenceData.assessment.disposableIncome,
+        monthlyExpenses: 0, // Can be calculated from expensesByCategory
+        disposableIncome: referenceData.assessment.disposableIncome,
+        monthlyBill: referenceData.assessment.monthlyBill,
+        billRatio: referenceData.assessment.billRatio,
+        hardshipLevel: referenceData.assessment.hardshipLevel,
+        status: referenceData.assessment.status,
+        arrears: 0, // Not in reference data
+        calculatedAt: referenceData.assessment.createdAt,
+      }
+    : null;
 
   const assessmentDate = assessment
     ? new Date(assessment.calculatedAt).toLocaleDateString('en-GB', {
