@@ -7,6 +7,7 @@ import { createBankConnectionRouter } from './features/bankConnection/router';
 import { createAssessmentRouter } from './features/assessment/router';
 import { createAuthRouter } from './features/auth/router';
 import { createCustomerRouter } from './features/customer/router';
+import { createReferenceDataRouter } from './features/shared/routes/referenceDataRouter';
 import { initAuthProvider } from './features/shared/config/providers/auth-provider.factory';
 import type { AppConfig } from './features/shared/config';
 import type { ILogger } from './features/shared/logging';
@@ -77,6 +78,7 @@ export function createApp(config: AppConfig, logger: ILogger, prisma: PrismaClie
   app.use('/api/bank-connections', createBankConnectionRouter(config, logger, authMiddleware, prisma));
   app.use('/api', createAssessmentRouter(prisma, logger, authMiddleware));
   app.use('/api/customer', createCustomerRouter(prisma, logger, authMiddleware));
+  app.use('/api/reference-data', createReferenceDataRouter(prisma, logger, authMiddleware));
 
   // ============ ERROR HANDLING ============
 

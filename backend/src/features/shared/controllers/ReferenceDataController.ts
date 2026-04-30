@@ -1,0 +1,37 @@
+import type { Request, Response } from 'express';
+import type { GetReferenceDataUseCase } from '../services/GetReferenceDataUseCase';
+
+export interface AuthenticatedRequest extends Request {
+  user?: {
+    id: string;
+    email?: string;
+  };
+}
+
+export class ReferenceDataController {
+  constructor(private getReferenceDataUseCase: GetReferenceDataUseCase) {}
+
+  async getReferenceData(req: AuthenticatedRequest, res: Response): Promise<void> {
+    try {
+      const userId = req.user?.id;
+
+      if (!userId) {
+        res.status(401).json({ error: 'Unauthorized' });
+        return;
+      }
+
+      const result = await this.getReferenceDataUseCase.execute({ userId });
+
+      if (result.isFail) {
+        res.status(400).json({ error: result.getError().message });
+        return;
+      }
+
+      const data = result.getOrElse(null);
+      res.status(200).json({ success: true, data });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      res.status(500).json({ error: `Internal server error: ${message}` });
+    }
+  }
+}
