@@ -1,12 +1,11 @@
-import { useCallback, useEffect, useRef } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '@/store';
 import { setCurrentStep } from '@/store/slices/customerSlice';
 import { useReferenceDataContext } from '@/context/ReferenceDataContext';
 import { Assessment } from '@/journeys/Assessment/models/assessment';
 
 export function useOverview() {
-  const { assessmentId } = useParams<{ assessmentId: string }>();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { data: referenceData, isLoading: loading, error, refetch } = useReferenceDataContext();
@@ -49,15 +48,15 @@ export function useOverview() {
   const assessment: Assessment | null = referenceData?.assessment
     ? {
         id: referenceData.assessment.id,
-        customerId: '', // Not in reference data
+        customerId: '',
         monthlyIncome: referenceData.assessment.disposableIncome,
-        monthlyExpenses: 0, // Can be calculated from expensesByCategory
+        monthlyExpenses: 0,
         disposableIncome: referenceData.assessment.disposableIncome,
         monthlyBill: referenceData.assessment.monthlyBill,
         billRatio: referenceData.assessment.billRatio,
         hardshipLevel: referenceData.assessment.hardshipLevel,
-        status: referenceData.assessment.status,
-        arrears: 0, // Not in reference data
+        status: referenceData.assessment.status === 'IN_PROGRESS' ? 'PENDING' : (referenceData.assessment.status as 'PENDING' | 'COMPLETED' | 'FAILED'),
+        arrears: 0,
         calculatedAt: referenceData.assessment.createdAt,
       }
     : null;

@@ -10,7 +10,7 @@ export interface Assessment {
     monthlyBill: number;
     billRatio: number;
     hardshipLevel: 'SEVERE' | 'MODERATE' | 'LOW' | 'NONE';
-    status: 'PENDING' | 'COMPLETED' | 'FAILED';
+    status: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'FAILED';
     arrears?: number | null;
     incomeBreakdown?: IncomeBreakdown | null;
     expenseBreakdown?: ExpenseBreakdown | null;

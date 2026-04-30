@@ -52,18 +52,32 @@ export function useAssessmentBreakdown(): UseAssessmentBreakdownReturn {
     }
 
     const assessmentData = referenceData.assessment;
+    const mapStatus = (status: string): 'PENDING' | 'COMPLETED' | 'FAILED' => {
+      if (status === 'COMPLETED') return 'COMPLETED';
+      if (status === 'PENDING' || status === 'IN_PROGRESS') return 'PENDING';
+      return 'PENDING';
+    };
+
     const detailedAssessment: AssessmentDetailedDTO = {
       id: assessmentData.id,
       customerId: '',
-      status: assessmentData.status,
+      status: mapStatus(assessmentData.status),
       hardshipLevel: assessmentData.hardshipLevel,
       disposableIncome: assessmentData.disposableIncome,
       monthlyBill: assessmentData.monthlyBill,
       billRatio: assessmentData.billRatio,
+      monthlyIncome: assessmentData.disposableIncome,
+      monthlyExpenses: 0,
+      arrears: 0,
       expensesByCategory: assessmentData.expensesByCategory,
-      incomeSources: assessmentData.incomeSources,
-      incomeHistory: assessmentData.incomeHistory,
-      factors: assessmentData.factors,
+      incomeSources: assessmentData.incomeSources as any,
+      incomeHistory: assessmentData.incomeHistory as any,
+      factors: assessmentData.factors.map(f => ({
+        title: f.name,
+        description: f.description,
+        impact: f.impact,
+      })),
+      paymentPlans: [] as any,
       createdAt: assessmentData.createdAt,
       updatedAt: assessmentData.createdAt,
     };
@@ -76,7 +90,7 @@ export function useAssessmentBreakdown(): UseAssessmentBreakdownReturn {
     assessment,
     activeTab,
     setActiveTab,
-    isLoading,
+    isLoading: contextLoading,
     error,
   };
 }

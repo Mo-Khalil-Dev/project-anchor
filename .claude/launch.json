@@ -15,5 +15,6 @@
       "port": 3000,
       "cwd": "frontend"
     }
-  ]
+  ],
+  "autoVerify": false
 }
