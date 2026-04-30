@@ -1,4 +1,4 @@
-import React, { ReactNode, useState, useEffect } from 'react';
+import React, { ReactNode, useMemo } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useReferenceData } from '../hooks/useReferenceData';
 import type { ReferenceData } from '../types/referenceData.types';
@@ -22,15 +22,14 @@ const ReferenceDataContext = React.createContext<ReferenceDataContextValue>(defa
 export function ReferenceDataProvider({ children }: { children: ReactNode }) {
   const { isAuthenticated } = useAuth();
   const referenceData = useReferenceData(isAuthenticated);
-  const [contextValue, setContextValue] = useState<ReferenceDataContextValue>(defaultContextValue);
 
-  useEffect(() => {
+  const contextValue = useMemo(() => {
     if (isAuthenticated) {
-      setContextValue(referenceData);
+      return referenceData;
     } else {
-      setContextValue(defaultContextValue);
+      return defaultContextValue;
     }
-  }, [isAuthenticated, referenceData]);
+  }, [isAuthenticated, referenceData.data, referenceData.isLoading, referenceData.error, referenceData.refetch]);
 
   return (
     <ReferenceDataContext.Provider value={contextValue}>

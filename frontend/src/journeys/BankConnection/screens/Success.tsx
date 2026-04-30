@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '@/store';
 import { setCurrentStep } from '@/store/slices/customerSlice';
+import { useReferenceDataContext } from '@/context/ReferenceDataContext';
 import { Button } from '@/components/core/Button';
 import { CheckmarkIcon } from '@/components/core/icons';
 import { CustomerLayout } from '@/components/layouts/CustomerLayout';
@@ -8,9 +9,12 @@ import { CustomerLayout } from '@/components/layouts/CustomerLayout';
 export function Success() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { refetch } = useReferenceDataContext();
   const data = useAppSelector((s) => s.customer.bankConnectionData);
 
-  const handleViewAssessment = () => {
+  const handleViewAssessment = async () => {
+    // Refetch reference data to get updated nextStep before navigating
+    await refetch();
     dispatch(setCurrentStep('assessment'));
     navigate('/assessment');
   };

@@ -27,7 +27,9 @@ export function useOverview() {
     } else if (assessment && (assessment.status === 'PENDING' || assessment.status === 'IN_PROGRESS')) {
       // Poll for assessment updates while pending
       if (!pollRef.current) {
-        pollRef.current = setInterval(refetch, 3000);
+        pollRef.current = setInterval(() => {
+          refetch();
+        }, 3000);
       }
     }
 

@@ -15,24 +15,24 @@ import { PaymentPlanOptionsRoute } from '@/journeys/PaymentPlanOptions/PaymentPl
 function App() {
   return (
     <Provider store={store}>
-      <ReferenceDataProvider>
-        <Router>
+      <Router>
+        <ReferenceDataProvider>
           <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/auth/callback" element={<AuthCallback />} />
-          <Route element={<ProtectedRoute />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/account-setup" element={<AccountSetupPage />} />
-            <Route path="/bank-connection" element={<BankConnectionRoot />} />
-            <Route path="/assessment" element={<AssessmentOverview />} />
-            <Route path="/assessment/breakdown" element={<AssessmentBreakdown />} />
-            <Route path="/assessment/:assessmentId" element={<AssessmentOverview />} />
-            <Route path="/payment-plans" element={<PaymentPlanOptionsRoute />} />
-          </Route>
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route element={<ProtectedRoute />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/account-setup" element={<AccountSetupPage />} />
+              <Route path="/bank-connection" element={<BankConnectionRoot />} />
+              <Route path="/assessment" element={<AssessmentOverview />} />
+              <Route path="/assessment/breakdown" element={<AssessmentBreakdown />} />
+              <Route path="/assessment/:assessmentId" element={<AssessmentOverview />} />
+              <Route path="/payment-plans" element={<PaymentPlanOptionsRoute />} />
+            </Route>
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </ReferenceDataProvider>
       </Router>
-      </ReferenceDataProvider>
     </Provider>
   );
 }
