@@ -10,4 +10,7 @@ export const API = {
   customer: {
     setup: '/customer/setup',
   },
+  referenceData: {
+    get: '/reference-data',
+  },
 } as const;

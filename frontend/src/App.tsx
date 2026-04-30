@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { store } from '@/store';
+import { ReferenceDataProvider } from '@/context/ReferenceDataContext';
 import { LoginPage } from '@/journeys/Login/LoginPage';
 import { AuthCallback } from '@/journeys/Auth/AuthCallback';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -14,8 +15,9 @@ import { PaymentPlanOptionsRoute } from '@/journeys/PaymentPlanOptions/PaymentPl
 function App() {
   return (
     <Provider store={store}>
-      <Router>
-        <Routes>
+      <ReferenceDataProvider>
+        <Router>
+          <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route element={<ProtectedRoute />}>
@@ -30,6 +32,7 @@ function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
+      </ReferenceDataProvider>
     </Provider>
   );
 }
