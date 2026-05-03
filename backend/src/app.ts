@@ -79,7 +79,7 @@ export function createApp(config: AppConfig, logger: ILogger, prisma: PrismaClie
   app.use('/api/bank-connections', createBankConnectionRouter(config, logger, authMiddleware, prisma));
   app.use('/api', createAssessmentRouter(prisma, logger, authMiddleware));
   app.use('/api/customer', createCustomerRouter(prisma, logger, authMiddleware));
-  app.use('/api/payments', createPaymentRouter(logger, authMiddleware));
+  app.use('/api/payments', createPaymentRouter(config, logger, authMiddleware));
   app.use('/api/reference-data', createReferenceDataRouter( logger, authMiddleware));
 
   // ============ ERROR HANDLING ============

@@ -61,7 +61,7 @@ function FormField({ label, hint, children }: FormFieldProps) {
 export function DirectDebitSetupScreen() {
   const { assessment } = useAssessmentBreakdown();
   const selectedPlan = useSelector((state: any) => state.customer.selectedPlan);
-  const { form, updateField, paymentDay, setPaymentDay, isComplete, paymentDays, handleConfirm, handleBack } = useDirectDebitSetup();
+  const { form, updateField, paymentDay, setPaymentDay, isComplete, paymentDays, submitting, error, handleConfirm, handleBack } = useDirectDebitSetup();
   const [focused, setFocused] = useState<string | null>(null);
 
   const plan = assessment?.paymentPlans.find(p => p.type.toLowerCase() === selectedPlan);
@@ -256,12 +256,18 @@ export function DirectDebitSetupScreen() {
           </div>
         </div>
 
+        {error && (
+          <div style={{ background: '#fef2f2', color: '#b91c1c', borderRadius: 12, padding: '12px 16px', marginTop: 12, fontSize: 13 }}>
+            {error}
+          </div>
+        )}
+
         {/* Actions */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 20 }}>
-          <Button variant="primary" className="w-full" disabled={!isComplete} onClick={handleConfirm}>
-            Confirm Direct Debit
+          <Button variant="primary" className="w-full" disabled={!isComplete || submitting} onClick={handleConfirm}>
+            {submitting ? 'Redirecting to GoCardless…' : 'Confirm Direct Debit'}
           </Button>
-          <Button variant="secondary" className="w-full" onClick={handleBack}>
+          <Button variant="secondary" className="w-full" onClick={handleBack} disabled={submitting}>
             Back
           </Button>
         </div>

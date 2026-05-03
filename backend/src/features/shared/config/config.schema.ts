@@ -42,6 +42,9 @@ const rawEnvSchema = z.object({
   STRIPE_SECRET_KEY: z.string().min(1, 'STRIPE_SECRET_KEY is required'),
   STRIPE_WEBHOOK_SECRET: z.string().min(1, 'STRIPE_WEBHOOK_SECRET is required'),
 
+  GOCARDLESS_ACCESS_TOKEN: z.string().default(''),
+  GOCARDLESS_WEBHOOK_KEY: z.string().default(''),
+
   ENABLE_EMAIL: boolFlag,
   ENABLE_PAYMENT_PROCESSING: boolFlag,
   ENABLE_BANK_OAUTH: boolFlag,
@@ -121,6 +124,10 @@ export const configSchema = rawEnvSchema.transform((env) => {
     stripe: {
       secretKey: env.STRIPE_SECRET_KEY,
       webhookSecret: env.STRIPE_WEBHOOK_SECRET,
+    },
+    gocardless: {
+      accessToken: env.GOCARDLESS_ACCESS_TOKEN,
+      webhookKey: env.GOCARDLESS_WEBHOOK_KEY,
     },
     email: {
       region: env.SES_REGION,

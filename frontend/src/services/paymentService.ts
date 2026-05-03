@@ -14,6 +14,16 @@ export interface SelectPlanResponse {
   selectedPlan: PlanType;
 }
 
+export interface InitiateDirectDebitInput {
+  accountHolderName: string;
+}
+
+export interface InitiateDirectDebitResponse {
+  authorizationUrl: string;
+  billingRequestId: string;
+  flowId: string;
+}
+
 export const paymentService = {
   /**
    * Persist the customer's chosen payment plan on their latest assessment.
@@ -24,5 +34,16 @@ export const paymentService = {
   selectPlan: (input: SelectPlanInput): Promise<SelectPlanResponse> =>
     httpService
       .post<ApiResponse<SelectPlanResponse>>(API.payments.selectPlan, input)
+      .then(unwrap),
+
+  /**
+   * Kick off the GoCardless billing request flow.
+   * Returns a hosted authorizationUrl — the frontend should redirect to it.
+   *
+   * POST /api/payments/initiate-direct-debit
+   */
+  initiateDirectDebit: (input: InitiateDirectDebitInput): Promise<InitiateDirectDebitResponse> =>
+    httpService
+      .post<ApiResponse<InitiateDirectDebitResponse>>(API.payments.initiateDirectDebit, input)
       .then(unwrap),
 };

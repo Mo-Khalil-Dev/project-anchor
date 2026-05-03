@@ -167,30 +167,49 @@ describe('useDirectDebitSetup', () => {
   });
 
   describe('handleConfirm', () => {
-    it('navigates to confirmation when form is complete', () => {
+    it('does not call API when form is incomplete', async () => {
+      const { paymentService } = await import('@/services/paymentService');
+      const spy = vi.spyOn(paymentService, 'initiateDirectDebit');
       const { result } = renderHook(() => useDirectDebitSetup());
 
-      act(() => {
+      await act(async () => {
+        await result.current.handleConfirm();
+      });
+
+      expect(spy).not.toHaveBeenCalled();
+      spy.mockRestore();
+    });
+
+    it('redirects to GoCardless when API succeeds', async () => {
+      const { paymentService } = await import('@/services/paymentService');
+      const spy = vi.spyOn(paymentService, 'initiateDirectDebit').mockResolvedValue({
+        authorizationUrl: 'https://pay-sandbox.gocardless.com/flow/abc',
+        billingRequestId: 'BRQ123',
+        flowId: 'BRF456',
+      });
+      const originalLocation = window.location;
+      // @ts-expect-error - override location for test
+      delete window.location;
+      window.location = { ...originalLocation, href: '' } as any;
+
+      const { result } = renderHook(() => useDirectDebitSetup());
+
+      await act(async () => {
         result.current.updateField('accountHolderName', 'Sarah Mitchell');
         result.current.updateField('sortCode', '200000');
         result.current.updateField('accountNumber', '12345678');
       });
 
-      act(() => {
-        result.current.handleConfirm();
+      await act(async () => {
+        await result.current.handleConfirm();
       });
 
-      expect(mockNavigate).toHaveBeenCalledWith('/payment-plans/confirmation', { replace: true });
-    });
+      expect(spy).toHaveBeenCalledWith({ accountHolderName: 'Sarah Mitchell' });
+      expect(window.location.href).toBe('https://pay-sandbox.gocardless.com/flow/abc');
 
-    it('does not navigate when form is incomplete', () => {
-      const { result } = renderHook(() => useDirectDebitSetup());
-
-      act(() => {
-        result.current.handleConfirm();
-      });
-
-      expect(mockNavigate).not.toHaveBeenCalled();
+      // restore
+      window.location = originalLocation;
+      spy.mockRestore();
     });
   });
 

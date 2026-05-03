@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { paymentService } from '@/services/paymentService';
 
 interface FormData {
   accountHolderName: string;
@@ -21,6 +22,8 @@ export function useDirectDebitSetup() {
   });
 
   const [paymentDay, setPaymentDay] = useState(15);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const updateField = useCallback((field: keyof FormData, value: string) => {
     if (field === 'sortCode') {
@@ -42,12 +45,23 @@ export function useDirectDebitSetup() {
     return sortCodeDigits && accountDigits && nameValid;
   }, [form]);
 
-  const handleConfirm = useCallback(() => {
-    if (!isComplete()) return;
-    // TODO: Call backend with form data + paymentDay to initiate GC flow
-    // For now, navigate to confirmation (Phase 2)
-    navigate('/payment-plans/confirmation', { replace: true });
-  }, [isComplete, navigate]);
+  const handleConfirm = useCallback(async () => {
+    if (!isComplete() || submitting) return;
+    setSubmitting(true);
+    setError(null);
+
+    try {
+      const { authorizationUrl } = await paymentService.initiateDirectDebit({
+        accountHolderName: form.accountHolderName.trim(),
+      });
+      // Redirect to GoCardless hosted authorization page
+      window.location.href = authorizationUrl;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to initiate Direct Debit setup';
+      setError(message);
+      setSubmitting(false);
+    }
+  }, [isComplete, submitting, form.accountHolderName]);
 
   const handleBack = useCallback(() => {
     navigate(-1);
@@ -60,6 +74,8 @@ export function useDirectDebitSetup() {
     setPaymentDay,
     isComplete: isComplete(),
     paymentDays: PAYMENT_DAYS,
+    submitting,
+    error,
     handleConfirm,
     handleBack,
     selectedPlan,
