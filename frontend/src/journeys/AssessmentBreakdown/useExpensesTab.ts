@@ -1,5 +1,5 @@
-import type { AssessmentDetailedDTO } from '../../types';
-import { UK_EXPENSE_AVERAGES, EXPENSE_COLORS } from '../../mocks/assessmentMockData';
+import type { AssessmentDetailedDTO } from '@/types';
+import { UK_EXPENSE_AVERAGES, EXPENSE_COLORS } from '@/mocks/assessmentMockData';
 
 export interface ExpenseItem {
   label: string;
@@ -38,6 +38,6 @@ export function useExpensesTab(assessment: AssessmentDetailedDTO) {
     expenses,
     comparisons,
     housingDiff,
-    totalExpenses,
+    totalExpenses: assessment.monthlyExpenses,
   };
 }

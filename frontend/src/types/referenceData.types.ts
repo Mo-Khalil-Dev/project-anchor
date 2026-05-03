@@ -53,6 +53,8 @@ export interface AssessmentData {
   disposableIncome: number;
   monthlyBill: number;
   billRatio: number;
+  monthlyIncome: number;
+  monthlyExpenses: number;
   expensesByCategory: Record<string, number>;
   incomeSources: IncomeSource[];
   incomeHistory: IncomeRecord[];

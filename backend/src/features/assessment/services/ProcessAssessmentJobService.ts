@@ -87,8 +87,8 @@ export class ProcessAssessmentJobService {
       const disposableIncome = income.total - expenses.total;
       const arrears = assessment.getArrears() ?? 0;
 
-      // Calculate payment plans (Conservative 14%, Balanced 18%, Aggressive 20%)
-      const paymentPlans = this.paymentPlanService.calculatePlans(disposableIncome, arrears);
+      // Calculate payment plans with bill consideration
+      const paymentPlans = this.paymentPlanService.calculatePlans(disposableIncome, arrears, assessment.getMonthlyBill());
 
       // Build breakdown JSON fields for the Reference Data endpoint
       const expensesByCategory: Record<string, number> = {

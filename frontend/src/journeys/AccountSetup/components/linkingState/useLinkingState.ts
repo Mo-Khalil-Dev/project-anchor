@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { LinkDetails, UtilityType } from '../../types';
 import { useCustomerSetup } from '@/hooks/useCustomerSetup';
+import { useReferenceDataContext } from '@/context/ReferenceDataContext';
 
 interface UseLinkingStateArgs {
   onSuccess: (details: LinkDetails) => void;
@@ -20,6 +21,7 @@ export function useLinkingState({ onSuccess, onError, submitDelayMs = 0 }: UseLi
   const [step, setStep] = useState<1 | 2>(1);
   const [utilityType, setUtilityType] = useState<UtilityType | ''>('');
   const { loading, linkCustomer } = useCustomerSetup();
+  const { refetch } = useReferenceDataContext();
 
   const goToDetails = () => setStep(2);
   const goBackToTypeSelection = () => setStep(1);
@@ -46,6 +48,7 @@ export function useLinkingState({ onSuccess, onError, submitDelayMs = 0 }: UseLi
       if (submitDelayMs > 0) {
         await new Promise(resolve => setTimeout(resolve, submitDelayMs));
       }
+      await refetch();
       onSuccess(details);
     } else {
       onError({ ...details, errorMessage: error ?? undefined });

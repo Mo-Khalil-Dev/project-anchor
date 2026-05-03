@@ -51,8 +51,8 @@ export function useOverview() {
     ? {
         id: referenceData.assessment.id,
         customerId: '',
-        monthlyIncome: referenceData.assessment.disposableIncome,
-        monthlyExpenses: 0,
+        monthlyIncome: referenceData.assessment.monthlyIncome,
+        monthlyExpenses: referenceData.assessment.monthlyExpenses,
         disposableIncome: referenceData.assessment.disposableIncome,
         monthlyBill: referenceData.assessment.monthlyBill,
         billRatio: referenceData.assessment.billRatio,

@@ -1,4 +1,4 @@
-import type { AssessmentDetailedDTO } from '../../types';
+import type { AssessmentDetailedDTO } from '@/types';
 import { formatCurrency } from '@/utils/format';
 
 export interface IncomeExpenseRow {
@@ -9,7 +9,7 @@ export interface IncomeExpenseRow {
 }
 
 export function useOverviewTab(assessment: AssessmentDetailedDTO) {
-  const totalIncome = assessment.incomeSources.reduce((s, x) => s + x.amount, 0);
+  const totalIncome = assessment.monthlyIncome;
   const totalExpenses = assessment.monthlyExpenses;
   const disposable = assessment.disposableIncome;
   const incomePercent = totalIncome > 0 ? Math.round((disposable / totalIncome) * 100) : 0;
