@@ -35,22 +35,40 @@
   border: 1.5px solid var(--color-border);
   cursor: pointer;
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: auto 1fr auto;
   gap: 1rem;
   align-items: center;
-  transition: all 0.15s;
+  transition: all 0.15s ease;
   background: #fff;
 }
 
 .methodCard:hover {
   border-color: var(--color-accent);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .methodCard.selected {
   border-width: 2px;
   border-color: var(--color-accent);
-  box-shadow: 0 3px 14px hsla(var(--accent-h), var(--accent-s), var(--accent-l), 0.1);
+  background: hsl(var(--accent-h), var(--accent-s), var(--accent-l), 0.02);
+  box-shadow: 0 4px 16px hsla(var(--accent-h), var(--accent-s), var(--accent-l), 0.12);
+}
+
+/* Icon box */
+.iconBox {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.875rem;
+  background: hsl(var(--accent-h), var(--accent-s), var(--accent-l), 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.methodCard.selected .iconBox {
+  background: hsl(var(--accent-h), var(--accent-s), var(--accent-l), 0.1);
 }
 
 .methodContent {
@@ -86,26 +104,34 @@
 
 /* Radio button */
 .radio {
-  width: 1.375rem;
-  height: 1.375rem;
+  width: 1.5rem;
+  height: 1.5rem;
   border-radius: 50%;
-  border: 2px solid var(--color-border);
+  border: 2.5px solid var(--color-border);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: all 0.15s;
+  transition: all 0.15s ease;
+  background: #fff;
+}
+
+.methodCard:hover .radio {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px hsl(var(--accent-h), var(--accent-s), var(--accent-l), 0.1);
 }
 
 .methodCard.selected .radio {
   border-color: var(--color-accent);
+  background: var(--color-accent);
+  box-shadow: 0 0 0 2px hsl(var(--accent-h), var(--accent-s), var(--accent-l), 0.15);
 }
 
 .radioDot {
-  width: 0.625rem;
-  height: 0.625rem;
+  width: 0.5rem;
+  height: 0.5rem;
   border-radius: 50%;
-  background: var(--color-accent);
+  background: #fff;
 }
 
 /* Info box */
