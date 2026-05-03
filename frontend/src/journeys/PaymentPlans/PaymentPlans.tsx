@@ -7,6 +7,8 @@ import { ConservativePlanDetail } from '@/journeys/PaymentPlans/screens/conserva
 import { BalancedPlanDetail } from '@/journeys/PaymentPlans/screens/balanced/BalancedPlanDetail';
 import { AggressivePlanDetail } from '@/journeys/PaymentPlans/screens/aggressive/AggressivePlanDetail';
 import { TermsAndConditions } from '@/journeys/PaymentPlans/screens/terms/TermsAndConditions';
+import { PaymentSetupScreen } from '@/journeys/PaymentPlans/screens/setup';
+import { DirectDebitSetupScreen } from '@/journeys/PaymentPlans/screens/direct-debit';
 
 export function PaymentPlans() {
   const location = useLocation();
@@ -31,6 +33,12 @@ export function PaymentPlans() {
 
   const pathname = location.pathname;
 
+  if (pathname.includes('/direct-debit')) {
+    return <DirectDebitSetupScreen />;
+  }
+  if (pathname.includes('/payment-setup') || pathname.includes('/setup')) {
+    return <PaymentSetupScreen />;
+  }
   if (pathname.includes('/terms')) {
     return <TermsAndConditions assessment={assessment} />;
   }

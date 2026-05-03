@@ -8,7 +8,7 @@ export function useTermsAndConditions() {
   const handleConfirm = useCallback(() => {
     if (!agreed) return;
     // TODO: Call backend to confirm payment plan acceptance
-    navigate('/assessment', { replace: true });
+    navigate('/payment-plans/payment-setup', { replace: true });
   }, [agreed, navigate]);
 
   const handleBack = useCallback(() => {
