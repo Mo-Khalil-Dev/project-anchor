@@ -73,28 +73,28 @@ function renderWithProviders(component: React.ReactNode) {
 describe('TermsAndConditions', () => {
   it('renders terms content', () => {
     renderWithProviders(<TermsAndConditions assessment={mockAssessment} />);
-    expect(screen.getByText('Payment Plan Terms')).toBeInTheDocument();
-    expect(screen.getByText(/monthly payments/i)).toBeInTheDocument();
+    expect(screen.getByText('Plan Agreement')).toBeInTheDocument();
+    expect(screen.getByText(/written in plain English/i)).toBeInTheDocument();
   });
 
   it('displays selected plan details', () => {
     renderWithProviders(<TermsAndConditions assessment={mockAssessment} />);
-    expect(screen.getByText('Conservative Plan')).toBeInTheDocument();
+    expect(screen.getByText('Conservative')).toBeInTheDocument();
     expect(screen.getByText('£70')).toBeInTheDocument();
     expect(screen.getByText('12 months')).toBeInTheDocument();
   });
 
-  it('disables confirm button until agreed', async () => {
+  it('disables continue button until agreed', async () => {
     const user = userEvent.setup();
     renderWithProviders(<TermsAndConditions assessment={mockAssessment} />);
 
-    const confirmButton = screen.getByRole('button', { name: /confirm/i });
-    expect(confirmButton).toBeDisabled();
+    const continueButton = screen.getByRole('button', { name: /continue to payment setup/i });
+    expect(continueButton).toBeDisabled();
 
     const checkbox = screen.getByRole('checkbox');
     await user.click(checkbox);
 
-    expect(confirmButton).not.toBeDisabled();
+    expect(continueButton).not.toBeDisabled();
   });
 
   it('shows error when no plan selected', () => {

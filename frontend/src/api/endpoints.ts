@@ -10,6 +10,10 @@ export const API = {
   customer: {
     setup: '/customer/setup',
   },
+  payments: {
+    selectPlan: '/payments/select-plan',
+    initiateDirectDebit: '/payments/initiate-direct-debit',
+  },
   referenceData: {
     get: '/reference-data',
   },

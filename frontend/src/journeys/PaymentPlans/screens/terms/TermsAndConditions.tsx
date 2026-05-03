@@ -48,7 +48,7 @@ const TERMS_SECTIONS = [
 export function TermsAndConditions({ assessment }: TermsAndConditionsProps) {
   const selectedPlan = useSelector((state: any) => state.customer.selectedPlan);
   console.log('[DEBUG] TermsAndConditions - selectedPlan from Redux:', selectedPlan);
-  const { agreed, setAgreed, handleConfirm, handleBack } = useTermsAndConditions();
+  const { agreed, setAgreed, submitting, error, handleConfirm, handleBack } = useTermsAndConditions();
 
   const plan = assessment.paymentPlans.find(p => p.type.toLowerCase() === selectedPlan);
 
@@ -123,12 +123,18 @@ export function TermsAndConditions({ assessment }: TermsAndConditionsProps) {
           </label>
         </Card>
 
+        {error && (
+          <div style={{ background: '#fef2f2', color: '#b91c1c', borderRadius: 12, padding: '12px 16px', marginBottom: 12, fontSize: 13 }}>
+            {error}
+          </div>
+        )}
+
         {/* Actions */}
         <div className={styles.actions}>
-          <Button variant="primary" className="w-full" disabled={!agreed} onClick={handleConfirm}>
-            Continue to Payment Setup
+          <Button variant="primary" className="w-full" disabled={!agreed || submitting} onClick={handleConfirm}>
+            {submitting ? 'Saving…' : 'Continue to Payment Setup'}
           </Button>
-          <Button variant="secondary" className="w-full" onClick={handleBack}>
+          <Button variant="secondary" className="w-full" onClick={handleBack} disabled={submitting}>
             Go Back
           </Button>
         </div>
