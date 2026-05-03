@@ -40,6 +40,10 @@ export interface AppConfig {
     secretKey: string;
     webhookSecret: string;
   };
+  gocardless: {
+    accessToken: string;
+    webhookKey: string;
+  };
   email: {
     region: string;
     fromAddress: string;
