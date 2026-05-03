@@ -10,13 +10,6 @@ const PAYMENT_METHODS = [
     badge: 'Recommended',
     badgeColor: '#10b981',
     description: 'Automatic monthly payment — set it and forget it. Most reliable way to keep your plan on track.',
-    icon: (isSelected: boolean) => (
-      <svg width="24" height="20" viewBox="0 0 26 22" fill="none">
-        <rect x="1" y="4" width="24" height="15" rx="3" stroke={isSelected ? '#fff' : 'var(--color-accent)'} strokeWidth="1.7" fill={isSelected ? 'var(--color-accent)' : 'var(--color-accent-bg)'} />
-        <path d="M1 8h24" stroke={isSelected ? '#fff' : 'var(--color-accent)'} strokeWidth="1.7" />
-        <rect x="4" y="13" width="6" height="3" rx="1.5" fill={isSelected ? '#fff' : 'var(--color-accent)'} />
-      </svg>
-    ),
   },
   {
     id: 'card' as PaymentMethod,
@@ -24,14 +17,6 @@ const PAYMENT_METHODS = [
     badge: 'Manual',
     badgeColor: '#f59e0b',
     description: 'Pay each month manually online or via bank transfer. You\'ll receive a reminder 7 days before each payment.',
-    icon: (isSelected: boolean) => (
-      <svg width="24" height="20" viewBox="0 0 26 22" fill="none">
-        <rect x="1" y="4" width="24" height="15" rx="3" stroke={isSelected ? 'var(--color-accent)' : 'var(--color-text-secondary)'} strokeWidth="1.7" fill={isSelected ? 'var(--color-accent-bg)' : 'var(--color-bg)'} />
-        <path d="M1 8h24" stroke={isSelected ? 'var(--color-accent)' : 'var(--color-text-secondary)'} strokeWidth="1.7" />
-        <rect x="4" y="13" width="4" height="3" rx="1.5" fill={isSelected ? 'var(--color-accent)' : 'var(--color-text-secondary)'} opacity="0.5" />
-        <rect x="10" y="13" width="6" height="3" rx="1.5" fill={isSelected ? 'var(--color-accent)' : 'var(--color-text-secondary)'} opacity="0.5" />
-      </svg>
-    ),
   },
   {
     id: 'cash' as PaymentMethod,
@@ -39,12 +24,6 @@ const PAYMENT_METHODS = [
     badge: 'In-person',
     badgeColor: '#6b7280',
     description: 'Pay cash at any Post Office branch with your payment reference. Allow 2 business days for processing.',
-    icon: (isSelected: boolean) => (
-      <svg width="24" height="20" viewBox="0 0 26 22" fill="none">
-        <rect x="1" y="4" width="24" height="15" rx="3" stroke={isSelected ? 'var(--color-accent)' : 'var(--color-text-secondary)'} strokeWidth="1.7" fill={isSelected ? 'var(--color-accent-bg)' : 'var(--color-bg)'} />
-        <path d="M13 8v8M9 10h8M9 14h8" stroke={isSelected ? 'var(--color-accent)' : 'var(--color-text-secondary)'} strokeWidth="1.4" strokeLinecap="round" />
-      </svg>
-    ),
   },
 ];
 
@@ -62,30 +41,106 @@ export function PaymentSetupScreen() {
         </div>
 
         {/* Payment method cards */}
-        <div className={styles.methodsGrid}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
           {PAYMENT_METHODS.map(method => (
             <div
               key={method.id}
-              className={`${styles.methodCard} ${selected === method.id ? styles.selected : ''}`}
               onClick={() => setSelected(method.id)}
+              style={{
+                background: '#fff',
+                borderRadius: '16px',
+                padding: '20px 22px',
+                border: `${selected === method.id ? 2 : 1.5}px solid ${selected === method.id ? 'var(--color-accent)' : 'var(--color-border)'}`,
+                cursor: 'pointer',
+                display: 'grid',
+                gridTemplateColumns: 'auto 1fr auto',
+                gap: '16px',
+                alignItems: 'center',
+                boxShadow: selected === method.id ? `0 3px 14px rgba(var(--accent-rgb), 0.1)` : '0 1px 4px rgba(0,0,0,0.05)',
+                transition: 'all 0.15s',
+              }}
             >
-              <div className={styles.iconBox}>
-                {method.icon(selected === method.id)}
+              {/* Icon box */}
+              <div
+                style={{
+                  width: '48px',
+                  height: '48px',
+                  borderRadius: '14px',
+                  background: selected === method.id ? 'var(--color-accent-bg)' : 'var(--color-bg)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}
+              >
+                <svg width="24" height="20" viewBox="0 0 26 22" fill="none">
+                  {method.id === 'dd' && (
+                    <>
+                      <rect x="1" y="4" width="24" height="15" rx="3" stroke={selected === method.id ? '#fff' : 'var(--color-accent)'} strokeWidth="1.7" fill={selected === method.id ? 'var(--color-accent)' : 'var(--color-accent-bg)'} />
+                      <path d="M1 8h24" stroke={selected === method.id ? '#fff' : 'var(--color-accent)'} strokeWidth="1.7" />
+                      <rect x="4" y="13" width="6" height="3" rx="1.5" fill={selected === method.id ? '#fff' : 'var(--color-accent)'} />
+                    </>
+                  )}
+                  {method.id === 'card' && (
+                    <>
+                      <rect x="1" y="4" width="24" height="15" rx="3" stroke={selected === method.id ? 'var(--color-accent)' : 'var(--color-text-secondary)'} strokeWidth="1.7" fill={selected === method.id ? 'var(--color-accent-bg)' : 'var(--color-bg)'} />
+                      <path d="M1 8h24" stroke={selected === method.id ? 'var(--color-accent)' : 'var(--color-text-secondary)'} strokeWidth="1.7" />
+                      <rect x="4" y="13" width="4" height="3" rx="1.5" fill={selected === method.id ? 'var(--color-accent)' : 'var(--color-text-secondary)'} opacity="0.5" />
+                      <rect x="10" y="13" width="6" height="3" rx="1.5" fill={selected === method.id ? 'var(--color-accent)' : 'var(--color-text-secondary)'} opacity="0.5" />
+                    </>
+                  )}
+                  {method.id === 'cash' && (
+                    <>
+                      <rect x="1" y="4" width="24" height="15" rx="3" stroke={selected === method.id ? 'var(--color-accent)' : 'var(--color-text-secondary)'} strokeWidth="1.7" fill={selected === method.id ? 'var(--color-accent-bg)' : 'var(--color-bg)'} />
+                      <path d="M13 8v8M9 10h8M9 14h8" stroke={selected === method.id ? 'var(--color-accent)' : 'var(--color-text-secondary)'} strokeWidth="1.4" strokeLinecap="round" />
+                    </>
+                  )}
+                </svg>
               </div>
-              <div className={styles.methodContent}>
-                <div className={styles.methodHeader}>
-                  <span className={styles.methodLabel}>{method.label}</span>
+
+              {/* Content */}
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '5px' }}>
+                  <span style={{ fontSize: '15px', fontWeight: 700, color: 'var(--color-text-primary)' }}>{method.label}</span>
                   <span
-                    className={styles.badge}
-                    style={{ backgroundColor: `${method.badgeColor}18`, color: method.badgeColor }}
+                    style={{
+                      fontSize: '11.5px',
+                      fontWeight: 600,
+                      padding: '2px 8px',
+                      borderRadius: '100px',
+                      backgroundColor: `${method.badgeColor}18`,
+                      color: method.badgeColor,
+                    }}
                   >
                     {method.badge}
                   </span>
                 </div>
-                <p className={styles.methodDescription}>{method.description}</p>
+                <div style={{ fontSize: '13px', color: 'var(--color-text-secondary)', lineHeight: '1.5' }}>{method.description}</div>
               </div>
-              <div className={styles.radio}>
-                {selected === method.id && <div className={styles.radioDot} />}
+
+              {/* Radio button */}
+              <div
+                style={{
+                  width: '22px',
+                  height: '22px',
+                  borderRadius: '50%',
+                  border: `2px solid ${selected === method.id ? 'var(--color-accent)' : 'var(--color-border)'}`,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}
+              >
+                {selected === method.id && (
+                  <div
+                    style={{
+                      width: '10px',
+                      height: '10px',
+                      borderRadius: '50%',
+                      background: 'var(--color-accent)',
+                    }}
+                  />
+                )}
               </div>
             </div>
           ))}
