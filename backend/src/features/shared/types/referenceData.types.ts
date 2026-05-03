@@ -55,6 +55,7 @@ export interface AssessmentData {
   incomeSources: IncomeSource[];
   incomeHistory: IncomeRecord[];
   factors: AssessmentFactor[];
+  paymentPlans: PaymentPlan[];
   createdAt: string;
 }
 

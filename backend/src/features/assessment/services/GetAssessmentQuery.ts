@@ -6,7 +6,7 @@ import type { AssessmentData } from '../../shared/types/referenceData.types';
 export class GetAssessmentQuery {
   constructor(
     private assessmentRepository: IAssessmentRepository,
-    private logger: ILogger,
+    private logger: ILogger
   ) {}
 
   async execute(input: { customerId: string }): Promise<Result<AssessmentData | null, Error>> {
@@ -34,6 +34,7 @@ export class GetAssessmentQuery {
       let incomeSources: any[] = [];
       let incomeHistory: any[] = [];
       let factors: any[] = [];
+      let paymentPlans: any[] = [];
 
       try {
         const expensesCategoryJson = assessment.getExpensesByCategory();
@@ -71,9 +72,23 @@ export class GetAssessmentQuery {
         this.logger.warn('Failed to parse factors', { customerId });
       }
 
+      try {
+        const suggestedPaymentPlansJson = assessment.getPaymentPlans();
+        if (suggestedPaymentPlansJson) {
+          paymentPlans = JSON.parse(suggestedPaymentPlansJson);
+        }
+      } catch (e) {
+        this.logger.warn('Failed to parse suggestedPaymentPlans', { customerId });
+      }
+
       const assessmentData: AssessmentData = {
         id: assessment.getId(),
-        status: assessment.getStatus() === 'COMPLETED' ? 'COMPLETED' : assessment.getStatus() === 'PENDING' ? 'PENDING' : 'IN_PROGRESS',
+        status:
+          assessment.getStatus() === 'COMPLETED'
+            ? 'COMPLETED'
+            : assessment.getStatus() === 'PENDING'
+              ? 'PENDING'
+              : 'IN_PROGRESS',
         hardshipLevel: assessment.getHardshipLevel(),
         disposableIncome: assessment.calculateDisposableIncome(),
         monthlyBill: assessment.getMonthlyBill(),
@@ -82,6 +97,7 @@ export class GetAssessmentQuery {
         incomeSources,
         incomeHistory,
         factors,
+        paymentPlans,
         createdAt: assessment.getCreatedAt().toISOString(),
       };
 
