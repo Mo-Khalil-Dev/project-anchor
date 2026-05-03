@@ -77,7 +77,7 @@ export function useAssessmentBreakdown(): UseAssessmentBreakdownReturn {
         description: f.description,
         impact: f.impact,
       })),
-      paymentPlans: [] as any,
+      paymentPlans: referenceData.paymentPlans || [],
       createdAt: assessmentData.createdAt,
       updatedAt: assessmentData.createdAt,
     };
