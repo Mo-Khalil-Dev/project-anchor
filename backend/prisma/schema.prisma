@@ -74,6 +74,8 @@ model Customer {
 
   bankConnections BankConnection[]
   assessments     Assessment[]
+  mandates        Mandate[]
+  paymentMethods  PaymentMethod[]
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -192,6 +194,11 @@ model Assessment {
   bankConnectionId  String?
   bankConnection    BankConnection? @relation(fields: [bankConnectionId], references: [id], onDelete: SetNull)
 
+  mandateId         String?
+  mandate           Mandate?        @relation(fields: [mandateId], references: [id], onDelete: SetNull)
+
+  paymentSchedules  PaymentSchedule[] @relation("AssessmentPaymentSchedule")
+
   monthlyIncome     Float?
   monthlyExpenses   Float?
   monthlyBill       Float?
@@ -235,4 +242,92 @@ model AssessmentJob {
   processedAt       DateTime?
 
   @@index([status])
+}
+
+// ── Payment Processing ──────────────────────────────────────────
+
+model Mandate {
+  id                String          @id @default(cuid())
+  customerId        String
+  customer          Customer        @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  assessments       Assessment[]
+  paymentMethods    PaymentMethod[]
+  paymentSchedules  PaymentSchedule[]
+
+  gocardlessId      String          @unique  // GC mandate ID
+  status            String          @default("PENDING")  // 'pending' | 'active' | 'failed' | 'cancelled'
+
+  accountHolderName String
+  bankAccountNumber String?         // Last 4 digits only
+  sortCode          String?         // Masked for display
+
+  createdAt         DateTime        @default(now())
+  expiresAt         DateTime?
+
+  @@index([customerId])
+  @@index([gocardlessId])
+}
+
+model PaymentSchedule {
+  id                String          @id @default(cuid())
+  mandateId         String
+  mandate           Mandate         @relation(fields: [mandateId], references: [id], onDelete: Cascade)
+
+  assessmentId      String
+  assessment        Assessment      @relation("AssessmentPaymentSchedule", fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  payments          Payment[]
+
+  gocardlessId      String          @unique  // GC subscription ID
+  planType          String          // 'Conservative' | 'Balanced' | 'Aggressive'
+  monthlyAmount     Int
+  totalAmount       Int
+  dayOfMonth        Int             // 1-28 or end of month
+  status            String          @default("ACTIVE")  // 'active' | 'completed' | 'cancelled' | 'failed'
+
+  firstPaymentDate  DateTime
+  finalPaymentDate  DateTime
+
+  createdAt         DateTime        @default(now())
+
+  @@index([mandateId])
+  @@index([assessmentId])
+  @@index([gocardlessId])
+}
+
+model Payment {
+  id                String          @id @default(cuid())
+  paymentScheduleId String
+  paymentSchedule   PaymentSchedule @relation(fields: [paymentScheduleId], references: [id], onDelete: Cascade)
+
+  gocardlessId      String          @unique  // GC payment ID
+  amount            Int
+  scheduledDate     DateTime
+  actualDate        DateTime?
+  status            String          @default("PENDING")  // 'pending' | 'submitted' | 'confirmed' | 'failed'
+  failureReason     String?
+
+  createdAt         DateTime        @default(now())
+
+  @@index([paymentScheduleId])
+  @@index([gocardlessId])
+  @@index([status])
+}
+
+model PaymentMethod {
+  id                String          @id @default(cuid())
+  customerId        String
+  customer          Customer        @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  mandateId         String
+  mandate           Mandate         @relation(fields: [mandateId], references: [id], onDelete: Cascade)
+
+  type              String          @default("direct_debit")  // 'direct_debit'
+  isDefault         Boolean         @default(false)
+
+  createdAt         DateTime        @default(now())
+
+  @@index([customerId])
+  @@index([mandateId])
 }
