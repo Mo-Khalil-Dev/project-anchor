@@ -1,6 +1,7 @@
 import type { AssessmentDetailedDTO } from '../../types';
 import { Card, HardshipBadge } from '@/components/core';
 import { useOverviewTab } from './useOverviewTab';
+import { formatCurrency } from '@/utils/format';
 
 export function OverviewTab({ assessment }: { assessment: AssessmentDetailedDTO }) {
   const { totalIncome, totalExpenses, disposable, incomePercent, billMonthsNeeded, incomeExpenseRows, typeColorMap } = useOverviewTab(assessment);
@@ -20,7 +21,7 @@ export function OverviewTab({ assessment }: { assessment: AssessmentDetailedDTO 
       <div className="flex flex-col gap-4">
         <Card>
           <div className="text-section-label text-muted mb-2">Disposable Income Formula</div>
-          <div className="text-sm text-sub leading-relaxed">Income <span className="text-green font-bold">£{totalIncome.toLocaleString()}</span> minus essential expenses <span className="text-amber font-bold">£{totalExpenses.toLocaleString()}</span> leaves <span className="text-red font-bold">£{disposable}/month</span> disposable income.</div>
+          <div className="text-sm text-sub leading-relaxed">Income <span className="text-green font-bold">£{formatCurrency(totalIncome)}</span> minus essential expenses <span className="text-amber font-bold">£{formatCurrency(totalExpenses)}</span> leaves <span className="text-red font-bold">£{formatCurrency(disposable)}/month</span> disposable income.</div>
           <div className="mt-4 h-2 bg-gray-200 rounded-full overflow-hidden"><div className="h-full bg-red rounded-full" style={{ width: `${Math.max(incomePercent, 2)}%` }} /></div>
           <div className="text-xs text-muted mt-2">{incomePercent}% of income is disposable — well below the 25% healthy threshold</div>
         </Card>
@@ -33,7 +34,7 @@ export function OverviewTab({ assessment }: { assessment: AssessmentDetailedDTO 
         </Card>
 
         <Card className="bg-accent-bg border border-accent/20">
-          <div className="text-sm text-accent leading-relaxed">Your bill of <strong>£{assessment.monthlyBill}</strong> would need <strong>{billMonthsNeeded} months</strong> of your entire disposable income to clear — before any emergencies.</div>
+          <div className="text-sm text-accent leading-relaxed">Your bill of <strong>£{formatCurrency(assessment.monthlyBill)}</strong> would need <strong>{billMonthsNeeded} months</strong> of your entire disposable income to clear — before any emergencies.</div>
         </Card>
       </div>
     </div>
