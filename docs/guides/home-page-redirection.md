@@ -20,7 +20,7 @@ The Home page now intelligently redirects users based on their journey progress.
              │
              ├─ Bank Connection COMPLETE
              │  AND Assessment COMPLETE
-             │  → Redirect to /assessment/breakdown ✓
+             │  → Redirect to /assessment ✓
              │
              └─ Show Home page with CTAs
 ```
@@ -42,12 +42,12 @@ File: `frontend/src/journeys/Home.tsx`
 useEffect(() => {
   if (isLoading || !referenceData) return;
 
-  // If both are complete → go to assessment breakdown
+  // If both are complete → go to assessment page
   if (
     referenceData.bankConnection?.status === 'CONNECTED' &&
     referenceData.assessment?.status === 'COMPLETED'
   ) {
-    navigate('/assessment/breakdown', { replace: true });
+    navigate('/assessment', { replace: true });
   }
 }, [referenceData, isLoading, navigate]);
 ```
@@ -59,7 +59,7 @@ useEffect(() => {
 - ✅ Bank connection NOT complete, OR
 - ✅ Assessment NOT complete
 
-### User Redirects To Assessment Breakdown If:
+### User Redirects To Assessment Page If:
 - ✅ Bank connection status = `'CONNECTED'`
 - ✅ Assessment status = `'COMPLETED'`
 
@@ -86,7 +86,7 @@ useEffect(() => {
 |----------|--------|
 | First-time user | See Home page → Click "Get Started" |
 | Connected bank, awaiting assessment | Redirect to `/assessment` |
-| Assessment complete | Redirect to `/assessment/breakdown` |
+| Assessment complete | Redirect to `/assessment` |
 | Viewed assessment, ready for payment | Can still access Home page |
 
 ## Testing

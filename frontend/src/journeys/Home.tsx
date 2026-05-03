@@ -21,12 +21,12 @@ export const Home = () => {
   useEffect(() => {
     if (isLoading || !referenceData) return;
 
-    // If bank connection AND assessment are complete → go to assessment breakdown
+    // If bank connection AND assessment are complete → go to assessment page
     if (
       referenceData.bankConnection?.status === 'CONNECTED' &&
       referenceData.assessment?.status === 'COMPLETED'
     ) {
-      navigate('/assessment/breakdown', { replace: true });
+      navigate('/assessment', { replace: true });
     }
   }, [referenceData, isLoading, navigate]);
 
