@@ -17,11 +17,16 @@ export interface ExpenseComparison {
 }
 
 export function useExpensesTab(assessment: AssessmentDetailedDTO) {
+  // Calculate total expenses from categories if monthlyExpenses is missing or 0
+  const totalExpenses = assessment.monthlyExpenses > 0
+    ? assessment.monthlyExpenses
+    : Object.values(assessment.expensesByCategory).reduce((sum, amount) => sum + amount, 0);
+
   const expenses: ExpenseItem[] = Object.entries(assessment.expensesByCategory).map(([label, amount]) => ({
     label,
     amount,
     color: EXPENSE_COLORS[label] || '#9197ab',
-    pct: Math.round((amount / assessment.monthlyExpenses) * 100),
+    pct: totalExpenses > 0 ? Math.round((amount / totalExpenses) * 100) : 0,
   }));
 
   const comparisons: ExpenseComparison[] = expenses.map(e => ({
@@ -38,6 +43,6 @@ export function useExpensesTab(assessment: AssessmentDetailedDTO) {
     expenses,
     comparisons,
     housingDiff,
-    totalExpenses: assessment.monthlyExpenses,
+    totalExpenses,
   };
 }
