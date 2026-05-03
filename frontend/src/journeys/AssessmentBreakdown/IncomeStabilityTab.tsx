@@ -1,6 +1,7 @@
 import type { AssessmentDetailedDTO } from '../../types';
 import { Card } from '@/components/core';
 import { useIncomeStabilityTab } from './useIncomeStabilityTab';
+import { formatCurrency } from '@/utils/format';
 
 export function IncomeStabilityTab({ assessment }: { assessment: AssessmentDetailedDTO }) {
   const { W, H, pad, min, range, avgY, gridLines, chartPoints, pathD, highest, stability, summaryRows } = useIncomeStabilityTab(assessment);
@@ -12,7 +13,7 @@ export function IncomeStabilityTab({ assessment }: { assessment: AssessmentDetai
         <svg viewBox={`0 0 ${W} ${H + 20}`} style={{ overflow: 'visible', marginTop: 8, width: '100%' }}>
           {gridLines.map(v => {
             const y = pad + (1 - (v - min) / range) * (H - pad * 2);
-            return (<g key={v}><line x1={pad} y1={y} x2={W - pad} y2={y} stroke="rgba(0,0,0,0.07)" strokeWidth="1" /><text x={pad - 8} y={y + 4} fontSize="10" fill="#9197ab" textAnchor="end">£{v}</text></g>);
+            return (<g key={v}><line x1={pad} y1={y} x2={W - pad} y2={y} stroke="rgba(0,0,0,0.07)" strokeWidth="1" /><text x={pad - 8} y={y + 4} fontSize="10" fill="#9197ab" textAnchor="end">£{formatCurrency(v)}</text></g>);
           })}
           <line x1={pad} y1={avgY} x2={W - pad} y2={avgY} stroke="oklch(52% 0.18 270)" strokeWidth="1.5" strokeDasharray="5,4" />
           <text x={W - pad + 6} y={avgY + 4} fontSize="10" fill="oklch(52% 0.18 270)">avg</text>
