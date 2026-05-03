@@ -218,6 +218,8 @@ model Assessment {
   factors           String?         // JSON: [{ title: "Household size 4", description: "..." }, ...]
   paymentPlans      String?         // JSON: [{ type: "Conservative", monthlyAmount: 185, duration: 36, totalRepayment: 6660, sustainability: "HIGH" }, ...]
 
+  selectedPlan      String?         // 'Conservative' | 'Balanced' | 'Aggressive' — set when customer accepts T&C
+
   status            String          @default("PENDING")
 
   assessmentJob     AssessmentJob?
