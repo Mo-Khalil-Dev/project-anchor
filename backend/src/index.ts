@@ -10,7 +10,7 @@ async function main() {
   const app = createApp(config, logger, prisma);
 
   const server = app.listen(config.server.port, () => {
-    logger.info('Bridge backend started', {
+    logger.info('SAFE backend started', {
       port: config.server.port,
       runtime: config.runtime,
       database: config.database.provider,

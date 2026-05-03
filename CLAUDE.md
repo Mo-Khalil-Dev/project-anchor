@@ -1,12 +1,12 @@
 # Memory
 
 ## Me
-Mohamed Khalil — working on PROJECT BRIDGE, a hardship assessment platform for UK utility companies
+Mohamed Khalil — working on SAFE (Sustainable Affordability Financial Evaluation), an affordability assessment platform for UK utility companies
 
 ## Projects
 | Name | What |
 |------|------|
-| **PROJECT BRIDGE** | Hardship assessment platform that helps UK utilities identify customers struggling with bills and create fair, sustainable payment plans. Prevents disconnections through automated assessment + officer review. |
+| **SAFE** | Sustainable Affordability Financial Evaluation platform that helps UK utilities identify vulnerable customers and create fair, sustainable payment plans. Prevents disconnections through automated affordability assessment + officer review. |
 
 ## Key Concepts
 | Term | Meaning |

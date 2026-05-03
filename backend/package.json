@@ -1,7 +1,7 @@
 {
-  "name": "bridge-backend",
+  "name": "safe-backend",
   "version": "1.0.0",
-  "description": "PROJECT BRIDGE - Hardship Assessment Platform Backend",
+  "description": "SAFE - Sustainable Affordability Financial Evaluation Backend",
   "main": "dist/index.js",
   "scripts": {
     "dev": "ts-node src/index.ts",

@@ -21,7 +21,7 @@ export const CustomerLayout: React.FC<CustomerLayoutProps> = ({
       <header className="sticky top-0 z-50 bg-white border-b border-border h-15 flex items-center px-8">
         <div className="flex items-center gap-3">
           <BridgeLogo />
-          <span className="text-xl font-bold text-text">Bridge</span>
+          <span className="text-xl font-bold text-text">SAFE</span>
         </div>
 
         {/* Step indicators */}

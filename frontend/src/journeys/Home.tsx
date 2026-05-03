@@ -133,7 +133,7 @@ export const Home = () => {
             marginBottom: '0px',
           }}
         >
-          How Bridge works
+          How SAFE works
         </div>
 
         {/* Steps Grid */}

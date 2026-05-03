@@ -1,5 +1,5 @@
 /**
- * Bridge Application Types
+ * SAFE Application Types
  * Central type definitions for the entire application
  */
 
