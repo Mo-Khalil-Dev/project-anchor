@@ -17,13 +17,11 @@ export interface ExpenseComparison {
 }
 
 export function useExpensesTab(assessment: AssessmentDetailedDTO) {
-  const totalExpenses = assessment.monthlyExpenses;
-
   const expenses: ExpenseItem[] = Object.entries(assessment.expensesByCategory).map(([label, amount]) => ({
     label,
     amount,
     color: EXPENSE_COLORS[label] || '#9197ab',
-    pct: totalExpenses > 0 ? Math.round((amount / totalExpenses) * 100) : 0,
+    pct: assessment.monthlyExpenses > 0 ? Math.round((amount / assessment.monthlyExpenses) * 100) : 0,
   }));
 
   const comparisons: ExpenseComparison[] = expenses.map(e => ({

@@ -81,6 +81,10 @@ export class GetAssessmentQuery {
         this.logger.warn('Failed to parse suggestedPaymentPlans', { customerId });
       }
 
+      // Calculate monthly totals from parsed data
+      const monthlyIncome = incomeSources.reduce((sum: number, source: any) => sum + (source.amount || 0), 0);
+      const monthlyExpenses = Object.values(expensesByCategory).reduce((sum: number, amount: any) => sum + (amount || 0), 0);
+
       const assessmentData: AssessmentData = {
         id: assessment.getId(),
         status:
@@ -93,6 +97,8 @@ export class GetAssessmentQuery {
         disposableIncome: assessment.calculateDisposableIncome(),
         monthlyBill: assessment.getMonthlyBill(),
         billRatio: assessment.calculateBillRatio(),
+        monthlyIncome,
+        monthlyExpenses,
         expensesByCategory,
         incomeSources,
         incomeHistory,
