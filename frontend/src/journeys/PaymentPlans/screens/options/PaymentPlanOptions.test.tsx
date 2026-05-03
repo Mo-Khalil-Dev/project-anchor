@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { PaymentPlanOptions } from './PaymentPlanOptions';
-import { MOCK_ASSESSMENT_DETAILED } from '../../mocks/assessmentMockData';
+import { MOCK_ASSESSMENT_DETAILED } from '../../../../mocks/assessmentMockData';
 
 describe('PaymentPlanOptions', () => {
   it('should render without crashing', () => {

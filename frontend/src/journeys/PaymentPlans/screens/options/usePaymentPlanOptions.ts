@@ -1,5 +1,8 @@
 import { useState, useCallback } from 'react';
-import type { AssessmentDetailedDTO } from '../../types';
+import { useNavigate } from 'react-router-dom';
+import { useAppDispatch } from '@/store';
+import type { AssessmentDetailedDTO } from '@/types';
+import { setSelectedPlan } from '@/store/slices/customerSlice';
 
 export const PROS: Record<string, string[]> = {
   Conservative: [
@@ -26,23 +29,25 @@ export const COLORS: Record<string, { text: string; bg: string; ring: string; bo
 
 export function usePaymentPlanOptions(assessment: AssessmentDetailedDTO) {
   const [selectedType, setSelectedType] = useState<string>('Conservative');
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const recommendedPlan = assessment.paymentPlans.find(p => p.sustainability === 'HIGH')?.type || 'Conservative';
 
   const selectedPlan = assessment.paymentPlans.find(p => p.type === selectedType);
   const monthlyBuffer = selectedPlan ? assessment.disposableIncome - selectedPlan.monthlyAmount : 0;
 
   const handleContinue = useCallback(() => {
-    // TODO: Phase 2 — Send selected plan to backend, navigate to acceptance/confirmation
-    console.log('Selected plan:', selectedType);
-    // For now, just alert
-    alert(`You've selected the ${selectedType} Plan (£${selectedPlan?.monthlyAmount}/month for ${selectedPlan?.duration} months). Plan submission coming soon.`);
-  }, [selectedType, selectedPlan]);
+    const planType = selectedType.toLowerCase() as 'conservative' | 'balanced' | 'aggressive';
+    console.log('[DEBUG] Dispatching setSelectedPlan with:', planType);
+    dispatch(setSelectedPlan(planType));
+    console.log('[DEBUG] Navigating to /payment-plans/terms');
+    navigate('/payment-plans/terms');
+  }, [selectedType, dispatch, navigate]);
 
   const handleCompare = useCallback(() => {
-    // TODO: Phase 2 — Open detailed comparison modal or navigate to comparison page
-    console.log('Comparing plans');
-    alert('Detailed comparison view coming soon.');
-  }, []);
+    const planSlug = selectedType.toLowerCase();
+    navigate(`/payment-plans/${planSlug}`);
+  }, [selectedType, navigate]);
 
   return {
     selectedType,

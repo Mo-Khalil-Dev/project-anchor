@@ -1,7 +1,7 @@
-import type { AssessmentDetailedDTO } from '../../types';
+import type { AssessmentDetailedDTO } from '@/types';
 import { CustomerLayout } from '@/components/layouts/CustomerLayout';
 import { Card, Button } from '@/components/core';
-import { PlanCard } from './PlanCard';
+import { PlanCard } from '../../components/PlanCard';
 import { usePaymentPlanOptions } from './usePaymentPlanOptions';
 import styles from './PaymentPlanOptions.module.css';
 
