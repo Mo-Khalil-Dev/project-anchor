@@ -1,7 +1,7 @@
-import type { PaymentPlanDTO } from '../../types';
+import type { PaymentPlanDTO } from '../../../types';
 import { Button, SustBadge } from '@/components/core';
-import { PROS, COLORS } from './usePaymentPlanOptions';
-import styles from './PaymentPlanOptions.module.css';
+import { PROS, COLORS } from '@/journeys/PaymentPlans/screens/options/usePaymentPlanOptions';
+import styles from '@/journeys/PaymentPlans/screens/options/PaymentPlanOptions.module.css';
 
 export function PlanCard({
   plan,

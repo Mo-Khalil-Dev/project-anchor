@@ -15,6 +15,7 @@ export type { CustomerSliceState };
 const initialState: CustomerSliceState = {
   currentStep: 'home',
   bankConnected: false,
+  selectedPlan: undefined,
 };
 
 const customerSlice = createSlice({
@@ -28,7 +29,9 @@ const customerSlice = createSlice({
       state.bankConnected = action.payload;
     },
     setSelectedPlan: (state, action: PayloadAction<PaymentPlanType | undefined>) => {
+      console.log('[Redux] setSelectedPlan reducer called with:', action.payload);
       state.selectedPlan = action.payload;
+      console.log('[Redux] state.selectedPlan is now:', state.selectedPlan);
     },
     setAssessment: (state, action: PayloadAction<AssessmentData>) => {
       state.assessment = action.payload;
