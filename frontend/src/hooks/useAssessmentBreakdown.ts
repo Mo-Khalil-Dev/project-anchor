@@ -58,6 +58,10 @@ export function useAssessmentBreakdown(): UseAssessmentBreakdownReturn {
       return 'PENDING';
     };
 
+    // Calculate totals that backend doesn't return
+    const monthlyIncome = assessmentData.incomeSources.reduce((sum: number, source: any) => sum + source.amount, 0);
+    const monthlyExpenses = Object.values(assessmentData.expensesByCategory).reduce((sum: number, amount: any) => sum + amount, 0);
+
     const detailedAssessment: AssessmentDetailedDTO = {
       id: assessmentData.id,
       customerId: '',
@@ -66,8 +70,8 @@ export function useAssessmentBreakdown(): UseAssessmentBreakdownReturn {
       disposableIncome: assessmentData.disposableIncome,
       monthlyBill: assessmentData.monthlyBill,
       billRatio: assessmentData.billRatio,
-      monthlyIncome: assessmentData.monthlyIncome || 0,
-      monthlyExpenses: Object.values(assessmentData.expensesByCategory).reduce((sum, amount) => sum + amount, 0),
+      monthlyIncome,
+      monthlyExpenses,
       arrears: 0,
       expensesByCategory: assessmentData.expensesByCategory,
       incomeSources: assessmentData.incomeSources as any,

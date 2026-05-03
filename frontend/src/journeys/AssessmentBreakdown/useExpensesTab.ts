@@ -17,10 +17,7 @@ export interface ExpenseComparison {
 }
 
 export function useExpensesTab(assessment: AssessmentDetailedDTO) {
-  // Calculate total expenses from categories if monthlyExpenses is missing or 0
-  const totalExpenses = assessment.monthlyExpenses > 0
-    ? assessment.monthlyExpenses
-    : Object.values(assessment.expensesByCategory).reduce((sum, amount) => sum + amount, 0);
+  const totalExpenses = assessment.monthlyExpenses;
 
   const expenses: ExpenseItem[] = Object.entries(assessment.expensesByCategory).map(([label, amount]) => ({
     label,
