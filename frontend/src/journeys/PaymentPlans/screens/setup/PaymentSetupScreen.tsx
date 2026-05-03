@@ -1,5 +1,5 @@
 import { CustomerLayout } from '@/components/layouts/CustomerLayout';
-import { Button, Card } from '@/components/core';
+import { Button } from '@/components/core';
 import { usePaymentSetup, type PaymentMethod } from './usePaymentSetup';
 import styles from './PaymentSetupScreen.module.css';
 
@@ -64,12 +64,12 @@ export function PaymentSetupScreen() {
         {/* Payment method cards */}
         <div className={styles.methodsGrid}>
           {PAYMENT_METHODS.map(method => (
-            <Card
+            <div
               key={method.id}
               className={`${styles.methodCard} ${selected === method.id ? styles.selected : ''}`}
               onClick={() => setSelected(method.id)}
             >
-              <div className={`${styles.iconBox} ${selected === method.id ? styles.iconBoxSelected : ''}`}>
+              <div className={styles.iconBox}>
                 {method.icon(selected === method.id)}
               </div>
               <div className={styles.methodContent}>
@@ -87,7 +87,7 @@ export function PaymentSetupScreen() {
               <div className={styles.radio}>
                 {selected === method.id && <div className={styles.radioDot} />}
               </div>
-            </Card>
+            </div>
           ))}
         </div>
 
