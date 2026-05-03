@@ -1,4 +1,5 @@
 import type { AssessmentDetailedDTO } from '../../types';
+import { formatCurrency } from '@/utils/format';
 
 export interface IncomeExpenseRow {
   label: string;
@@ -17,19 +18,19 @@ export function useOverviewTab(assessment: AssessmentDetailedDTO) {
   const incomeExpenseRows: (IncomeExpenseRow | null)[] = [
     ...assessment.incomeSources.map(s => ({
       label: s.type,
-      amount: `£${s.amount.toLocaleString()}`,
+      amount: `£${formatCurrency(s.amount)}`,
       type: 'income' as const,
     })),
-    { label: 'Total Income', amount: `£${totalIncome.toLocaleString()}`, bold: true, type: 'income' as const },
+    { label: 'Total Income', amount: `£${formatCurrency(totalIncome)}`, bold: true, type: 'income' as const },
     null,
     ...Object.entries(assessment.expensesByCategory).map(([k, v]) => ({
       label: k,
-      amount: `£${v}`,
+      amount: `£${formatCurrency(v)}`,
       type: 'expense' as const,
     })),
-    { label: 'Total Expenses', amount: `£${totalExpenses.toLocaleString()}`, bold: true, type: 'expense' as const },
+    { label: 'Total Expenses', amount: `£${formatCurrency(totalExpenses)}`, bold: true, type: 'expense' as const },
     null,
-    { label: 'Disposable Income', amount: `£${disposable}`, bold: true, type: 'disposable' as const },
+    { label: 'Disposable Income', amount: `£${formatCurrency(disposable)}`, bold: true, type: 'disposable' as const },
   ];
 
   const typeColorMap = {
