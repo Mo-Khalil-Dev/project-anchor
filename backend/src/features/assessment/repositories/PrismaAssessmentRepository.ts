@@ -1,5 +1,5 @@
 import { Result } from '../../shared/result';
-import { Assessment, type IAssessmentRepository } from '../types/assessment.types';
+import { Assessment, type IAssessmentRepository, type PlanType } from '../types/assessment.types';
 import { prisma } from '../../shared/utils/db';
 
 
@@ -120,6 +120,22 @@ export class PrismaAssessmentRepository implements IAssessmentRepository {
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to update assessment';
       return Result.fail(new Error(`Assessment update failed: ${message}`));
+    }
+  }
+
+  async updateSelectedPlan(assessmentId: string, planType: PlanType): Promise<Result<void, Error>> {
+    try {
+      await prisma.assessment.update({
+        where: { id: assessmentId },
+        data: {
+          selectedPlan: planType,
+          updatedAt: new Date(),
+        },
+      });
+      return Result.ok(undefined);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to update selected plan';
+      return Result.fail(new Error(`Selected plan update failed: ${message}`));
     }
   }
 

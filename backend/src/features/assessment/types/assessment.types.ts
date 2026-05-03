@@ -214,10 +214,13 @@ export class Assessment {
   }
 }
 
+export type PlanType = 'Conservative' | 'Balanced' | 'Aggressive';
+
 export interface IAssessmentRepository {
   save(assessment: Assessment): Promise<Result<Assessment, Error>>;
   findById(id: string): Promise<Result<Assessment | null, Error>>;
   findByCustomerId(customerId: string): Promise<Result<Assessment[], Error>>;
   findLatestByCustomerId(customerId: string): Promise<Result<Assessment | null, Error>>;
   update(assessment: Assessment): Promise<Result<Assessment, Error>>;
+  updateSelectedPlan(assessmentId: string, planType: PlanType): Promise<Result<void, Error>>;
 }

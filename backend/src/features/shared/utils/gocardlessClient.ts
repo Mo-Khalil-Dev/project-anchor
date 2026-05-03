@@ -1,8 +1,5 @@
-import gocardless from 'gocardless-nodejs';
+import gocardless, { Environments, GoCardlessClient } from 'gocardless-nodejs';
 
-export function initGoCardlessClient(accessToken: string): typeof gocardless {
-  return gocardless({
-    accessToken,
-    environment: 'sandbox',
-  });
+export function initGoCardlessClient(accessToken: string): GoCardlessClient {
+  return gocardless(accessToken, Environments.Sandbox);
 }
