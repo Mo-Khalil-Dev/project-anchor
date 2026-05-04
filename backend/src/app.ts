@@ -42,7 +42,12 @@ export function createApp(config: AppConfig, logger: ILogger, prisma: PrismaClie
     next();
   });
 
-  app.use(express.json());
+  // Skip JSON body parsing for the GoCardless webhook so the raw body is
+  // available for HMAC signature verification in the payment router.
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    if (req.path === '/api/payments/webhook') return next();
+    return express.json()(req, res, next);
+  });
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser());
 
