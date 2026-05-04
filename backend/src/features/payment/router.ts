@@ -1,7 +1,7 @@
 import { Router, type RequestHandler, raw } from 'express';
 import type { ILogger } from '../shared/logging';
 import type { AppConfig } from '../shared/config';
-import { asyncHandler } from '@/features/shared/middleware';
+import { asyncHandler } from '../shared/middleware/globalErrorHandler';
 import { initGoCardlessClient } from '../shared/utils/gocardlessClient';
 import { PaymentController } from './controllers/PaymentController';
 import { SelectPlanUseCase } from './services/SelectPlanUseCase';

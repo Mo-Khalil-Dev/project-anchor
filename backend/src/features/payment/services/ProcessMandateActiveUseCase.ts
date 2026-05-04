@@ -39,17 +39,7 @@ export class ProcessMandateActiveUseCase {
   ) {}
 
   async execute(mandateGocardlessId: string): Promise<Result<void, Error>> {
-    // 1. Idempotency check
-    const existingResult = await this.paymentRepository.findMandateByGocardlessId(mandateGocardlessId);
-    if (existingResult.isFail) {
-      return Result.fail(existingResult.getError() ?? new Error('Mandate lookup failed'));
-    }
-    if (existingResult.getOrElse(null)) {
-      this.logger.info('Mandate already processed — skipping', { mandateGocardlessId });
-      return Result.ok(undefined);
-    }
-
-    // 2. Fetch mandate from GC
+    // 2. Fetch mandate from GC to get metadata (needed for better idempotency check)
     let gcMandate: any;
     try {
       gcMandate = await this.gocardless.mandates.find(mandateGocardlessId);
@@ -69,6 +59,33 @@ export class ProcessMandateActiveUseCase {
         hasAssessmentId: !!assessmentId,
       });
       return Result.fail(new Error('Mandate metadata missing customerId/assessmentId'));
+    }
+
+    // 1. Idempotency check
+    // A: Check if mandate already processed locally
+    const existingMandateResult = await this.paymentRepository.findPaymentScheduleByAssessmentId(mandateGocardlessId);
+    if (existingMandateResult.isFail) {
+      return Result.fail(existingMandateResult.getError() ?? new Error('Mandate lookup failed'));
+    }
+
+    // B: Check if schedule already created for this assessment
+    // This is CRITICAL because a mandate might be saved but the process failed before GC schedule creation
+    // OR GC schedule was created but local persistence failed.
+    const existingScheduleResult = await this.paymentRepository.findPaymentScheduleByAssessmentId(assessmentId);
+    if (existingScheduleResult.isFail) {
+      return Result.fail(existingScheduleResult.getError() ?? new Error('Schedule lookup failed'));
+    }
+
+    const existingMandate = existingMandateResult.getOrElse(null);
+    const existingSchedule = existingScheduleResult.getOrElse(null);
+
+    if (existingMandate && existingSchedule) {
+      this.logger.info('Mandate and Schedule already processed — skipping', {
+        mandateGocardlessId,
+        assessmentId,
+        scheduleId: existingSchedule.id,
+      });
+      return Result.ok(undefined);
     }
 
     // 3. Load assessment + selectedPlan
@@ -105,50 +122,63 @@ export class ProcessMandateActiveUseCase {
 
     // 4. Save Mandate + PaymentMethod
     const accountHolderName = (gcMandate.payer_resource as any)?.name
-      ?? (gcMandate.next_possible_charge_date ? '' : '')
       ?? 'Unknown';
 
-    const mandateSaveResult = await this.paymentRepository.saveMandate({
-      customerId,
-      gocardlessId: mandateGocardlessId,
-      status: 'ACTIVE',
-      accountHolderName,
-      bankAccountNumber: null, // Last 4 only — GC doesn't expose this directly
-      sortCode: null,
-    });
-    if (mandateSaveResult.isFail) {
-      return Result.fail(mandateSaveResult.getError() ?? new Error('Mandate save failed'));
-    }
-    const { id: localMandateId } = mandateSaveResult.getOrThrow();
-
-    const methodSaveResult = await this.paymentRepository.savePaymentMethod({
-      customerId,
-      mandateId: localMandateId,
-      type: 'direct_debit',
-      isDefault: true,
-    });
-    if (methodSaveResult.isFail) {
-      this.logger.warn('PaymentMethod save failed (mandate exists)', {
-        localMandateId,
-        error: methodSaveResult.getError()?.message,
+    let localMandateId: string;
+    if (existingMandate) {
+      localMandateId = existingMandate.id;
+    } else {
+      const mandateSaveResult = await this.paymentRepository.saveMandate({
+        customerId,
+        gocardlessId: mandateGocardlessId,
+        status: 'ACTIVE',
+        accountHolderName,
+        bankAccountNumber: (gcMandate.payer_resource as any)?.account_number_ending, // Last 4 if available
+        sortCode: null,
       });
-      // Non-fatal — mandate is saved, schedule can still proceed
+      if (mandateSaveResult.isFail) {
+        return Result.fail(mandateSaveResult.getError() ?? new Error('Mandate save failed'));
+      }
+      localMandateId = mandateSaveResult.getOrThrow().id;
+
+      const methodSaveResult = await this.paymentRepository.savePaymentMethod({
+        customerId,
+        mandateId: localMandateId,
+        type: 'direct_debit',
+        isDefault: true,
+      });
+      if (methodSaveResult.isFail) {
+        this.logger.warn('PaymentMethod save failed (mandate exists)', {
+          localMandateId,
+          error: methodSaveResult.getError()?.message,
+        });
+        // Non-fatal — mandate is saved, schedule can still proceed
+      }
     }
 
     // 5. Create instalment schedule via GC
     const totalAmountPence = Math.round(plan.totalRepayment * 100);
+    let instalmentScheduleId: string;
 
-    const scheduleResult = await this.createInstalmentSchedule.execute({
-      mandateId: mandateGocardlessId,
-      totalAmountPence,
-      installmentCount: plan.duration,
-      dayOfMonth: DEFAULT_DAY_OF_MONTH,
-      name: `SAFE plan — ${selectedPlan} (${assessmentId})`,
-    });
-    if (scheduleResult.isFail) {
-      return Result.fail(scheduleResult.getError() ?? new Error('Schedule creation failed'));
+    if (existingSchedule) {
+      instalmentScheduleId = existingSchedule.gocardlessId;
+      this.logger.info('GC Schedule already exists but local record was missing — using existing ID', {
+        assessmentId,
+        instalmentScheduleId,
+      });
+    } else {
+      const scheduleResult = await this.createInstalmentSchedule.execute({
+        mandateId: mandateGocardlessId,
+        totalAmountPence,
+        installmentCount: plan.duration,
+        dayOfMonth: DEFAULT_DAY_OF_MONTH,
+        name: `SAFE plan — ${selectedPlan} (${assessmentId})`,
+      });
+      if (scheduleResult.isFail) {
+        return Result.fail(scheduleResult.getError() ?? new Error('Schedule creation failed'));
+      }
+      instalmentScheduleId = scheduleResult.getOrThrow().instalmentScheduleId;
     }
-    const { instalmentScheduleId } = scheduleResult.getOrThrow();
 
     // 6. Persist PaymentSchedule
     const firstPaymentDate = this.computeStartDate(DEFAULT_DAY_OF_MONTH);
@@ -199,7 +229,14 @@ export class ProcessMandateActiveUseCase {
 
   private addMonths(date: Date, months: number): Date {
     const result = new Date(date);
+    const expectedMonth = (result.getMonth() + months) % 12;
     result.setMonth(result.getMonth() + months);
+
+    // Handle month overflow (e.g. Jan 31 + 1 month -> March 3)
+    // We want it to stay in the expected month, usually by capping at the last day.
+    if (result.getMonth() !== expectedMonth) {
+      result.setDate(0); // Set to last day of previous month
+    }
     return result;
   }
 }

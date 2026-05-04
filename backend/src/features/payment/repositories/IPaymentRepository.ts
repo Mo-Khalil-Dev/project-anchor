@@ -43,6 +43,6 @@ export interface IPaymentRepository {
   /** Persist a PaymentSchedule row tied to a mandate + assessment */
   savePaymentSchedule(input: SavePaymentScheduleInput): Promise<Result<void, Error>>;
 
-  /** Find existing mandate by GC ID — used to short-circuit duplicate webhook deliveries */
-  findMandateByGocardlessId(gocardlessId: string): Promise<Result<{ id: string } | null, Error>>;
+  /** Find existing payment schedule by assessment ID — used for idempotency */
+  findPaymentScheduleByAssessmentId(assessmentId: string): Promise<Result<{ id: string; gocardlessId: string } | null, Error>>;
 }

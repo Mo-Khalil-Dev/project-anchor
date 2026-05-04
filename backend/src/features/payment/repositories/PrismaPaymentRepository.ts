@@ -80,4 +80,17 @@ export class PrismaPaymentRepository implements IPaymentRepository {
       return Result.fail(new Error(`Mandate lookup failed: ${message}`));
     }
   }
+
+  async findPaymentScheduleByAssessmentId(assessmentId: string): Promise<Result<{ id: string; gocardlessId: string } | null, Error>> {
+    try {
+      const schedule = await prisma.paymentSchedule.findFirst({
+        where: { assessmentId },
+        select: { id: true, gocardlessId: true },
+      });
+      return Result.ok(schedule);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to find payment schedule';
+      return Result.fail(new Error(`Payment schedule lookup failed: ${message}`));
+    }
+  }
 }

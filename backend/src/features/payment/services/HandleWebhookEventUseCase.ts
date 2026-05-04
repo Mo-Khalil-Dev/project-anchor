@@ -67,7 +67,7 @@ export class HandleWebhookEventUseCase {
       action: event.action,
     });
 
-    if (event.action === 'active' && this.onMandateActive) {
+    if (event.action === 'created' && this.onMandateActive) {
       try {
         await this.onMandateActive(mandateId);
       } catch (error) {

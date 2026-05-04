@@ -15,21 +15,30 @@ export class LocalJobDispatcher implements IJobDispatcher {
       delayMs: this.delayMs,
     });
 
-    setImmediate(async () => {
-      if (this.delayMs > 0) {
-        await new Promise<void>(resolve => setTimeout(resolve, this.delayMs));
-      }
+    setImmediate(() => {
+      (async () => {
+        try {
+          if (this.delayMs > 0) {
+            await new Promise<void>(resolve => setTimeout(resolve, this.delayMs));
+          }
 
-      const result = await this.jobService.execute(jobId);
+          const result = await this.jobService.execute(jobId);
 
-      if (result.isFail) {
-        this.logger.error('Background assessment job failed', {
-          jobId,
-          error: result.getError()?.message,
-        });
-      } else {
-        this.logger.info('Background assessment job completed', { jobId });
-      }
+          if (result.isFail) {
+            this.logger.error('Background assessment job failed', {
+              jobId,
+              error: result.getError()?.message,
+            });
+          } else {
+            this.logger.info('Background assessment job completed', { jobId });
+          }
+        } catch (error) {
+          this.logger.error('Unexpected error in background assessment job', {
+            jobId,
+            error: error instanceof Error ? error.message : String(error),
+          });
+        }
+      })();
     });
   }
 }
