@@ -1,4 +1,3 @@
-import type { GoCardlessClient } from 'gocardless-nodejs';
 import { Result } from '../../shared/result';
 import type { ILogger } from '../../shared/logging';
 
@@ -32,9 +31,8 @@ export interface WebhookEvent {
  */
 export class HandleWebhookEventUseCase {
   constructor(
-    private gocardless: GoCardlessClient,
     private logger: ILogger,
-    private onMandateActive?: (mandateId: string, billingRequestId: string | null) => Promise<void>,
+    private onMandateActive?: (mandateId: string) => Promise<void>,
   ) {}
 
   async execute(event: WebhookEvent): Promise<Result<void, Error>> {
@@ -63,32 +61,23 @@ export class HandleWebhookEventUseCase {
       return Result.ok(undefined);
     }
 
-    if (event.action === 'active' || event.action === 'created') {
+    this.logger.info('Mandate event received', {
+      eventId: event.id,
+      mandateId,
+      action: event.action,
+    });
+
+    if (event.action === 'active' && this.onMandateActive) {
       try {
-        // Fetch mandate to get linked billing_request and customer
-        const mandate = await this.gocardless.mandates.find(mandateId);
-        const billingRequestId = (mandate as any).links?.customer_bank_account
-          ? null
-          : null; // TODO: resolve via billing_request lookup if needed
-
-        this.logger.info('Mandate event received', {
-          eventId: event.id,
-          mandateId,
-          action: event.action,
-          status: (mandate as any).status,
-        });
-
-        if (event.action === 'active' && this.onMandateActive) {
-          await this.onMandateActive(mandateId, billingRequestId);
-        }
+        await this.onMandateActive(mandateId);
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Unknown error';
-        this.logger.error('Failed to process mandate event', {
+        this.logger.error('onMandateActive callback threw', {
           eventId: event.id,
           mandateId,
           error: message,
         });
-        return Result.fail(new Error(`Mandate event processing failed: ${message}`));
+        return Result.fail(new Error(`Mandate active handler failed: ${message}`));
       }
     }
 

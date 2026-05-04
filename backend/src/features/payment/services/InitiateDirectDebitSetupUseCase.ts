@@ -1,6 +1,7 @@
 import { Result } from '../../shared/result';
 import type { ILogger } from '../../shared/logging';
 import type { ICustomerRepository } from '../../customer/types/customer.types';
+import type { IAssessmentRepository } from '../../assessment/types/assessment.types';
 import type { CreateBillingRequestUseCase } from './CreateBillingRequestUseCase';
 import type { CollectCustomerDetailsUseCase } from './CollectCustomerDetailsUseCase';
 import type { CollectBankAccountUseCase } from './CollectBankAccountUseCase';
@@ -36,6 +37,7 @@ export interface InitiateDirectDebitSetupOutput {
 export class InitiateDirectDebitSetupUseCase {
   constructor(
     private customerRepository: ICustomerRepository,
+    private assessmentRepository: IAssessmentRepository,
     private createBillingRequest: CreateBillingRequestUseCase,
     private collectCustomerDetails: CollectCustomerDetailsUseCase,
     private collectBankAccount: CollectBankAccountUseCase,
@@ -67,16 +69,30 @@ export class InitiateDirectDebitSetupUseCase {
       return Result.fail(new Error('Customer not found'));
     }
 
-    // 2. Step 1 of GC flow: create billing request
+    // 2. Resolve the customer's latest assessment so we can tag the mandate
+    //    with both customerId and assessmentId for the webhook to pick up later.
+    const assessmentResult = await this.assessmentRepository.findLatestByCustomerId(customerId);
+    if (assessmentResult.isFail) {
+      return Result.fail(new Error('Failed to load assessment'));
+    }
+    const assessment = assessmentResult.getOrElse(null);
+    if (!assessment) {
+      return Result.fail(new Error('No assessment found for customer'));
+    }
+    const assessmentId = assessment.getId();
+
+    // 3. Step 1 of GC flow: create billing request
     const brResult = await this.createBillingRequest.execute({
       metadataReference: `safe-${customerId}-${Date.now()}`,
+      customerId,
+      assessmentId,
     });
     if (brResult.isFail) {
       return Result.fail(brResult.getError() ?? new Error('Create billing request failed'));
     }
     const { billingRequestId } = brResult.getOrThrow();
 
-    // 3. Step 2: collect customer details
+    // 4. Step 2: collect customer details
     const fullName = accountHolderName.trim().split(/\s+/);
     const givenName = fullName.slice(0, -1).join(' ') || customer.firstName || 'Customer';
     const familyName = fullName.length > 1 ? fullName[fullName.length - 1] : (customer.lastName || 'Unknown');
@@ -95,7 +111,7 @@ export class InitiateDirectDebitSetupUseCase {
       return Result.fail(detailsResult.getError() ?? new Error('Collect customer details failed'));
     }
 
-    // 4. Step 3: collect bank account (hardcoded sandbox values)
+    // 5. Step 3: collect bank account (hardcoded sandbox values)
     const bankResult = await this.collectBankAccount.execute({
       billingRequestId,
       accountHolderName,
@@ -104,7 +120,7 @@ export class InitiateDirectDebitSetupUseCase {
       return Result.fail(bankResult.getError() ?? new Error('Collect bank account failed'));
     }
 
-    // 5. Step 4: create the billing request flow
+    // 6. Step 4: create the billing request flow
     const flowResult = await this.createBillingRequestFlow.execute({
       billingRequestId,
       redirectUri,

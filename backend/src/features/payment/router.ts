@@ -1,7 +1,7 @@
 import { Router, type RequestHandler, raw } from 'express';
 import type { ILogger } from '../shared/logging';
 import type { AppConfig } from '../shared/config';
-import { asyncHandler } from '../shared/middleware/globalErrorHandler';
+import { asyncHandler } from '@/features/shared/middleware';
 import { initGoCardlessClient } from '../shared/utils/gocardlessClient';
 import { PaymentController } from './controllers/PaymentController';
 import { SelectPlanUseCase } from './services/SelectPlanUseCase';
@@ -12,8 +12,10 @@ import { CreateBillingRequestFlowUseCase } from './services/CreateBillingRequest
 import { InitiateDirectDebitSetupUseCase } from './services/InitiateDirectDebitSetupUseCase';
 import { HandleWebhookEventUseCase } from './services/HandleWebhookEventUseCase';
 import { CreateInstalmentScheduleUseCase } from './services/CreateInstalmentScheduleUseCase';
+import { ProcessMandateActiveUseCase } from './services/ProcessMandateActiveUseCase';
 import { PrismaAssessmentRepository } from '../assessment/repositories/PrismaAssessmentRepository';
 import { PrismaCustomerRepository } from '../customer/repositories/PrismaCustomerRepository';
+import { PrismaPaymentRepository } from './repositories/PrismaPaymentRepository';
 
 export function createPaymentRouter(
   config: AppConfig,
@@ -25,6 +27,7 @@ export function createPaymentRouter(
   // ============ DEPENDENCY INJECTION ============
   const assessmentRepository = new PrismaAssessmentRepository();
   const customerRepository = new PrismaCustomerRepository();
+  const paymentRepository = new PrismaPaymentRepository();
   const gocardless = initGoCardlessClient(config.gocardless.accessToken);
 
   const selectPlanUseCase = new SelectPlanUseCase(
@@ -41,6 +44,7 @@ export function createPaymentRouter(
 
   const initiateDirectDebitSetupUseCase = new InitiateDirectDebitSetupUseCase(
     customerRepository,
+    assessmentRepository,
     createBillingRequestUseCase,
     collectCustomerDetailsUseCase,
     collectBankAccountUseCase,
@@ -48,25 +52,27 @@ export function createPaymentRouter(
     logger,
   );
 
-  // When a mandate becomes active, the webhook handler invokes this callback
-  // to create the instalment schedule. For now this is a stub that logs;
-  // wiring it to a real customer-aware flow comes in the next iteration.
-  const onMandateActive = async (mandateId: string, billingRequestId: string | null) => {
-    logger.info('Mandate active — instalment schedule creation pending', {
-      mandateId,
-      billingRequestId,
-      note: 'Looking up customer/assessment to compute schedule deferred to next iteration',
-    });
-    // TODO: Resolve customer & selected plan from mandate's billing_request metadata,
-    // then call createInstalmentScheduleUseCase.execute({ ... }).
-    void createInstalmentScheduleUseCase;
+  const processMandateActiveUseCase = new ProcessMandateActiveUseCase(
+    gocardless,
+    assessmentRepository,
+    paymentRepository,
+    createInstalmentScheduleUseCase,
+    logger,
+  );
+
+  // When a mandate becomes active, run the full post-authorization flow:
+  // resolve our records, persist the mandate, and create the instalment schedule.
+  const onMandateActive = async (mandateId: string) => {
+    const result = await processMandateActiveUseCase.execute(mandateId);
+    if (result.isFail) {
+      logger.error('ProcessMandateActive failed', {
+        mandateId,
+        error: result.getError()?.message,
+      });
+    }
   };
 
-  const handleWebhookEventUseCase = new HandleWebhookEventUseCase(
-    gocardless,
-    logger,
-    onMandateActive,
-  );
+  const handleWebhookEventUseCase = new HandleWebhookEventUseCase(logger, onMandateActive);
 
   const controller = new PaymentController(
     selectPlanUseCase,

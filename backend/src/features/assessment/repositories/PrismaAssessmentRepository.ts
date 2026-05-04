@@ -155,6 +155,7 @@ export class PrismaAssessmentRepository implements IAssessmentRepository {
       incomeSources: record.incomeSources,
       factors: record.factors,
       paymentPlans: record.paymentPlans,
+      selectedPlan: record.selectedPlan,
       status: record.status,
       createdAt: record.createdAt,
       updatedAt: record.updatedAt,

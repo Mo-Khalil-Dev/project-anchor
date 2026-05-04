@@ -1,0 +1,48 @@
+import type { Result } from '../../shared/result';
+
+export type MandateStatus = 'PENDING' | 'ACTIVE' | 'FAILED' | 'CANCELLED' | 'EXPIRED';
+export type ScheduleStatus = 'ACTIVE' | 'COMPLETED' | 'CANCELLED' | 'FAILED';
+
+export interface SaveMandateInput {
+  customerId: string;
+  gocardlessId: string;
+  status: MandateStatus;
+  accountHolderName: string;
+  bankAccountNumber?: string | null;
+  sortCode?: string | null;
+  expiresAt?: Date | null;
+}
+
+export interface SavePaymentMethodInput {
+  customerId: string;
+  mandateId: string;
+  type: 'direct_debit';
+  isDefault: boolean;
+}
+
+export interface SavePaymentScheduleInput {
+  mandateId: string;
+  assessmentId: string;
+  gocardlessId: string;
+  planType: 'Conservative' | 'Balanced' | 'Aggressive';
+  monthlyAmount: number;
+  totalAmount: number;
+  dayOfMonth: number;
+  status: ScheduleStatus;
+  firstPaymentDate: Date;
+  finalPaymentDate: Date;
+}
+
+export interface IPaymentRepository {
+  /** Persist a Mandate row, returning the new mandate's ID */
+  saveMandate(input: SaveMandateInput): Promise<Result<{ id: string }, Error>>;
+
+  /** Persist a PaymentMethod row linking customer ↔ mandate */
+  savePaymentMethod(input: SavePaymentMethodInput): Promise<Result<void, Error>>;
+
+  /** Persist a PaymentSchedule row tied to a mandate + assessment */
+  savePaymentSchedule(input: SavePaymentScheduleInput): Promise<Result<void, Error>>;
+
+  /** Find existing mandate by GC ID — used to short-circuit duplicate webhook deliveries */
+  findMandateByGocardlessId(gocardlessId: string): Promise<Result<{ id: string } | null, Error>>;
+}

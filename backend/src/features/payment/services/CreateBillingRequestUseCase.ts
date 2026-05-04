@@ -5,6 +5,10 @@ import type { ILogger } from '../../shared/logging';
 export interface CreateBillingRequestInput {
   /** Free-form metadata for tracing in GC dashboard */
   metadataReference: string;
+  /** Our customer ID — propagated to mandate metadata so we can look up our records on webhook */
+  customerId: string;
+  /** Our assessment ID — propagated to mandate metadata so we can resolve plan/amount on webhook */
+  assessmentId: string;
 }
 
 export interface CreateBillingRequestOutput {
@@ -35,6 +39,12 @@ export class CreateBillingRequestUseCase {
           currency: 'GBP',
           scheme: 'bacs',
           verify: 'recommended',
+          // Mandate-level metadata propagates to the mandate record itself —
+          // we read this back from the mandates.active webhook to identify our records.
+          metadata: {
+            customerId: input.customerId,
+            assessmentId: input.assessmentId,
+          },
         },
         metadata: {
           reference: input.metadataReference,

@@ -19,6 +19,7 @@ export interface AssessmentProps {
   incomeSources?: string | null;
   factors?: string | null;
   paymentPlans?: string | null;
+  selectedPlan?: string | null;
   status: AssessmentStatus;
   createdAt: Date;
   updatedAt: Date;
@@ -39,6 +40,7 @@ export class Assessment {
   private readonly incomeSources: string | null;
   private readonly factors: string | null;
   private readonly paymentPlans: string | null;
+  private readonly selectedPlan: string | null;
   private readonly createdAt: Date;
   private updatedAt: Date;
   private status: AssessmentStatus;
@@ -58,6 +60,7 @@ export class Assessment {
     this.incomeSources = props.incomeSources ?? null;
     this.factors = props.factors ?? null;
     this.paymentPlans = props.paymentPlans ?? null;
+    this.selectedPlan = props.selectedPlan ?? null;
     this.status = props.status;
     this.createdAt = props.createdAt;
     this.updatedAt = props.updatedAt;
@@ -126,6 +129,10 @@ export class Assessment {
 
   getPaymentPlans(): string | null {
     return this.paymentPlans;
+  }
+
+  getSelectedPlan(): string | null {
+    return this.selectedPlan;
   }
 
   getStatus(): AssessmentStatus {
