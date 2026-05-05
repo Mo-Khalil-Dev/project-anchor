@@ -1,21 +1,31 @@
 import { Router, type RequestHandler } from 'express';
 import type { PrismaClient } from '@prisma/client';
-import type { IAuthProvider } from './types/auth.types';
 
 // Import all use cases
-import { InitiateLoginUseCase } from './services/InitiateLoginUseCase';
-import { HandleAuthCallbackUseCase } from './services/HandleAuthCallbackUseCase';
-import { RefreshAccessTokenUseCase } from './services/RefreshAccessTokenUseCase';
-import { LogoutUseCase } from './services/LogoutUseCase';
-import { ValidateTokenUseCase } from './services/ValidateTokenUseCase';
-import { GetRedirectToJourneyUseCase } from './services/GetRedirectToJourneyUseCase';
+import {
+  InitiateLoginUseCase,
+  HandleAuthCallbackUseCase,
+  RefreshAccessTokenUseCase,
+  LogoutUseCase,
+  ValidateTokenUseCase,
+  GetRedirectToJourneyUseCase,
+} from './application/usecases';
 
 // Import controller
-import { AuthController } from './controllers/AuthController';
+import { AuthController } from '@/features/auth/infrastructure/controllers/AuthController';
 
 // Import shared utilities
 import { asyncHandler } from '../shared/middleware/globalErrorHandler';
 import { createAuthenticateMiddleware } from '../shared/middleware/authenticateRequest';
+import { IAuthProvider } from '@/features/auth/application/services/IAuthProvider';
+
+// Import repositories
+import { PrismaUserRepository } from '@/features/auth/infrastructure/repositories/PrismaUserRepository';
+import { PrismaSessionLogRepository } from '@/features/auth/infrastructure/repositories/PrismaSessionLogRepository';
+import { PrismaRefreshTokenRepository } from '@/features/auth/infrastructure/repositories/PrismaRefreshTokenRepository';
+
+// Import services
+import { TokenService } from '@/features/auth/application/services/TokenService';
 
 export interface AuthSetup {
   router: Router;
@@ -29,13 +39,26 @@ export function createAuthRouter(
   const router = Router();
 
   // ============ DEPENDENCY INJECTION ============
+  // Create repositories
+  const userRepository = new PrismaUserRepository(prisma);
+  const sessionLogRepository = new PrismaSessionLogRepository(prisma);
+  const tokensRepository = new PrismaRefreshTokenRepository(prisma);
+
+  // Create services
+  const tokenService = new TokenService(authProvider, tokensRepository);
+
   // Create all use cases
   const initiateLoginUseCase = new InitiateLoginUseCase(authProvider);
-  const handleAuthCallbackUseCase = new HandleAuthCallbackUseCase(authProvider, prisma);
-  const refreshAccessTokenUseCase = new RefreshAccessTokenUseCase(authProvider, prisma);
-  const logoutUseCase = new LogoutUseCase(authProvider, prisma);
-  const validateTokenUseCase = new ValidateTokenUseCase(authProvider, prisma);
-  const getRedirectToJourneyUseCase = new GetRedirectToJourneyUseCase(prisma);
+  const handleAuthCallbackUseCase = new HandleAuthCallbackUseCase(
+    authProvider,
+    tokenService,
+    userRepository,
+    sessionLogRepository
+  );
+  const refreshAccessTokenUseCase = new RefreshAccessTokenUseCase(tokenService);
+  const logoutUseCase = new LogoutUseCase(tokenService, sessionLogRepository, userRepository);
+  const validateTokenUseCase = new ValidateTokenUseCase(tokenService, userRepository);
+  const getRedirectToJourneyUseCase = new GetRedirectToJourneyUseCase(userRepository);
 
   // Create authentication middleware
   const authenticateRequest = createAuthenticateMiddleware(validateTokenUseCase);

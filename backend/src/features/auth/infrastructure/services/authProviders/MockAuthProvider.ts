@@ -1,8 +1,9 @@
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-import type { AppConfig } from '../../shared/config/config.types';
-import type { IAuthProvider, AuthTokens, AuthUser } from '../types/auth.types';
-import { InvalidTokenError, InvalidStateError, AuthenticationError } from '../types/auth.types';
+import type { AppConfig } from '../../../shared/config/config.types';
+import type { AuthTokens, AuthUser } from '../../types/auth.types';
+import { InvalidTokenError, InvalidStateError, AuthenticationError } from '../../application/errors';
+import { IAuthProvider } from "@/features/auth/application/services/IAuthProvider";
 
 export class MockAuthProvider implements IAuthProvider {
   private config: AppConfig;
