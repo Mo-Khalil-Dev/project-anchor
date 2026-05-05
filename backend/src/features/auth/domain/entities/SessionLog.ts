@@ -29,16 +29,4 @@ export class SessionLog extends Entity<string> {
   getUserAgent(): string | undefined {
     return this.userAgent;
   }
-
-  isLoginAction(): boolean {
-    return this.action === 'LOGIN';
-  }
-
-  isLogoutAction(): boolean {
-    return this.action === 'LOGOUT';
-  }
-
-  isTokenAction(): boolean {
-    return this.action === 'TOKEN_REFRESH' || this.action === 'TOKEN_REVOKE';
-  }
 }

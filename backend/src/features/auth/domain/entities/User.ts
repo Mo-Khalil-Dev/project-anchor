@@ -59,11 +59,6 @@ export class User extends AggregateRoot<string> {
     return this.lastName;
   }
 
-  getFullName(): string {
-    const parts = [this.firstName, this.lastName].filter(Boolean);
-    return parts.length > 0 ? parts.join(' ') : this.email;
-  }
-
   updateProfile(firstName?: string, lastName?: string): void {
     if (firstName !== undefined) {
       this.firstName = firstName;
@@ -78,9 +73,5 @@ export class User extends AggregateRoot<string> {
       })
     );
     this.incrementVersion();
-  }
-
-  canLogin(): boolean {
-    return !!this.email && !!this.externalId;
   }
 }
