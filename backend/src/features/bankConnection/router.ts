@@ -27,7 +27,7 @@ export function createBankConnectionRouter(
   const tinkService = new TinkOAuthService(config, logger);
   const bankConnectionRepository = new PrismaBankConnectionRepository();
   const customerRepository = new PrismaCustomerRepository();
-  const assessmentRepository = new PrismaAssessmentRepository();
+  const assessmentRepository = new PrismaAssessmentRepository(logger);
   const processJobService = new ProcessAssessmentJob(prisma, assessmentRepository, logger);
   const dispatchMode = process.env.JOB_DISPATCH_MODE ?? 'local';
   const delayMs = parseInt(process.env.JOB_DISPATCH_DELAY_MS ?? '35000', 10);

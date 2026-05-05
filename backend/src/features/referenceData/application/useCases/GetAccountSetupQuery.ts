@@ -1,7 +1,7 @@
 import { Result } from '../../../shared/result';
 import type { ILogger } from '../../../shared/logging';
 import type { ICustomerRepository } from '../../../customer/types/customer.types';
-import type { AccountSetupData } from '../../../shared/types/referenceData.types';
+import type { AccountSetupData } from './GetReferenceDataUseCase.dto';
 
 export class GetAccountSetupQuery {
   constructor(

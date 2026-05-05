@@ -1,18 +1,23 @@
 import { Result } from '../../../shared/result';
 import type { ILogger } from '../../../shared/logging';
 import type { IAssessmentRepository } from '../../domain/entities';
-import type { AssessmentData } from '../../../shared/types/referenceData.types';
+import type { AssessmentData } from './GetAssessmentQuery.dto';
 import type { ApplicationError } from '../../../../core/domain/errors';
+import { AssessmentMapper } from '../../infrastructure/mappers';
 import {
   AssessmentRepositoryQueryError,
   GetAssessmentQueryExecutionError,
 } from '../errors/GetAssessmentQuery.errors';
 
 export class GetAssessmentQuery {
+  private assessmentMapper: AssessmentMapper;
+
   constructor(
     private assessmentRepository: IAssessmentRepository,
     private logger: ILogger
-  ) {}
+  ) {
+    this.assessmentMapper = new AssessmentMapper(logger);
+  }
 
   async execute(input: { customerId: string }): Promise<Result<AssessmentData | null, ApplicationError>> {
     try {
@@ -35,82 +40,7 @@ export class GetAssessmentQuery {
         return Result.ok<AssessmentData | null>(null) as Result<AssessmentData | null, ApplicationError>;
       }
 
-      // Parse JSON fields
-      let expensesByCategory: Record<string, number> = {};
-      let incomeSources: any[] = [];
-      let incomeHistory: any[] = [];
-      let factors: any[] = [];
-      let paymentPlans: any[] = [];
-
-      try {
-        const expensesCategoryJson = assessment.getExpensesByCategory();
-        if (expensesCategoryJson) {
-          expensesByCategory = JSON.parse(expensesCategoryJson);
-        }
-      } catch (e) {
-        this.logger.warn('Failed to parse expensesByCategory', { customerId });
-      }
-
-      try {
-        const incomeSourcesJson = assessment.getIncomeSources();
-        if (incomeSourcesJson) {
-          incomeSources = JSON.parse(incomeSourcesJson);
-        }
-      } catch (e) {
-        this.logger.warn('Failed to parse incomeSources', { customerId });
-      }
-
-      try {
-        const incomeHistoryJson = assessment.getIncomeHistory();
-        if (incomeHistoryJson) {
-          incomeHistory = JSON.parse(incomeHistoryJson);
-        }
-      } catch (e) {
-        this.logger.warn('Failed to parse incomeHistory', { customerId });
-      }
-
-      try {
-        const factorsJson = assessment.getFactors();
-        if (factorsJson) {
-          factors = JSON.parse(factorsJson);
-        }
-      } catch (e) {
-        this.logger.warn('Failed to parse factors', { customerId });
-      }
-
-      try {
-        const suggestedPaymentPlansJson = assessment.getPaymentPlans();
-        if (suggestedPaymentPlansJson) {
-          paymentPlans = JSON.parse(suggestedPaymentPlansJson);
-        }
-      } catch (e) {
-        this.logger.warn('Failed to parse suggestedPaymentPlans', { customerId });
-      }
-
-      const monthlyIncome = assessment.getMonthlyIncome();
-      const monthlyExpenses = assessment.getMonthlyExpenses();
-
-      const assessmentData: AssessmentData = {
-        id: assessment.getId(),
-        status:
-          assessment.getStatus() === 'COMPLETED'
-            ? 'COMPLETED'
-            : assessment.getStatus() === 'PENDING'
-              ? 'PENDING'
-              : 'IN_PROGRESS',
-        hardshipLevel: assessment.getHardshipLevel(),
-        disposableIncome: assessment.calculateDisposableIncome(),
-        monthlyBill: assessment.getMonthlyBill(),
-        billRatio: assessment.calculateBillRatio(),
-        monthlyIncome,
-        monthlyExpenses,
-        expensesByCategory,
-        incomeSources,
-        incomeHistory,
-        factors,
-        paymentPlans,
-        createdAt: assessment.getCreatedAt().toISOString(),
-      };
+      const assessmentData = this.assessmentMapper.toDTO(assessment, customerId);
 
       return Result.ok<AssessmentData | null>(assessmentData) as Result<
         AssessmentData | null,

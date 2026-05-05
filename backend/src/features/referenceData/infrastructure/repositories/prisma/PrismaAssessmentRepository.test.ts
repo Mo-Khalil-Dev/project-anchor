@@ -1,3 +1,4 @@
+import type { ILogger } from '../../../../shared/logging';
 import { Assessment } from '../../../domain/entities';
 import { ASSESSMENT_STATUS } from '../../../domain/entities/assessment-status';
 import { prisma } from '../../../../shared/utils/db';
@@ -37,14 +38,22 @@ const buildRecord = () => ({
 });
 
 describe('PrismaAssessmentRepository', () => {
-  const repository = new PrismaAssessmentRepository();
+  const mockLogger: ILogger = {
+    debug: jest.fn(),
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+    child: jest.fn().mockReturnThis(),
+  };
+
+  const repository = new PrismaAssessmentRepository(mockLogger);
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('saves and maps assessment from prisma', async () => {
-    const assessment = new Assessment(buildRecord());
+    const assessment = Assessment.reconstruct(buildRecord());
     (prisma.assessment.create as jest.Mock).mockResolvedValue(buildRecord());
 
     const result = await repository.save(assessment);

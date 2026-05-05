@@ -1,7 +1,7 @@
 import { Result } from '../../../shared/result';
 import type { ILogger } from '../../../shared/logging';
 import type { IBankConnectionRepository } from '../../../bankConnection/types/bankConnection.types';
-import type { BankConnectionData } from '../../../shared/types/referenceData.types';
+import type { BankConnectionData } from './GetReferenceDataUseCase.dto';
 
 export class GetBankConnectionQuery {
   constructor(

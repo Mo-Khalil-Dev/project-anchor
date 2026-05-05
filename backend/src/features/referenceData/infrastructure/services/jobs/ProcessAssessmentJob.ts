@@ -108,7 +108,7 @@ export class ProcessAssessmentJob implements IBackgroundJob<string> {
         income.other && { type: 'Other income', amount: income.other, frequency: 'Monthly' },
       ].filter(Boolean);
 
-      const updatedAssessment = new Assessment({
+      const updatedAssessment = Assessment.reconstruct({
         id: assessment.getId(),
         customerId: assessment.getCustomerId(),
         bankConnectionId: assessment.getBankConnectionId(),
@@ -123,6 +123,7 @@ export class ProcessAssessmentJob implements IBackgroundJob<string> {
         incomeSources: JSON.stringify(incomeSources),
         factors: assessment.getFactors(),
         paymentPlans: JSON.stringify(paymentPlans),
+        selectedPlan: assessment.getSelectedPlan(),
         status: ASSESSMENT_STATUS.COMPLETED,
         createdAt: assessment.getCreatedAt(),
         updatedAt: new Date(),

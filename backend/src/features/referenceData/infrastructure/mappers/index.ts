@@ -1,0 +1,1 @@
+export { AssessmentMapper } from './AssessmentMapper';

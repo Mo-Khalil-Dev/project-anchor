@@ -1,3 +1,4 @@
+import { AggregateRoot } from '@/features/shared/domain/AggregateRoot';
 import type { AssessmentProps } from './assessment-props';
 import {
   ASSESSMENT_STATUS,
@@ -11,9 +12,9 @@ import {
   SUSTAINABILITY_SCORE,
   type SustainabilityScore,
 } from '@/features/referenceData/domain/entities/sustainability-score';
+import { AssessmentCreatedEvent, AssessmentCompletedEvent, AssessmentFailedEvent, PaymentPlanSelectedEvent } from '../events';
 
-export class Assessment {
-  private readonly id: string;
+export class Assessment extends AggregateRoot<string> {
   private readonly customerId: string;
   private readonly bankConnectionId: string | null;
   private readonly monthlyIncome: number;
@@ -27,13 +28,12 @@ export class Assessment {
   private readonly incomeSources: string | null;
   private readonly factors: string | null;
   private readonly paymentPlans: string | null;
-  private readonly selectedPlan: string | null;
-  private readonly createdAt: Date;
+  private selectedPlan: string | null;
   private updatedAt: Date;
   private status: AssessmentStatus;
 
-  constructor(props: AssessmentProps) {
-    this.id = props.id;
+  private constructor(props: AssessmentProps) {
+    super(props.id, props.createdAt);
     this.customerId = props.customerId;
     this.bankConnectionId = props.bankConnectionId ?? null;
     this.monthlyIncome = props.monthlyIncome;
@@ -49,17 +49,42 @@ export class Assessment {
     this.paymentPlans = props.paymentPlans ?? null;
     this.selectedPlan = props.selectedPlan ?? null;
     this.status = props.status;
-    this.createdAt = props.createdAt;
     this.updatedAt = props.updatedAt;
   }
 
-  static create(props: Omit<AssessmentProps, 'createdAt' | 'updatedAt'>): Assessment {
+  static create(customerId: string, bankConnectionId?: string): Assessment {
     const now = new Date();
-    return new Assessment({
-      ...props,
+    const assessment = new Assessment({
+      id: crypto.randomUUID(),
+      customerId,
+      bankConnectionId: bankConnectionId ?? null,
+      monthlyIncome: 0,
+      monthlyExpenses: 0,
+      monthlyBill: 0,
+      arrears: null,
+      incomeBreakdown: null,
+      expenseBreakdown: null,
+      expensesByCategory: null,
+      incomeHistory: null,
+      incomeSources: null,
+      factors: null,
+      paymentPlans: null,
+      selectedPlan: null,
+      status: ASSESSMENT_STATUS.PENDING,
       createdAt: now,
       updatedAt: now,
     });
+    assessment.addDomainEvent(
+      new AssessmentCreatedEvent(assessment.id, assessment.getVersion(), {
+        customerId,
+        bankConnectionId: bankConnectionId ?? null,
+      })
+    );
+    return assessment;
+  }
+
+  static reconstruct(props: AssessmentProps): Assessment {
+    return new Assessment(props);
   }
 
   getId(): string {
@@ -200,10 +225,41 @@ export class Assessment {
   markAsCompleted(): void {
     this.status = ASSESSMENT_STATUS.COMPLETED;
     this.updatedAt = new Date();
+    this.incrementVersion();
+
+    this.addDomainEvent(
+      new AssessmentCompletedEvent(this.id, this.getVersion(), {
+        hardshipLevel: this.getHardshipLevel(),
+        disposableIncome: this.calculateDisposableIncome(),
+        billRatio: this.calculateBillRatio(),
+        paymentPlans: this.paymentPlans,
+      })
+    );
   }
 
-  markAsFailed(): void {
+  markAsFailed(reason: string, errorCode?: string): void {
     this.status = ASSESSMENT_STATUS.FAILED;
     this.updatedAt = new Date();
+    this.incrementVersion();
+
+    this.addDomainEvent(
+      new AssessmentFailedEvent(this.id, this.getVersion(), {
+        reason,
+        errorCode,
+      })
+    );
+  }
+
+  selectPaymentPlan(planType: 'Conservative' | 'Balanced' | 'Aggressive'): void {
+    this.selectedPlan = planType;
+    this.updatedAt = new Date();
+    this.incrementVersion();
+
+    this.addDomainEvent(
+      new PaymentPlanSelectedEvent(this.id, this.getVersion(), {
+        planType,
+        selectedAt: new Date(),
+      })
+    );
   }
 }

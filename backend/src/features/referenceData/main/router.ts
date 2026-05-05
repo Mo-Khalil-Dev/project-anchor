@@ -18,7 +18,7 @@ export function createReferenceDataRouter(
   // Create repositories
   const customerRepository = new PrismaCustomerRepository();
   const bankConnectionRepository = new PrismaBankConnectionRepository();
-  const assessmentRepository = new PrismaAssessmentRepository();
+  const assessmentRepository = new PrismaAssessmentRepository(logger);
 
   // Create use case
   const getReferenceDataUseCase = new GetReferenceDataUseCase(

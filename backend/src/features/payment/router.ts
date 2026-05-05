@@ -25,7 +25,7 @@ export function createPaymentRouter(
   const router = Router();
 
   // ============ DEPENDENCY INJECTION ============
-  const assessmentRepository = new PrismaAssessmentRepository();
+  const assessmentRepository = new PrismaAssessmentRepository(logger);
   const customerRepository = new PrismaCustomerRepository();
   const paymentRepository = new PrismaPaymentRepository();
   const gocardless = initGoCardlessClient(config.gocardless.accessToken);

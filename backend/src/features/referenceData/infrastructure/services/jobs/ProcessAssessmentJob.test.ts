@@ -6,7 +6,7 @@ import { ASSESSMENT_STATUS } from '../../../domain/entities/assessment-status';
 import { ProcessAssessmentJob } from './ProcessAssessmentJob';
 
 const buildAssessment = () =>
-  new Assessment({
+  Assessment.reconstruct({
     id: 'assessment-1',
     customerId: 'customer-1',
     bankConnectionId: 'bank-1',

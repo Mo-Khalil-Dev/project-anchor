@@ -29,7 +29,7 @@ const createAssessmentProps = () => ({
     updatedAt: new Date('2026-04-10T00:00:00.000Z'),
   });
 
-const createAssessment = () => new Assessment(createAssessmentProps());
+const createAssessment = () => Assessment.reconstruct(createAssessmentProps());
 
 describe('GetAssessmentQuery', () => {
   const logger: ILogger = {
@@ -101,7 +101,7 @@ describe('GetAssessmentQuery', () => {
   });
 
   it('falls back to defaults when JSON parsing fails', async () => {
-    const brokenAssessment = new Assessment({
+    const brokenAssessment = Assessment.reconstruct({
       ...createAssessmentProps(),
       expensesByCategory: '{invalid json',
       incomeSources: '{invalid json',

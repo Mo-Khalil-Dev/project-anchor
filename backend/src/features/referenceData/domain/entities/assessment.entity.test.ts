@@ -19,26 +19,11 @@ describe('Assessment Entity', () => {
 
   describe('create', () => {
     it('should initialize createdAt and updatedAt timestamps', () => {
-      const assessment = Assessment.create({
-        id: 'referenceData-create-1',
-        customerId: 'customer-create-1',
-        bankConnectionId: null,
-        monthlyIncome: 2500,
-        monthlyExpenses: 1800,
-        monthlyBill: 120,
-        arrears: 200,
-        incomeBreakdown: null,
-        expenseBreakdown: null,
-        expensesByCategory: null,
-        incomeHistory: null,
-        incomeSources: null,
-        factors: null,
-        paymentPlans: null,
-        selectedPlan: null,
-        status: ASSESSMENT_STATUS.PENDING,
-      });
+      const assessment = Assessment.create('customer-create-1', 'bank-1');
 
       expect(assessment.getStatus()).toBe(ASSESSMENT_STATUS.PENDING);
+      expect(assessment.getCustomerId()).toBe('customer-create-1');
+      expect(assessment.getBankConnectionId()).toBe('bank-1');
       expect(assessment.getCreatedAt()).toBeInstanceOf(Date);
       expect(assessment.getUpdatedAt()).toBeInstanceOf(Date);
       expect(assessment.getUpdatedAt().getTime()).toBe(assessment.getCreatedAt().getTime());
@@ -47,12 +32,12 @@ describe('Assessment Entity', () => {
 
   describe('calculateDisposableIncome', () => {
     it('should calculate disposable income correctly', () => {
-      const assessment = new Assessment(mockProps);
+      const assessment = Assessment.reconstruct(mockProps);
       expect(assessment.calculateDisposableIncome()).toBe(1000);
     });
 
     it('should handle negative disposable income', () => {
-      const assessment = new Assessment({
+      const assessment = Assessment.reconstruct({
         ...mockProps,
         monthlyExpenses: 4000,
       });
@@ -60,7 +45,7 @@ describe('Assessment Entity', () => {
     });
 
     it('should round to 2 decimal places', () => {
-      const assessment = new Assessment({
+      const assessment = Assessment.reconstruct({
         ...mockProps,
         monthlyIncome: 3000.456,
         monthlyExpenses: 2000.789,
@@ -70,7 +55,7 @@ describe('Assessment Entity', () => {
     });
 
     it('should handle zero disposable income', () => {
-      const assessment = new Assessment({
+      const assessment = Assessment.reconstruct({
         ...mockProps,
         monthlyExpenses: 3000,
       });
@@ -80,13 +65,13 @@ describe('Assessment Entity', () => {
 
   describe('calculateBillRatio', () => {
     it('should calculate bill ratio as percentage correctly', () => {
-      const assessment = new Assessment(mockProps);
+      const assessment = Assessment.reconstruct(mockProps);
       // (100 / 1000) * 100 = 10%
       expect(assessment.calculateBillRatio()).toBe(10);
     });
 
     it('should return POSITIVE_INFINITY when disposable income is 0', () => {
-      const assessment = new Assessment({
+      const assessment = Assessment.reconstruct({
         ...mockProps,
         monthlyExpenses: 3000,
       });
@@ -94,7 +79,7 @@ describe('Assessment Entity', () => {
     });
 
     it('should return POSITIVE_INFINITY when disposable income is negative', () => {
-      const assessment = new Assessment({
+      const assessment = Assessment.reconstruct({
         ...mockProps,
         monthlyExpenses: 4000,
       });
@@ -102,7 +87,7 @@ describe('Assessment Entity', () => {
     });
 
     it('should round to 2 decimal places', () => {
-      const assessment = new Assessment({
+      const assessment = Assessment.reconstruct({
         ...mockProps,
         monthlyBill: 111.11,
         monthlyIncome: 3000,
@@ -113,7 +98,7 @@ describe('Assessment Entity', () => {
     });
 
     it('should handle large bill ratios', () => {
-      const assessment = new Assessment({
+      const assessment = Assessment.reconstruct({
         ...mockProps,
         monthlyBill: 5000,
         monthlyIncome: 3000,
@@ -125,7 +110,7 @@ describe('Assessment Entity', () => {
 
   describe('getHardshipLevel', () => {
     it('should return SEVERE when ratio > 25%', () => {
-      const assessment = new Assessment({
+      const assessment = Assessment.reconstruct({
         ...mockProps,
         monthlyBill: 300,
         monthlyIncome: 3000,
@@ -135,7 +120,7 @@ describe('Assessment Entity', () => {
     });
 
     it('should return SEVERE when disposable income <= 0', () => {
-      const assessment = new Assessment({
+      const assessment = Assessment.reconstruct({
         ...mockProps,
         monthlyExpenses: 3000,
         monthlyBill: 100,
@@ -144,7 +129,7 @@ describe('Assessment Entity', () => {
     });
 
     it('should return MODERATE when ratio between 10-25%', () => {
-      const assessment = new Assessment({
+      const assessment = Assessment.reconstruct({
         ...mockProps,
         monthlyBill: 150,
         monthlyIncome: 3000,
@@ -154,7 +139,7 @@ describe('Assessment Entity', () => {
     });
 
     it('should return LOW when ratio between 5-10%', () => {
-      const assessment = new Assessment({
+      const assessment = Assessment.reconstruct({
         ...mockProps,
         monthlyBill: 75,
         monthlyIncome: 3000,
@@ -164,7 +149,7 @@ describe('Assessment Entity', () => {
     });
 
     it('should return NONE when ratio < 5%', () => {
-      const assessment = new Assessment({
+      const assessment = Assessment.reconstruct({
         ...mockProps,
         monthlyBill: 40,
         monthlyIncome: 3000,
@@ -174,7 +159,7 @@ describe('Assessment Entity', () => {
     });
 
     it('should return NONE when ratio = 0', () => {
-      const assessment = new Assessment({
+      const assessment = Assessment.reconstruct({
         ...mockProps,
         monthlyBill: 0,
       });
@@ -182,7 +167,7 @@ describe('Assessment Entity', () => {
     });
 
     it('should return SEVERE when ratio > 100% (INFINITE)', () => {
-      const assessment = new Assessment({
+      const assessment = Assessment.reconstruct({
         ...mockProps,
         monthlyExpenses: 3000,
         monthlyBill: 100,
@@ -193,7 +178,7 @@ describe('Assessment Entity', () => {
 
   describe('getSustainabilityScore', () => {
     it('should return LOW when disposable income <= 0', () => {
-      const assessment = new Assessment({
+      const assessment = Assessment.reconstruct({
         ...mockProps,
         monthlyExpenses: 3000,
       });
@@ -201,7 +186,7 @@ describe('Assessment Entity', () => {
     });
 
     it('should return LOW when ratio > 100%', () => {
-      const assessment = new Assessment({
+      const assessment = Assessment.reconstruct({
         ...mockProps,
         monthlyBill: 5000,
         monthlyIncome: 3000,
@@ -211,7 +196,7 @@ describe('Assessment Entity', () => {
     });
 
     it('should return MEDIUM when ratio between 25-100%', () => {
-      const assessment = new Assessment({
+      const assessment = Assessment.reconstruct({
         ...mockProps,
         monthlyBill: 300,
         monthlyIncome: 3000,
@@ -221,7 +206,7 @@ describe('Assessment Entity', () => {
     });
 
     it('should return HIGH when ratio between 10-25%', () => {
-      const assessment = new Assessment({
+      const assessment = Assessment.reconstruct({
         ...mockProps,
         monthlyBill: 150,
         monthlyIncome: 3000,
@@ -231,7 +216,7 @@ describe('Assessment Entity', () => {
     });
 
     it('should return HIGH when ratio < 10%', () => {
-      const assessment = new Assessment({
+      const assessment = Assessment.reconstruct({
         ...mockProps,
         monthlyBill: 50,
         monthlyIncome: 3000,
@@ -243,7 +228,7 @@ describe('Assessment Entity', () => {
 
   describe('markAsCompleted', () => {
     it('should change status to COMPLETED', () => {
-      const assessment = new Assessment({
+      const assessment = Assessment.reconstruct({
         ...mockProps,
         status: ASSESSMENT_STATUS.PENDING,
       });
@@ -252,7 +237,7 @@ describe('Assessment Entity', () => {
     });
 
     it('should update timestamp', () => {
-      const assessment = new Assessment(mockProps);
+      const assessment = Assessment.reconstruct(mockProps);
       const before = assessment.getUpdatedAt();
       assessment.markAsCompleted();
       const after = assessment.getUpdatedAt();
@@ -262,18 +247,18 @@ describe('Assessment Entity', () => {
 
   describe('markAsFailed', () => {
     it('should change status to FAILED', () => {
-      const assessment = new Assessment({
+      const assessment = Assessment.reconstruct({
         ...mockProps,
         status: ASSESSMENT_STATUS.PENDING,
       });
-      assessment.markAsFailed();
+      assessment.markAsFailed('Test failure');
       expect(assessment.getStatus()).toBe(ASSESSMENT_STATUS.FAILED);
     });
 
     it('should update timestamp', () => {
-      const assessment = new Assessment(mockProps);
+      const assessment = Assessment.reconstruct(mockProps);
       const before = assessment.getUpdatedAt();
-      assessment.markAsFailed();
+      assessment.markAsFailed('Test failure');
       const after = assessment.getUpdatedAt();
       expect(after.getTime()).toBeGreaterThan(before.getTime());
     });
@@ -281,7 +266,7 @@ describe('Assessment Entity', () => {
 
   describe('Getters', () => {
     it('should return all properties correctly', () => {
-      const assessment = new Assessment(mockProps);
+      const assessment = Assessment.reconstruct(mockProps);
       expect(assessment.getId()).toBe('referenceData-1');
       expect(assessment.getCustomerId()).toBe('customer-1');
       expect(assessment.getBankConnectionId()).toBe('bank-1');
@@ -293,7 +278,7 @@ describe('Assessment Entity', () => {
     });
 
     it('should return null for optional fields when not provided', () => {
-      const assessment = new Assessment({
+      const assessment = Assessment.reconstruct({
         ...mockProps,
         bankConnectionId: undefined,
         arrears: undefined,
