@@ -6,7 +6,8 @@ import { Assessment } from '../../../domain/entities';
 import type { ILogger } from '../../../../shared/logging';
 import { PaymentPlanCalculationService } from '../../../application/services/paymentPlanCalculations/PaymentPlanCalculationService';
 import type { IBackgroundJob } from '../../../../../core/application/services/IBackgroundJob';
-import { ASSESSMENT_STATUS } from '../../../domain/entities/assessment-status';
+import { CompleteAssessmentUseCase } from '../../../application/useCases/CompleteAssessmentUseCase';
+import { FailAssessmentUseCase } from '../../../application/useCases/FailAssessmentUseCase';
 
 export class ProcessAssessmentJob implements IBackgroundJob<string> {
   private paymentPlanService = new PaymentPlanCalculationService();
@@ -15,11 +16,14 @@ export class ProcessAssessmentJob implements IBackgroundJob<string> {
     private prisma: PrismaClient,
     private assessmentRepository: IAssessmentRepository,
     private logger: ILogger,
+    private completeAssessmentUseCase: CompleteAssessmentUseCase,
+    private failAssessmentUseCase: FailAssessmentUseCase,
   ) {}
 
   async execute(jobId: string): Promise<Result<void, Error>> {
+    let job: any;
     try {
-      const job = await this.prisma.assessmentJob.findUnique({
+      job = await this.prisma.assessmentJob.findUnique({
         where: { id: jobId },
         include: { assessment: true },
       });
@@ -32,21 +36,23 @@ export class ProcessAssessmentJob implements IBackgroundJob<string> {
 
       const assessmentResult = await this.assessmentRepository.findById(job.assessmentId);
       if (assessmentResult.isFail) {
-        await this.updateJobStatus(jobId, 'FAILED', assessmentResult.getError()?.message);
-        return Result.fail(assessmentResult.getError() || new Error('Failed to fetch referenceData'));
+        const reason = assessmentResult.getError()?.message || 'Failed to fetch assessment';
+        await this.updateJobStatus(jobId, 'FAILED', reason);
+        return Result.fail(assessmentResult.getError() || new Error(reason));
       }
 
       const assessment = assessmentResult.getOrThrow();
       if (!assessment) {
-        const error = new Error(`Assessment not found for job ${jobId}`);
-        await this.updateJobStatus(jobId, 'FAILED', error.message);
-        return Result.fail(error);
+        const reason = `Assessment not found for job ${jobId}`;
+        await this.updateJobStatus(jobId, 'FAILED', reason);
+        return Result.fail(new Error(reason));
       }
 
       if (!assessment.getBankConnectionId()) {
-        const error = new Error('Assessment missing bank connection');
-        await this.updateJobStatus(jobId, 'FAILED', error.message);
-        return Result.fail(error);
+        const reason = 'Assessment missing bank connection';
+        await this.markAssessmentFailed(job.assessmentId, reason);
+        await this.updateJobStatus(jobId, 'FAILED', reason);
+        return Result.fail(new Error(reason));
       }
 
       const bankReport = await this.prisma.bankReports.findUnique({
@@ -54,9 +60,10 @@ export class ProcessAssessmentJob implements IBackgroundJob<string> {
       });
 
       if (!bankReport) {
-        const error = new Error('Bank report not found');
-        await this.updateJobStatus(jobId, 'FAILED', error.message);
-        return Result.fail(error);
+        const reason = 'Bank report not found';
+        await this.markAssessmentFailed(job.assessmentId, reason);
+        await this.updateJobStatus(jobId, 'FAILED', reason);
+        return Result.fail(new Error(reason));
       }
 
       let incomeData: any;
@@ -66,21 +73,26 @@ export class ProcessAssessmentJob implements IBackgroundJob<string> {
         incomeData = JSON.parse(bankReport.incomeJson);
         expenseData = JSON.parse(bankReport.expensesJson);
       } catch (parseError) {
-        const error = new Error('Failed to parse bank report JSON');
-        await this.updateJobStatus(jobId, 'FAILED', error.message);
-        return Result.fail(error);
+        const reason = 'Failed to parse bank report JSON';
+        await this.markAssessmentFailed(job.assessmentId, reason);
+        await this.updateJobStatus(jobId, 'FAILED', reason);
+        return Result.fail(new Error(reason));
       }
 
       const incomeResult = BankDataExtractionService.extractIncome(incomeData);
       if (incomeResult.isFail) {
-        await this.updateJobStatus(jobId, 'FAILED', incomeResult.getError()?.message);
-        return Result.fail(incomeResult.getError() || new Error('Failed to extract income'));
+        const reason = incomeResult.getError()?.message || 'Failed to extract income';
+        await this.markAssessmentFailed(job.assessmentId, reason);
+        await this.updateJobStatus(jobId, 'FAILED', reason);
+        return Result.fail(incomeResult.getError() || new Error(reason));
       }
 
       const expenseResult = BankDataExtractionService.extractExpenses(expenseData);
       if (expenseResult.isFail) {
-        await this.updateJobStatus(jobId, 'FAILED', expenseResult.getError()?.message);
-        return Result.fail(expenseResult.getError() || new Error('Failed to extract expenses'));
+        const reason = expenseResult.getError()?.message || 'Failed to extract expenses';
+        await this.markAssessmentFailed(job.assessmentId, reason);
+        await this.updateJobStatus(jobId, 'FAILED', reason);
+        return Result.fail(expenseResult.getError() || new Error(reason));
       }
 
       const income = incomeResult.getOrThrow();
@@ -108,7 +120,8 @@ export class ProcessAssessmentJob implements IBackgroundJob<string> {
         income.other && { type: 'Other income', amount: income.other, frequency: 'Monthly' },
       ].filter(Boolean);
 
-      const updatedAssessment = Assessment.reconstruct({
+      // Update assessment with enriched bank data
+      const enrichedAssessment = Assessment.reconstruct({
         id: assessment.getId(),
         customerId: assessment.getCustomerId(),
         bankConnectionId: assessment.getBankConnectionId(),
@@ -124,15 +137,25 @@ export class ProcessAssessmentJob implements IBackgroundJob<string> {
         factors: assessment.getFactors(),
         paymentPlans: JSON.stringify(paymentPlans),
         selectedPlan: assessment.getSelectedPlan(),
-        status: ASSESSMENT_STATUS.COMPLETED,
+        status: assessment.getStatus(),
         createdAt: assessment.getCreatedAt(),
         updatedAt: new Date(),
       });
 
-      const updateResult = await this.assessmentRepository.update(updatedAssessment);
-      if (updateResult.isFail) {
-        await this.updateJobStatus(jobId, 'FAILED', updateResult.getError()?.message);
-        return Result.fail(updateResult.getError() || new Error('Failed to update referenceData'));
+      const enrichmentResult = await this.assessmentRepository.update(enrichedAssessment);
+      if (enrichmentResult.isFail) {
+        await this.updateJobStatus(jobId, 'FAILED', enrichmentResult.getError()?.message);
+        return Result.fail(enrichmentResult.getError() || new Error('Failed to enrich assessment'));
+      }
+
+      // Use command use case to mark assessment as completed
+      const completeResult = await this.completeAssessmentUseCase.execute({
+        assessmentId: assessment.getId(),
+      });
+
+      if (completeResult.isFail) {
+        await this.updateJobStatus(jobId, 'FAILED', completeResult.getError()?.message);
+        return Result.fail(completeResult.getError() || new Error('Failed to complete assessment'));
       }
 
       await this.prisma.assessmentJob.update({
@@ -156,8 +179,33 @@ export class ProcessAssessmentJob implements IBackgroundJob<string> {
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       this.logger.error('Assessment job processing failed', { jobId, error: message });
+
+      // Attempt to mark assessment as failed if we have the job context
+      if (jobId && job?.assessmentId) {
+        await this.markAssessmentFailed(job.assessmentId, message);
+      }
+
       await this.updateJobStatus(jobId, 'FAILED', message);
       return Result.fail(new Error(`Job processing failed: ${message}`));
+    }
+  }
+
+  private async markAssessmentFailed(assessmentId: string, reason: string): Promise<void> {
+    try {
+      const failResult = await this.failAssessmentUseCase.execute({
+        assessmentId,
+        reason,
+        errorCode: 'BANK_DATA_PROCESSING_FAILED',
+      });
+
+      if (failResult.isFail) {
+        this.logger.error('Failed to mark assessment as failed', {
+          assessmentId,
+          error: failResult.getError()?.message,
+        });
+      }
+    } catch (error) {
+      this.logger.error('Error marking assessment as failed', { assessmentId, error });
     }
   }
 

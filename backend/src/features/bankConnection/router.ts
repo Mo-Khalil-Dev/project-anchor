@@ -11,6 +11,8 @@ import { PrismaBankConnectionRepository } from './repositories/PrismaBankConnect
 import { PrismaCustomerRepository } from '../customer/repositories/PrismaCustomerRepository';
 import { PrismaAssessmentRepository } from '@/features/referenceData/infrastructure/repositories/prisma/PrismaAssessmentRepository';
 import { ProcessAssessmentJob } from '@/features/referenceData/infrastructure/services/jobs/ProcessAssessmentJob';
+import { CompleteAssessmentUseCase } from '@/features/referenceData/application/useCases/CompleteAssessmentUseCase';
+import { FailAssessmentUseCase } from '@/features/referenceData/application/useCases/FailAssessmentUseCase';
 import { LocalJobDispatcher } from '../../core/infrastructure/jobDispatchers/LocalJobDispatcher';
 import { AwsSqsJobDispatcher } from '../../core/infrastructure/jobDispatchers/AwsSqsJobDispatcher';
 import type { IJobDispatcher } from '../../core/application/services/IJobDispatcher';
@@ -28,7 +30,15 @@ export function createBankConnectionRouter(
   const bankConnectionRepository = new PrismaBankConnectionRepository();
   const customerRepository = new PrismaCustomerRepository();
   const assessmentRepository = new PrismaAssessmentRepository(logger);
-  const processJobService = new ProcessAssessmentJob(prisma, assessmentRepository, logger);
+  const completeAssessmentUseCase = new CompleteAssessmentUseCase(assessmentRepository, logger);
+  const failAssessmentUseCase = new FailAssessmentUseCase(assessmentRepository, logger);
+  const processJobService = new ProcessAssessmentJob(
+    prisma,
+    assessmentRepository,
+    logger,
+    completeAssessmentUseCase,
+    failAssessmentUseCase,
+  );
   const dispatchMode = process.env.JOB_DISPATCH_MODE ?? 'local';
   const delayMs = parseInt(process.env.JOB_DISPATCH_DELAY_MS ?? '35000', 10);
   const sqsQueueUrl = process.env.AWS_BACKGROUND_JOB_QUEUE_URL;

@@ -51,13 +51,27 @@ describe('ProcessAssessmentJob', () => {
     update: jest.fn(),
   } as any;
 
+  const completeAssessmentUseCase = {
+    execute: jest.fn(),
+  } as any;
+
+  const failAssessmentUseCase = {
+    execute: jest.fn(),
+  } as any;
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('returns failed result when job does not exist', async () => {
     prisma.assessmentJob.findUnique.mockResolvedValue(null);
-    const job = new ProcessAssessmentJob(prisma, assessmentRepository, logger);
+    const job = new ProcessAssessmentJob(
+      prisma,
+      assessmentRepository,
+      logger,
+      completeAssessmentUseCase,
+      failAssessmentUseCase,
+    );
 
     const result = await job.execute('job-404');
 
@@ -77,6 +91,12 @@ describe('ProcessAssessmentJob', () => {
       expensesJson: '{"ok":true}',
     });
     assessmentRepository.update.mockResolvedValue(Result.ok(buildAssessment()));
+    completeAssessmentUseCase.execute.mockResolvedValue(Result.ok({
+      assessmentId: 'assessment-1',
+      status: 'COMPLETED',
+      hardshipLevel: 'MODERATE',
+      disposableIncome: 700,
+    }));
     jest.spyOn(BankDataExtractionService, 'extractIncome').mockReturnValue(
       Result.ok({
         salary: 2500,
@@ -96,12 +116,21 @@ describe('ProcessAssessmentJob', () => {
         total: 1900,
       }) as any,
     );
-    const job = new ProcessAssessmentJob(prisma, assessmentRepository, logger);
+    const job = new ProcessAssessmentJob(
+      prisma,
+      assessmentRepository,
+      logger,
+      completeAssessmentUseCase,
+      failAssessmentUseCase,
+    );
 
     const result = await job.execute('job-1');
 
     expect(result.isOk).toBe(true);
     expect(assessmentRepository.update).toHaveBeenCalled();
+    expect(completeAssessmentUseCase.execute).toHaveBeenCalledWith({
+      assessmentId: 'assessment-1',
+    });
     expect(prisma.assessmentJob.update).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { id: 'job-1' },
