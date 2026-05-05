@@ -299,9 +299,9 @@ export function authenticateRequest(req: Request, res: Response, next: NextFunct
 //   ← { success: true }
 
 // GET /api/customer/current-state (requires authenticateRequest)
-//   ↓ Check if customer has assessment
-//   ↓ Determine next journey (assessment | bank-connection)
-//   ← { customer, nextStep, assessment? }
+//   ↓ Check if customer has referenceData
+//   ↓ Determine next journey (referenceData | bank-connection)
+//   ← { customer, nextStep, referenceData? }
 ```
 
 **File**: `backend/src/presentation/controllers/AuthController.ts`
@@ -761,7 +761,7 @@ Response: {
   success: true,
   data: {
     userType: 'customer' | 'admin';
-    redirectTo: string;  // '/link-customer' | '/assessment/:id' | etc.
+    redirectTo: string;  // '/link-customer' | '/referenceData/:id' | etc.
     customer?: Customer;
     assessment?: Assessment;
   }

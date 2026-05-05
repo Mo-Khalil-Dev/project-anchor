@@ -79,7 +79,7 @@ npx shadcn-ui@latest add table
 # For dialogs (modals, confirmations)
 npx shadcn-ui@latest add dialog
 
-# For tabs (assessment breakdown)
+# For tabs (referenceData breakdown)
 npx shadcn-ui@latest add tabs
 
 # For dropdowns

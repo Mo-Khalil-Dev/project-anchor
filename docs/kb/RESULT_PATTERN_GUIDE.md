@@ -296,7 +296,7 @@ class GetAssessmentUseCase {
     return this.assessmentRepository
       .findLatestByCustomerId(customerId)
       .flatMap(assessment => {
-        // Check if assessment is stale
+        // Check if referenceData is stale
         if (this.isStale(assessment)) {
           return Result.fail(
             new ApplicationError(

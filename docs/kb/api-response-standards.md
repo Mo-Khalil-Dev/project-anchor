@@ -17,7 +17,7 @@ The closest thing to a universal standard for error responses. ASP.NET `ProblemD
   "type": "https://example.com/errors/assessment-not-found",
   "title": "Assessment Not Found",
   "status": 404,
-  "detail": "No assessment exists with ID 'abc-123'.",
+  "detail": "No referenceData exists with ID 'abc-123'.",
   "instance": "/assessments/abc-123"
 }
 ```

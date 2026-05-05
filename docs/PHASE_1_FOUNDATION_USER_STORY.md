@@ -159,9 +159,9 @@ async create(input: CreateAssessmentInput) {
 
 ### Code (Production-Ready)
 - ✅ `backend/src/shared/result/Result.ts` (200+ lines)
-- ✅ `backend/src/shared/errors/ApplicationError.ts`
-- ✅ `backend/src/shared/errors/ValidationError.ts`
-- ✅ `backend/src/shared/errors/DomainError.ts`
+- ✅ `backend/src/shared/errors/applicationError.ts`
+- ✅ `backend/src/shared/errors/validationError.ts`
+- ✅ `backend/src/shared/errors/domainError.ts`
 - ✅ `backend/src/presentation/middleware/globalErrorHandler.ts`
 - ✅ `backend/src/presentation/middleware/validateRequest.ts`
 - ✅ `backend/src/shared/validators/schemas.ts` (10+ schemas)

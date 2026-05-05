@@ -33,7 +33,7 @@ interface ApiResponse<T> {
 ```json
 {
   "success": true,
-  "data": { "id": "assessment-1", "status": "COMPLETED", ... }
+  "data": { "id": "referenceData-1", "status": "COMPLETED", ... }
 }
 ```
 

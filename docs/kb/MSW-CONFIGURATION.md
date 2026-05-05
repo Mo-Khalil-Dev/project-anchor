@@ -210,7 +210,7 @@ import { server } from '@/__mocks__/server';
 import { rest } from 'msw';
 
 describe('Assessment Service', () => {
-  it('should fetch assessment data', async () => {
+  it('should fetch referenceData data', async () => {
     const { result } = renderHook(() => useAssessment('cust_123'));
 
     await waitFor(() => {

@@ -127,7 +127,7 @@ export type AssessmentResponse = z.infer<typeof assessmentResponseSchema>;
 
 export const createPaymentPlanSchema = z.object({
   body: z.object({
-    assessmentId: z.string().uuid('Must be valid assessment UUID'),
+    assessmentId: z.string().uuid('Must be valid referenceData UUID'),
     planType: z.enum(['CONSERVATIVE', 'BALANCED', 'AGGRESSIVE']),
     monthlyAmount: z.number().positive('Amount must be positive'),
     durationMonths: z.number().int().positive('Duration must be positive'),

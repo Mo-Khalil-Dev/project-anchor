@@ -38,16 +38,16 @@ File: `frontend/src/journeys/Home.tsx`
 ### Code Logic
 
 ```typescript
-// Check if user has completed bank connection + assessment
+// Check if user has completed bank connection + referenceData
 useEffect(() => {
   if (isLoading || !referenceData) return;
 
-  // If both are complete → go to assessment page
+  // If both are complete → go to referenceData page
   if (
     referenceData.bankConnection?.status === 'CONNECTED' &&
     referenceData.assessment?.status === 'COMPLETED'
   ) {
-    navigate('/assessment', { replace: true });
+    navigate('/referenceData', { replace: true });
   }
 }, [referenceData, isLoading, navigate]);
 ```

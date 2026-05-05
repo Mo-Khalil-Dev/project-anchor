@@ -1,10 +1,12 @@
 import type { Response } from 'express';
-import type { AuthenticatedRequest } from '../../shared/middleware/authenticateRequest';
-import type { InitiateLoginUseCase } from '../services/InitiateLoginUseCase';
-import type { HandleAuthCallbackUseCase } from '../services/HandleAuthCallbackUseCase';
-import type { RefreshAccessTokenUseCase } from '../services/RefreshAccessTokenUseCase';
-import type { LogoutUseCase } from '../services/LogoutUseCase';
-import type { GetRedirectToJourneyUseCase } from '../services/GetRedirectToJourneyUseCase';
+import type { AuthenticatedRequest } from '../../../shared/middleware/authenticateRequest';
+import type {
+  InitiateLoginUseCase,
+  HandleAuthCallbackUseCase,
+  RefreshAccessTokenUseCase,
+  LogoutUseCase,
+  GetRedirectToJourneyUseCase,
+} from '../../application/usecases';
 
 export class AuthController {
   constructor(

@@ -1,8 +1,8 @@
 import AWS from 'aws-sdk';
 import jwt from 'jsonwebtoken';
 import axios from 'axios';
-import type { AuthTokens, AuthUser } from '../../types/auth.types';
-import { AuthenticationError, InvalidTokenError, ProviderConfigError } from '../../application/errors';
+import type { AuthTokens, AuthUser } from '../../../types/auth.types';
+import { AuthenticationError, InvalidTokenError, ProviderConfigError } from '../../../application/errors';
 import { IAuthProvider } from '@/features/auth/application/services/IAuthProvider';
 
 interface CognitoConfig {

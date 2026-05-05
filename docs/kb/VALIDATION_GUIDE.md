@@ -561,7 +561,7 @@ const router = express.Router();
 
 /**
  * POST /assessments
- * Create a new hardship assessment
+ * Create a new hardship referenceData
  *
  * Body:
  * - customerId: UUID of the customer
@@ -571,7 +571,7 @@ const router = express.Router();
  * - incomeBreakdown: Income sources breakdown
  * - expenseBreakdown: Expense categories breakdown
  *
- * Returns: 201 Created with assessment details
+ * Returns: 201 Created with referenceData details
  */
 router.post(
   '/',

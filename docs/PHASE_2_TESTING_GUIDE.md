@@ -5,7 +5,7 @@
 ### 1. Environment Variables
 Ensure these are set in `.env`:
 ```bash
-PROCESS_JOBS_SYNCHRONOUSLY=true  # For immediate assessment processing
+PROCESS_JOBS_SYNCHRONOUSLY=true  # For immediate referenceData processing
 VITE_API_URL=http://localhost:3001/api
 ```
 
