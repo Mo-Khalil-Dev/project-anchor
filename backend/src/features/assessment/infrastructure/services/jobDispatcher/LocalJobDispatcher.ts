@@ -1,4 +1,4 @@
-import type { IJobDispatcher } from './IJobDispatcher';
+import type { IJobDispatcher } from '../application/services/IJobDispatcher';
 import type { ProcessAssessmentJobService } from './ProcessAssessmentJobService';
 import type { ILogger } from '../../shared/logging';
 

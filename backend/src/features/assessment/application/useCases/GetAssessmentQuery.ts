@@ -1,6 +1,6 @@
 import { Result } from '../../shared/result';
 import type { ILogger } from '../../shared/logging';
-import type { IAssessmentRepository } from '../types/assessment.types';
+import type { IAssessmentRepository } from '../domain/entities';
 import type { AssessmentData } from '../../shared/types/referenceData.types';
 
 export class GetAssessmentQuery {

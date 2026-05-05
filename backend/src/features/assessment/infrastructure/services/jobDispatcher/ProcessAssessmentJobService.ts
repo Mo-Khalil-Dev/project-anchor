@@ -1,10 +1,10 @@
 import { PrismaClient } from '@prisma/client';
 import { Result } from '../../shared/result';
 import { BankDataExtractionService } from '../../bankConnection/services/BankDataExtractionService';
-import type { IAssessmentRepository } from '../types/assessment.types';
-import { Assessment } from '../types/assessment.types';
+import type { IAssessmentRepository } from '../domain/entities';
+import { Assessment } from '../domain/entities';
 import type { ILogger } from '../../shared/logging';
-import { PaymentPlanCalculationService } from './PaymentPlanCalculationService';
+import { PaymentPlanCalculationService } from '../application/useCases/PaymentPlanCalculationService';
 
 export class ProcessAssessmentJobService {
   private paymentPlanService = new PaymentPlanCalculationService();

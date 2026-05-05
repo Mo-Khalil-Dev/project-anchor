@@ -3,6 +3,10 @@ import type { ILogger } from '../../shared/logging';
 import type { IAssessmentRepository } from '../types/assessment.types';
 import { Assessment } from '../types/assessment.types';
 import type { ICustomerRepository } from '../../customer/types/customer.types';
+import { Usecase } from '@/core/domain/common/useCase';
+import { ApplicationError } from '@/core/domain/errors';
+import { DomainError } from '@/core/domain/errors/domainError';
+import { UserIdMissingError } from '@/features/assessment/application/errors/UserNotFoundError';
 
 export interface GetCurrentAssessmentInput {
   userId: string;
@@ -20,7 +24,7 @@ export interface GetCurrentAssessmentInput {
  *
  * Used by: GET /api/me/assessment (Reference Data endpoint)
  */
-export class GetCurrentAssessmentUseCase {
+export class GetCurrentAssessmentUseCase implements Usecase<GetCurrentAssessmentInput, Assessment>{
   constructor(
     private assessmentRepository: IAssessmentRepository,
     private customerRepository: ICustomerRepository,
@@ -29,12 +33,12 @@ export class GetCurrentAssessmentUseCase {
 
   async execute(
     input: GetCurrentAssessmentInput,
-  ): Promise<Result<Assessment | null, Error>> {
+  ): Promise<Result<Assessment | null, ApplicationError|DomainError|Error>> {
     try {
       const { userId } = input;
-
+                                                                   
       if (!userId) {
-        return Result.fail(new Error('User ID is required'));
+        return Result.fail(new UserIdMissingError());
       }
 
       // Step 1: Resolve userId → customerId via Users table

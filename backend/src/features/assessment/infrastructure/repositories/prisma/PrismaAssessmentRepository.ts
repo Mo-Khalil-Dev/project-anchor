@@ -1,5 +1,5 @@
 import { Result } from '../../shared/result';
-import { Assessment, type IAssessmentRepository, type PlanType } from '../types/assessment.types';
+import { Assessment, type IAssessmentRepository, type PlanType } from '../domain/entities';
 import { prisma } from '../../shared/utils/db';
 
 

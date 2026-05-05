@@ -1,29 +1,16 @@
-import type { Result } from '../../shared/result';
-
-export type HardshipLevel = 'SEVERE' | 'MODERATE' | 'LOW' | 'NONE';
-export type SustainabilityScore = 'HIGH' | 'MEDIUM' | 'LOW';
-export type AssessmentStatus = 'PENDING' | 'COMPLETED' | 'FAILED';
-
-export interface AssessmentProps {
-  id: string;
-  customerId: string;
-  bankConnectionId?: string | null;
-  monthlyIncome: number;
-  monthlyExpenses: number;
-  monthlyBill: number;
-  arrears?: number | null;
-  incomeBreakdown?: string | null;
-  expenseBreakdown?: string | null;
-  expensesByCategory?: string | null;
-  incomeHistory?: string | null;
-  incomeSources?: string | null;
-  factors?: string | null;
-  paymentPlans?: string | null;
-  selectedPlan?: string | null;
-  status: AssessmentStatus;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import type { AssessmentProps } from './assessment-props';
+import {
+  ASSESSMENT_STATUS,
+  type AssessmentStatus,
+} from '@/features/assessment/domain/entities/assessment-status';
+import {
+  HARDSHIP_LEVEL,
+  type HardshipLevel,
+} from '@/features/assessment/domain/entities/hardship-level';
+import {
+  SUSTAINABILITY_SCORE,
+  type SustainabilityScore,
+} from '@/features/assessment/domain/entities/sustainability-score';
 
 export class Assessment {
   private readonly id: string;
@@ -168,66 +155,55 @@ export class Assessment {
     const ratio = this.calculateBillRatio();
 
     if (ratio > 100 || disposable <= 0) {
-      return 'SEVERE';
+      return HARDSHIP_LEVEL.SEVERE;
     }
 
     if (ratio > 25) {
-      return 'SEVERE';
+      return HARDSHIP_LEVEL.SEVERE;
     }
 
     if (ratio > 10) {
-      return 'MODERATE';
+      return HARDSHIP_LEVEL.MODERATE;
     }
 
     if (ratio >= 0) {
-      return ratio > 5 ? 'LOW' : 'NONE';
+      return ratio > 5 ? HARDSHIP_LEVEL.LOW : HARDSHIP_LEVEL.NONE;
     }
 
-    return 'NONE';
+    return HARDSHIP_LEVEL.NONE;
   }
 
   getSustainabilityScore(): SustainabilityScore {
     const disposable = this.calculateDisposableIncome();
 
     if (disposable <= 0) {
-      return 'LOW';
+      return SUSTAINABILITY_SCORE.LOW;
     }
 
     const ratio = this.calculateBillRatio();
 
     if (ratio > 100) {
-      return 'LOW';
+      return SUSTAINABILITY_SCORE.LOW;
     }
 
     if (ratio > 25) {
-      return 'MEDIUM';
+      return SUSTAINABILITY_SCORE.MEDIUM;
     }
 
     if (ratio > 10) {
-      return 'HIGH';
+      return SUSTAINABILITY_SCORE.HIGH;
     }
 
-    return 'HIGH';
+    return SUSTAINABILITY_SCORE.HIGH;
   }
 
   markAsCompleted(): void {
-    this.status = 'COMPLETED';
+    this.status = ASSESSMENT_STATUS.COMPLETED;
     this.updatedAt = new Date();
   }
 
   markAsFailed(): void {
-    this.status = 'FAILED';
+    this.status = ASSESSMENT_STATUS.FAILED;
     this.updatedAt = new Date();
   }
-}
-
-export type PlanType = 'Conservative' | 'Balanced' | 'Aggressive';
-
-export interface IAssessmentRepository {
-  save(assessment: Assessment): Promise<Result<Assessment, Error>>;
-  findById(id: string): Promise<Result<Assessment | null, Error>>;
-  findByCustomerId(customerId: string): Promise<Result<Assessment[], Error>>;
-  findLatestByCustomerId(customerId: string): Promise<Result<Assessment | null, Error>>;
-  update(assessment: Assessment): Promise<Result<Assessment, Error>>;
-  updateSelectedPlan(assessmentId: string, planType: PlanType): Promise<Result<void, Error>>;
 }
