@@ -7,7 +7,7 @@ export interface CreateBillingRequestInput {
   metadataReference: string;
   /** Our customer ID — propagated to mandate metadata so we can look up our records on webhook */
   customerId: string;
-  /** Our assessment ID — propagated to mandate metadata so we can resolve plan/amount on webhook */
+  /** Our referenceData ID — propagated to mandate metadata so we can resolve plan/amount on webhook */
   assessmentId: string;
 }
 

@@ -20,7 +20,7 @@ export class PaymentController {
   /**
    * POST /api/payments/select-plan
    * Body: { planType: 'Conservative' | 'Balanced' | 'Aggressive' }
-   * Persists the customer's chosen payment plan on their latest assessment.
+   * Persists the customer's chosen payment plan on their latest referenceData.
    */
   async selectPlan(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {

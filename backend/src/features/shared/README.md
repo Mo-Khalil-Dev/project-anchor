@@ -9,8 +9,8 @@ shared/
 ├── result/
 │   └── Result.ts          # Railway-oriented error handling
 ├── errors/
-│   ├── ApplicationError.ts # Base error for application logic
-│   └── ValidationError.ts  # Validation-specific errors
+│   ├── applicationError.ts # Base error for application logic
+│   └── validationError.ts  # Validation-specific errors
 └── validators/
     └── schemas.ts         # Zod validation schemas (to be created)
 ```

@@ -46,13 +46,13 @@ export class GetRedirectToJourneyUseCase {
       return { nextPage: '/bank-connection', reason: 'bank_not_connected' };
     }
 
-    // 3. Has bank connection + assessment → land them on Assessment Overview
+    // 3. Has bank connection + referenceData → land them on Assessment Overview
     const hasAssessment = user.customer.assessments && user.customer.assessments.length > 0;
     if (hasAssessment) {
-      return { nextPage: '/assessment', reason: 'assessment_available' };
+      return { nextPage: '/referenceData', reason: 'assessment_available' };
     }
 
-    // 4. Bank connected but no assessment yet (still being processed)
-    return { nextPage: '/assessment', reason: 'assessment_not_completed' };
+    // 4. Bank connected but no referenceData yet (still being processed)
+    return { nextPage: '/referenceData', reason: 'assessment_not_completed' };
   }
 }

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { DomainError } from '../errors/DomainError';
-import { ApplicationError } from '../errors/ApplicationError';
-import { ValidationError } from '../errors/ValidationError';
+import { DomainError } from '@/core/domain/errors/domainError';
+import { ApplicationError } from '@/core/domain/errors/applicationError';
+import { ValidationError } from '@/core/domain/errors/validationError';
 import { v4 as uuidv4 } from 'uuid';
 import type { ILogger } from '../logging';
 import type { AppConfig } from '../config';

@@ -362,7 +362,7 @@ async function main() {
     if (existing) {
       console.log(`  ✅ ${customer.email} (already exists)`);
 
-      // Create assessment for existing customer if not already present
+      // Create referenceData for existing customer if not already present
       const existingAssessment = await prisma.assessment.findFirst({
         where: { customerId: existing.id },
       });
@@ -378,7 +378,7 @@ async function main() {
       });
       console.log(`  ✅ ${customer.email} (created)`);
 
-      // Create assessment for new customer
+      // Create referenceData for new customer
       const assessment = createMockAssessment(newCustomer.id, customer.monthlyBill);
       await prisma.assessment.create({ data: assessment });
       console.log(`     └─ Assessment created (breakdown data included)`);
@@ -392,7 +392,7 @@ async function main() {
   console.log('  • expensesByCategory (5 categories with realistic UK values)');
   console.log('  • incomeHistory (6 months of income data)');
   console.log('  • incomeSources (employment + benefits)');
-  console.log('  • factors (3 assessment factors explaining hardship)');
+  console.log('  • factors (3 referenceData factors explaining hardship)');
   console.log('  • paymentPlans (3 plans: Conservative, Balanced, Aggressive)');
   console.log('');
   console.log('Next steps:');

@@ -1,7 +1,7 @@
 import type { GoCardlessClient } from 'gocardless-nodejs';
 import { Result } from '../../shared/result';
 import type { ILogger } from '../../shared/logging';
-import type { IAssessmentRepository } from '../../assessment/types/assessment.types';
+import type { IAssessmentRepository } from '@/features/referenceData/domain/entities';
 import type { IPaymentRepository } from '../repositories/IPaymentRepository';
 import type { CreateInstalmentScheduleUseCase } from './CreateInstalmentScheduleUseCase';
 
@@ -21,7 +21,7 @@ interface PaymentPlanRecord {
  * Triggered by the `mandates.active` webhook event. Responsibilities:
  *   1. Fetch the mandate from GC and read metadata (customerId, assessmentId)
  *   2. Short-circuit if we've already saved this mandate (idempotency)
- *   3. Load the assessment, look up the customer's selectedPlan
+ *   3. Load the referenceData, look up the customer's selectedPlan
  *   4. Persist Mandate + PaymentMethod rows
  *   5. Call GC to create the instalment schedule
  *   6. Persist PaymentSchedule row
@@ -68,7 +68,7 @@ export class ProcessMandateActiveUseCase {
       return Result.fail(existingMandateResult.getError() ?? new Error('Mandate lookup failed'));
     }
 
-    // B: Check if schedule already created for this assessment
+    // B: Check if schedule already created for this referenceData
     // This is CRITICAL because a mandate might be saved but the process failed before GC schedule creation
     // OR GC schedule was created but local persistence failed.
     const existingScheduleResult = await this.paymentRepository.findPaymentScheduleByAssessmentId(assessmentId);
@@ -88,7 +88,7 @@ export class ProcessMandateActiveUseCase {
       return Result.ok(undefined);
     }
 
-    // 3. Load assessment + selectedPlan
+    // 3. Load referenceData + selectedPlan
     const assessmentResult = await this.assessmentRepository.findById(assessmentId);
     if (assessmentResult.isFail) {
       return Result.fail(assessmentResult.getError() ?? new Error('Assessment lookup failed'));
@@ -112,7 +112,7 @@ export class ProcessMandateActiveUseCase {
     try {
       plans = JSON.parse(paymentPlansJson);
     } catch {
-      return Result.fail(new Error('Invalid paymentPlans JSON on assessment'));
+      return Result.fail(new Error('Invalid paymentPlans JSON on referenceData'));
     }
 
     const plan = plans.find(p => p.type === selectedPlan);

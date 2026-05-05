@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { z, ZodSchema } from 'zod';
-import { ValidationError } from '../errors/ValidationError';
+import { ValidationError } from '@/core/domain/errors/validationError';
 import { extractValidationErrors } from '../validators/schemas';
 
 /**

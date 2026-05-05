@@ -13,7 +13,7 @@ import { InitiateDirectDebitSetupUseCase } from './services/InitiateDirectDebitS
 import { HandleWebhookEventUseCase } from './services/HandleWebhookEventUseCase';
 import { CreateInstalmentScheduleUseCase } from './services/CreateInstalmentScheduleUseCase';
 import { ProcessMandateActiveUseCase } from './services/ProcessMandateActiveUseCase';
-import { PrismaAssessmentRepository } from '../assessment/repositories/PrismaAssessmentRepository';
+import { PrismaAssessmentRepository } from '@/features/referenceData/infrastructure/repositories/prisma/PrismaAssessmentRepository';
 import { PrismaCustomerRepository } from '../customer/repositories/PrismaCustomerRepository';
 import { PrismaPaymentRepository } from './repositories/PrismaPaymentRepository';
 

@@ -1,6 +1,6 @@
 import { Result } from '../../shared/result';
 import type { ILogger } from '../../shared/logging';
-import type { IAssessmentRepository } from '../../assessment/types/assessment.types';
+import type { IAssessmentRepository } from '@/features/referenceData/domain/entities';
 import type { ICustomerRepository } from '../../customer/types/customer.types';
 import type { SelectPlanInput, SelectPlanOutput, PlanType } from '../types/payment.types';
 
@@ -9,14 +9,14 @@ const VALID_PLAN_TYPES: PlanType[] = ['Conservative', 'Balanced', 'Aggressive'];
 /**
  * SelectPlanUseCase
  *
- * Persists the customer's chosen payment plan on their latest assessment.
+ * Persists the customer's chosen payment plan on their latest referenceData.
  * Called from the T&C screen when the customer accepts the plan.
  *
  * Flow:
  *   1. Resolve userId → customerId via Users table
- *   2. Find the latest assessment for that customer
+ *   2. Find the latest referenceData for that customer
  *   3. Validate that the planType matches one of the calculated plans
- *   4. Update assessment.selectedPlan
+ *   4. Update referenceData.selectedPlan
  */
 export class SelectPlanUseCase {
   constructor(
@@ -48,19 +48,19 @@ export class SelectPlanUseCase {
       return Result.fail(new Error('Customer not linked to user'));
     }
 
-    // Find latest assessment
+    // Find latest referenceData
     const assessmentResult = await this.assessmentRepository.findLatestByCustomerId(customerId);
     if (assessmentResult.isFail) {
-      this.logger.error('Failed to fetch latest assessment', { userId, customerId });
-      return Result.fail(new Error('Failed to fetch assessment'));
+      this.logger.error('Failed to fetch latest referenceData', { userId, customerId });
+      return Result.fail(new Error('Failed to fetch referenceData'));
     }
 
     const assessment = assessmentResult.getOrElse(null);
     if (!assessment) {
-      return Result.fail(new Error('No assessment found for customer'));
+      return Result.fail(new Error('No referenceData found for customer'));
     }
 
-    // Validate plan exists in the assessment's calculated plans
+    // Validate plan exists in the referenceData's calculated plans
     const paymentPlansJson = assessment.getPaymentPlans();
     if (!paymentPlansJson) {
       return Result.fail(new Error('Assessment has no payment plans'));

@@ -121,7 +121,7 @@ app.use((req, res, next) => {
 async function createAssessment(req, res) {
   const log = req.logger.child({ customerId: req.body.customerId });
 
-  log.info('Starting assessment');              // traceId + customerId on every line
+  log.info('Starting referenceData');              // traceId + customerId on every line
   const result = await useCase.execute(input);
   log.info('Assessment complete', { assessmentId: result.id });
 }
@@ -196,7 +196,7 @@ export class CreateAssessmentUseCase {
   async execute(input: CreateAssessmentInput): Promise<Result<Assessment, DomainError>> {
     const log = this.logger.child({ customerId: input.customerId });
 
-    log.debug('Validating assessment input');
+    log.debug('Validating referenceData input');
 
     const assessment = Assessment.create(input);
     if (assessment.isFail) {
@@ -231,7 +231,7 @@ export class PrismaAssessmentRepository implements IAssessmentRepository {
       log.debug('Assessment persisted');
       return AssessmentMapper.toDomain(record);
     } catch (err) {
-      log.error('Failed to persist assessment', err);
+      log.error('Failed to persist referenceData', err);
       throw err;
     }
   }

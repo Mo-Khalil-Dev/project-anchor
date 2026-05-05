@@ -40,9 +40,9 @@ export interface IPaymentRepository {
   /** Persist a PaymentMethod row linking customer ↔ mandate */
   savePaymentMethod(input: SavePaymentMethodInput): Promise<Result<void, Error>>;
 
-  /** Persist a PaymentSchedule row tied to a mandate + assessment */
+  /** Persist a PaymentSchedule row tied to a mandate + referenceData */
   savePaymentSchedule(input: SavePaymentScheduleInput): Promise<Result<void, Error>>;
 
-  /** Find existing payment schedule by assessment ID — used for idempotency */
+  /** Find existing payment schedule by referenceData ID — used for idempotency */
   findPaymentScheduleByAssessmentId(assessmentId: string): Promise<Result<{ id: string; gocardlessId: string } | null, Error>>;
 }

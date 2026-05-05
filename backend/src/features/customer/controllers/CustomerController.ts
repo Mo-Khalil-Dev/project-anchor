@@ -1,7 +1,7 @@
 import { Response, NextFunction } from 'express';
 import type { AuthenticatedRequest } from '../../shared/middleware/authenticateRequest';
 import type { LinkUserToCustomerUseCase } from '../services/LinkUserToCustomerUseCase';
-import { ApplicationError } from '../../shared/errors/ApplicationError';
+import { ApplicationError } from '@/core/domain/errors/applicationError';
 
 export class CustomerController {
   constructor(

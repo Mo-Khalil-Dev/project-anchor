@@ -4,7 +4,8 @@ import type { IBankConnectionRepository } from '../types/bankConnection.types';
 import type { ILogger } from '../../shared/logging';
 import type { TinkOAuthService } from './TinkOAuthService';
 import { BankDataExtractionService, IncomeBreakdown, ExpenseBreakdown } from './BankDataExtractionService';
-import type { IJobDispatcher } from '../../assessment/services/IJobDispatcher';
+import type { IJobDispatcher } from '../../../core/application/services/IJobDispatcher';
+import { ASSESSMENT_STATUS } from '@/features/referenceData/domain/entities/assessment-status';
 
 export class HandleBankOAuthCallbackUseCase {
   constructor(
@@ -116,7 +117,7 @@ export class HandleBankOAuthCallbackUseCase {
         monthlyExpenses: expenses.total,
         monthlyBill: customer.monthlyBill ?? 0,
         arrears: customer.arrears ?? null,
-        status: 'PENDING',
+        status: ASSESSMENT_STATUS.PENDING,
       };
 
       // Generate ID before saving
@@ -144,7 +145,7 @@ export class HandleBankOAuthCallbackUseCase {
       // Dispatch job for background processing — returns immediately
       await this.jobDispatcher.dispatch(jobId);
 
-      this.logger.info('OAuth callback handled and assessment created', {
+      this.logger.info('OAuth callback handled and referenceData created', {
         connectionId: connection.id,
         customerId: connection.customerId,
         assessmentId,

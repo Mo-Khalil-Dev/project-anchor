@@ -77,7 +77,7 @@ The Assessment aggregate is a complete working example showing all patterns. Fil
 - Implements business rules
 - Depends on repositories (IAssessmentRepository)
 
-**Error:** `DomainError.ts`
+**Error:** `domainError.ts`
 - Custom error for business rule violations
 - Includes error code, message, details
 
@@ -279,7 +279,7 @@ export class GeneratePaymentPlansUseCase {
   ) {}
 
   async execute(input: { assessmentId: string }): Promise<PaymentPlan[]> {
-    // 1. Fetch assessment
+    // 1. Fetch referenceData
     const assessment = await this.assessmentRepository.findById(input.assessmentId);
     if (!assessment) {
       throw new DomainError('ASSESSMENT_NOT_FOUND', 'Assessment not found');
@@ -561,7 +561,7 @@ Test endpoints with real HTTP client:
 
 ```typescript
 describe('POST /payment-plans', () => {
-  it('should generate payment plans for valid assessment', async () => {
+  it('should generate payment plans for valid referenceData', async () => {
     const response = await request(app)
       .post('/payment-plans')
       .send({ assessmentId: 'assessment_123' });
@@ -570,7 +570,7 @@ describe('POST /payment-plans', () => {
     expect(response.body.plans).toHaveLength(3);
   });
 
-  it('should return 404 if assessment not found', async () => {
+  it('should return 404 if referenceData not found', async () => {
     const response = await request(app)
       .post('/payment-plans')
       .send({ assessmentId: 'nonexistent' });

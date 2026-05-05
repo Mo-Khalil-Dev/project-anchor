@@ -311,7 +311,7 @@ export class AssessmentDomainService {
     customerId: string,
     financialData: FinancialData
   ): Promise<Result<Assessment>> {
-    // Business logic: Create assessment based on financial data
+    // Business logic: Create referenceData based on financial data
     const hardshipResult = this.calculateHardship(financialData);
     if (hardshipResult.isFailure) {
       return Result.fail(hardshipResult.error);
@@ -343,7 +343,7 @@ export class AssessmentDomainService {
 
   private async hasPreviewDefault(customerId: string): Promise<boolean> {
     const assessments = await this.assessmentRepository.findByCustomerId(customerId);
-    // Check if any previous assessment had issues
+    // Check if any previous referenceData had issues
     return assessments.length > 0; // Simplified
   }
 
@@ -366,8 +366,8 @@ import { Result } from '@/domain/shared';
 import { UseCase } from '../../../shared/UseCase.interface';
 import { CreateAssessmentRequest } from '../dtos/CreateAssessmentRequest.dto';
 import { AssessmentResponse } from '../dtos/AssessmentResponse.dto';
-import { IAssessmentRepository } from '@/domain/assessment/IAssessmentRepository';
-import { AssessmentDomainService } from '@/domain/assessment/AssessmentService';
+import { IAssessmentRepository } from '@/domain/referenceData/IAssessmentRepository';
+import { AssessmentDomainService } from '@/domain/referenceData/AssessmentService';
 import { AssessmentMapper } from '../mappers/AssessmentMapper';
 
 export class CreateAssessmentUseCase implements UseCase<CreateAssessmentRequest, AssessmentResponse> {
@@ -454,7 +454,7 @@ export interface AssessmentResponse {
 
 **File: `src/application/assessment/mappers/AssessmentMapper.ts`**
 ```typescript
-import { Assessment } from '@/domain/assessment/Assessment.entity';
+import { Assessment } from '@/domain/referenceData/Assessment.entity';
 import { AssessmentResponse } from '../dtos/AssessmentResponse.dto';
 
 export class AssessmentMapper {
@@ -490,8 +490,8 @@ export class AssessmentMapper {
 
 **File: `src/infrastructure/persistence/PrismaAssessmentRepository.ts`**
 ```typescript
-import { IAssessmentRepository } from '@/domain/assessment/IAssessmentRepository';
-import { Assessment } from '@/domain/assessment/Assessment.entity';
+import { IAssessmentRepository } from '@/domain/referenceData/IAssessmentRepository';
+import { Assessment } from '@/domain/referenceData/Assessment.entity';
 import { prisma } from '../shared/db';
 
 export class PrismaAssessmentRepository implements IAssessmentRepository {
@@ -575,8 +575,8 @@ export class EmailService implements IEmailService {
 **File: `src/presentation/assessment/AssessmentController.ts`**
 ```typescript
 import { Request, Response, NextFunction } from 'express';
-import { CreateAssessmentUseCase } from '@/application/assessment/usecases/CreateAssessment.usecase';
-import { CreateAssessmentRequest } from '@/application/assessment/dtos/CreateAssessmentRequest.dto';
+import { CreateAssessmentUseCase } from '@/application/referenceData/usecases/CreateAssessment.usecase';
+import { CreateAssessmentRequest } from '@/application/referenceData/dtos/CreateAssessmentRequest.dto';
 
 export class AssessmentController {
   constructor(private createAssessmentUseCase: CreateAssessmentUseCase) {}
@@ -734,8 +734,8 @@ try {
 try {
   await assessmentRepository.save(assessment);
 } catch (error) {
-  logger.error('Failed to save assessment', { error });
-  throw new AssessmentPersistenceError('Could not save assessment', error);
+  logger.error('Failed to save referenceData', { error });
+  throw new AssessmentPersistenceError('Could not save referenceData', error);
 }
 ```
 
@@ -763,11 +763,11 @@ try {
 
 **File: `src/config/container.ts` (Service Container)**
 ```typescript
-import { IAssessmentRepository } from '@/domain/assessment/IAssessmentRepository';
+import { IAssessmentRepository } from '@/domain/referenceData/IAssessmentRepository';
 import { PrismaAssessmentRepository } from '@/infrastructure/persistence/PrismaAssessmentRepository';
-import { AssessmentDomainService } from '@/domain/assessment/AssessmentService';
-import { CreateAssessmentUseCase } from '@/application/assessment/usecases/CreateAssessment.usecase';
-import { AssessmentController } from '@/presentation/assessment/AssessmentController';
+import { AssessmentDomainService } from '@/domain/referenceData/AssessmentService';
+import { CreateAssessmentUseCase } from '@/application/referenceData/usecases/CreateAssessment.usecase';
+import { AssessmentController } from '@/presentation/referenceData/AssessmentController';
 
 export class Container {
   static getAssessmentController(): AssessmentController {
@@ -808,7 +808,7 @@ describe('Assessment Entity', () => {
 ```typescript
 // Test use cases with mocked repository
 describe('CreateAssessmentUseCase', () => {
-  it('should create assessment and return DTO', async () => {
+  it('should create referenceData and return DTO', async () => {
     const mockRepository = {
       findById: jest.fn(),
       save: jest.fn(),
@@ -827,7 +827,7 @@ describe('CreateAssessmentUseCase', () => {
 ```typescript
 // Test HTTP endpoints
 describe('POST /assessments', () => {
-  it('should create assessment and return 201', async () => {
+  it('should create referenceData and return 201', async () => {
     const response = await request(app)
       .post('/assessments')
       .set('Authorization', 'Bearer token')

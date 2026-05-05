@@ -1,7 +1,7 @@
 import { Result } from '../../shared/result';
 import type { ILogger } from '../../shared/logging';
 import type { ICustomerRepository } from '../../customer/types/customer.types';
-import type { IAssessmentRepository } from '../../assessment/types/assessment.types';
+import type { IAssessmentRepository } from '@/features/referenceData/domain/entities';
 import type { CreateBillingRequestUseCase } from './CreateBillingRequestUseCase';
 import type { CollectCustomerDetailsUseCase } from './CollectCustomerDetailsUseCase';
 import type { CollectBankAccountUseCase } from './CollectBankAccountUseCase';
@@ -69,15 +69,15 @@ export class InitiateDirectDebitSetupUseCase {
       return Result.fail(new Error('Customer not found'));
     }
 
-    // 2. Resolve the customer's latest assessment so we can tag the mandate
+    // 2. Resolve the customer's latest referenceData so we can tag the mandate
     //    with both customerId and assessmentId for the webhook to pick up later.
     const assessmentResult = await this.assessmentRepository.findLatestByCustomerId(customerId);
     if (assessmentResult.isFail) {
-      return Result.fail(new Error('Failed to load assessment'));
+      return Result.fail(new Error('Failed to load referenceData'));
     }
     const assessment = assessmentResult.getOrElse(null);
     if (!assessment) {
-      return Result.fail(new Error('No assessment found for customer'));
+      return Result.fail(new Error('No referenceData found for customer'));
     }
     const assessmentId = assessment.getId();
 

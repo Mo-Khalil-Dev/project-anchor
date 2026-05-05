@@ -1,2 +1,2 @@
-export { ApplicationError } from './ApplicationError';
-export { ValidationError } from './ValidationError';
+export { ApplicationError } from './applicationError';
+export { ValidationError } from './validationError';
