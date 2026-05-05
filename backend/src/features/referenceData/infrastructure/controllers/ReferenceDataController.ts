@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import type { GetReferenceDataUseCase } from '../application/useCases/GetReferenceDataUseCase';
+import type { GetReferenceDataUseCase } from '../../application/useCases/GetReferenceDataUseCase';
 
 export interface AuthenticatedRequest extends Request {
   user?: {

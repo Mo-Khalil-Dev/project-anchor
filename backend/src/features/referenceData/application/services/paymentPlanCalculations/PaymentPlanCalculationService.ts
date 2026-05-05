@@ -1,3 +1,9 @@
+import {
+  SUSTAINABILITY_SCORE,
+  type SustainabilityScore,
+} from '../../../domain/entities/sustainability-score';
+import { PLAN_TYPE, type PlanType } from '../../../domain/entities/plan-type';
+
 /**
  * PaymentPlanCalculationService
  *
@@ -8,11 +14,11 @@
  */
 
 export interface PaymentPlan {
-  type: 'Conservative' | 'Balanced' | 'Aggressive';
+  type: PlanType;
   monthlyAmount: number;
   duration: number; // months
   totalRepayment: number;
-  sustainability: 'HIGH' | 'MEDIUM' | 'LOW';
+  sustainability: SustainabilityScore;
 }
 
 export class PaymentPlanCalculationService {
@@ -49,39 +55,39 @@ export class PaymentPlanCalculationService {
     const aggressiveDuration = Math.ceil(arrears / aggressiveAmount);
 
     // Determine sustainability based on bill ratio
-    const getConservativeSustainability = (): 'HIGH' | 'MEDIUM' | 'LOW' => {
-      if (isSevereBill) return 'MEDIUM';
-      return 'HIGH';
+    const getConservativeSustainability = (): SustainabilityScore => {
+      if (isSevereBill) return SUSTAINABILITY_SCORE.MEDIUM;
+      return SUSTAINABILITY_SCORE.HIGH;
     };
 
-    const getBalancedSustainability = (): 'HIGH' | 'MEDIUM' | 'LOW' => {
-      if (isSevereBill) return 'LOW';
-      if (isModeratedBill) return 'MEDIUM';
-      return 'MEDIUM';
+    const getBalancedSustainability = (): SustainabilityScore => {
+      if (isSevereBill) return SUSTAINABILITY_SCORE.LOW;
+      if (isModeratedBill) return SUSTAINABILITY_SCORE.MEDIUM;
+      return SUSTAINABILITY_SCORE.MEDIUM;
     };
 
-    const getAggressiveSustainability = (): 'HIGH' | 'MEDIUM' | 'LOW' => {
-      if (isSevereBill) return 'LOW';
-      return 'MEDIUM';
+    const getAggressiveSustainability = (): SustainabilityScore => {
+      if (isSevereBill) return SUSTAINABILITY_SCORE.LOW;
+      return SUSTAINABILITY_SCORE.MEDIUM;
     };
 
     return [
       {
-        type: 'Conservative',
+        type: PLAN_TYPE.CONSERVATIVE,
         monthlyAmount: conservativeAmount,
         duration: conservativeDuration,
         totalRepayment: arrears,
         sustainability: getConservativeSustainability(),
       },
       {
-        type: 'Balanced',
+        type: PLAN_TYPE.BALANCED,
         monthlyAmount: balancedAmount,
         duration: balancedDuration,
         totalRepayment: arrears,
         sustainability: getBalancedSustainability(),
       },
       {
-        type: 'Aggressive',
+        type: PLAN_TYPE.AGGRESSIVE,
         monthlyAmount: aggressiveAmount,
         duration: aggressiveDuration,
         totalRepayment: arrears,

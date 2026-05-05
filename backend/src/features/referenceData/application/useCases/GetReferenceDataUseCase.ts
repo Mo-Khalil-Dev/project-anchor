@@ -2,8 +2,8 @@ import { Result } from '../../../shared/result';
 import type { ILogger } from '../../../shared/logging';
 import { prisma } from '../../../shared/utils/db';
 import type { ReferenceData, NextStep } from '../../../shared/types/referenceData.types';
-import { GetAccountSetupQuery } from '../../../customer/services/GetAccountSetupQuery';
-import { GetBankConnectionQuery } from '../../../bankConnection/services/GetBankConnectionQuery';
+import { GetAccountSetupQuery } from './GetAccountSetupQuery';
+import { GetBankConnectionQuery } from './GetBankConnectionQuery';
 import { GetAssessmentQuery } from './GetAssessmentQuery';
 import type { ICustomerRepository } from '../../../customer/types/customer.types';
 import type { IBankConnectionRepository } from '../../../bankConnection/types/bankConnection.types';
@@ -18,7 +18,7 @@ export class GetReferenceDataUseCase {
     customerRepository: ICustomerRepository,
     bankConnectionRepository: IBankConnectionRepository,
     assessmentRepository: IAssessmentRepository,
-    private logger: ILogger,
+    private logger: ILogger
   ) {
     this.getAccountSetupQuery = new GetAccountSetupQuery(customerRepository, logger);
     this.getBankConnectionQuery = new GetBankConnectionQuery(bankConnectionRepository, logger);
@@ -68,7 +68,9 @@ export class GetReferenceDataUseCase {
 
       // Step 3: Determine nextStep based on completion status
       const accountSetup = accountSetupResult.isFail ? null : accountSetupResult.getOrElse(null);
-      const bankConnection = bankConnectionResult.isFail ? null : bankConnectionResult.getOrElse(null);
+      const bankConnection = bankConnectionResult.isFail
+        ? null
+        : bankConnectionResult.getOrElse(null);
       const assessment = assessmentResult.isFail ? null : assessmentResult.getOrElse(null);
 
       const nextStep = this.determineNextStep(accountSetup, bankConnection, assessment);
@@ -78,7 +80,8 @@ export class GetReferenceDataUseCase {
         accountSetup,
         bankConnection,
         assessment,
-        paymentPlans: assessment?.status === 'COMPLETED' ? (assessment as any).paymentPlans || [] : [],
+        paymentPlans:
+          assessment?.status === 'COMPLETED' ? (assessment as any).paymentPlans || [] : [],
         nextStep,
       };
 

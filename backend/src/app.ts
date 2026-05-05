@@ -97,7 +97,7 @@ export function createApp(config: AppConfig, logger: ILogger, prisma: PrismaClie
     });
   });
 
-  app.use(globalErrorHandler(logger, config));
+  app.use(globalErrorHandler(logger));
 
   return app;
 }

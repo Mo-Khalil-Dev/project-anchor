@@ -2,6 +2,11 @@ import { Result } from '../../../shared/result';
 import type { ILogger } from '../../../shared/logging';
 import type { IAssessmentRepository } from '../../domain/entities';
 import type { AssessmentData } from '../../../shared/types/referenceData.types';
+import type { ApplicationError } from '../../../../core/domain/errors';
+import {
+  AssessmentRepositoryQueryError,
+  GetAssessmentQueryExecutionError,
+} from '../errors/GetAssessmentQuery.errors';
 
 export class GetAssessmentQuery {
   constructor(
@@ -9,24 +14,25 @@ export class GetAssessmentQuery {
     private logger: ILogger
   ) {}
 
-  async execute(input: { customerId: string }): Promise<Result<AssessmentData | null, Error>> {
+  async execute(input: { customerId: string }): Promise<Result<AssessmentData | null, ApplicationError>> {
     try {
       const { customerId } = input;
 
       const assessmentResult = await this.assessmentRepository.findLatestByCustomerId(customerId);
 
       if (assessmentResult.isFail) {
+        const repositoryError = assessmentResult.getError();
         this.logger.error('Failed to fetch referenceData', {
           customerId,
-          error: assessmentResult.getError(),
+          error: repositoryError,
         });
-        return Result.fail(new Error('Failed to fetch referenceData data'));
+        return Result.fail(new AssessmentRepositoryQueryError(customerId, repositoryError));
       }
 
       const assessment = assessmentResult.getOrElse(null);
 
       if (!assessment) {
-        return Result.ok(null);
+        return Result.ok<AssessmentData | null>(null) as Result<AssessmentData | null, ApplicationError>;
       }
 
       // Parse JSON fields
@@ -106,13 +112,16 @@ export class GetAssessmentQuery {
         createdAt: assessment.getCreatedAt().toISOString(),
       };
 
-      return Result.ok(assessmentData);
+      return Result.ok<AssessmentData | null>(assessmentData) as Result<
+        AssessmentData | null,
+        ApplicationError
+      >;
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       this.logger.error('GetAssessment query failed', {
         error: message,
       });
-      return Result.fail(new Error(`Failed to get assessment: ${message}`));
+      return Result.fail(new GetAssessmentQueryExecutionError(error));
     }
   }
 }

@@ -1,8 +1,8 @@
 import { Result } from '../../../shared/result';
 import type { ILogger } from '../../../shared/logging';
 import { prisma } from '../../../shared/utils/db';
-import { GetAccountSetupQuery } from '../../../customer/services/GetAccountSetupQuery';
-import { GetBankConnectionQuery } from '../../../bankConnection/services/GetBankConnectionQuery';
+import { GetAccountSetupQuery } from './GetAccountSetupQuery';
+import { GetBankConnectionQuery } from './GetBankConnectionQuery';
 import { GetAssessmentQuery } from './GetAssessmentQuery';
 import { GetReferenceDataUseCase } from './GetReferenceDataUseCase';
 

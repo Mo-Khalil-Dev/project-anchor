@@ -14,6 +14,7 @@ const makeConfig = (overrides: Partial<AppConfig> = {}): AppConfig => ({
   database: { provider: 'sqlite', url: 'file:./dev.db' },
   logging: { level: 'info' },
   auth: {
+    provider : 'mock',
     jwtSecret: 'secret',
     cognito: { userPoolId: 'pool', clientId: 'client', region: 'us-east-1' },
   },
@@ -27,6 +28,7 @@ const makeConfig = (overrides: Partial<AppConfig> = {}): AppConfig => ({
     expensesApiBaseUrl: 'https://expenses.tink.com',
   },
   stripe: { secretKey: 'sk_test', webhookSecret: 'whsec' },
+  gocardless: { accessToken: 'test_token', webhookKey: 'test_key' },
   email: { region: 'us-east-1', fromAddress: 'test@bridge.local' },
   features: {
     emailEnabled: true,

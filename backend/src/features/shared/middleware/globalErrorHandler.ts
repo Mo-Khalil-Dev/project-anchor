@@ -4,9 +4,8 @@ import { ApplicationError } from '@/core/domain/errors/applicationError';
 import { ValidationError } from '@/core/domain/errors/validationError';
 import { v4 as uuidv4 } from 'uuid';
 import type { ILogger } from '../logging';
-import type { AppConfig } from '../config';
 
-export function globalErrorHandler(logger: ILogger, _: AppConfig) {
+export function globalErrorHandler(logger: ILogger) {
   return (err: unknown, req: Request, res: Response, _next: NextFunction): void => {
     const traceId = uuidv4();
     const timestamp = new Date().toISOString();

@@ -4,7 +4,7 @@ import type { ILogger } from '../../shared/logging';
 import { PrismaCustomerRepository } from '../../customer/repositories/PrismaCustomerRepository';
 import { PrismaBankConnectionRepository } from '../../bankConnection/repositories/PrismaBankConnectionRepository';
 import { PrismaAssessmentRepository } from '../infrastructure/repositories/prisma/PrismaAssessmentRepository';
-import { ReferenceDataController } from '@/features/referenceData/controllers/ReferenceDataController';
+import { ReferenceDataController } from '@/features/referenceData/infrastructure/controllers/ReferenceDataController';
 import { GetReferenceDataUseCase } from '../application/useCases/GetReferenceDataUseCase';
 import { asyncHandler } from '../../shared/middleware/globalErrorHandler';
 

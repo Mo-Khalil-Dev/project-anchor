@@ -3,6 +3,10 @@ import type { ILogger } from '../../../shared/logging';
 import { Assessment } from '../../domain/entities';
 import { ASSESSMENT_STATUS } from '../../domain/entities/assessment-status';
 import { GetAssessmentQuery } from './GetAssessmentQuery';
+import {
+  AssessmentRepositoryQueryError,
+  GetAssessmentQueryExecutionError,
+} from '../errors/GetAssessmentQuery.errors';
 
 const createAssessmentProps = () => ({
     id: 'assessment-1',
@@ -75,8 +79,25 @@ describe('GetAssessmentQuery', () => {
     const result = await query.execute({ customerId: 'customer-1' });
 
     expect(result.isFail).toBe(true);
-    expect(result.getError()).toEqual(new Error('Failed to fetch referenceData data'));
+    expect(result.getError()).toBeInstanceOf(AssessmentRepositoryQueryError);
+    expect(result.getError()).toMatchObject({
+      code: 'ASSESSMENT_REPOSITORY_QUERY_FAILED',
+      message: 'Failed to fetch assessment data',
+    });
     expect(logger.error).toHaveBeenCalled();
+  });
+
+  it('returns execution typed error when repository throws unexpectedly', async () => {
+    repository.findLatestByCustomerId.mockRejectedValue(new Error('db exploded'));
+    const query = new GetAssessmentQuery(repository as any, logger);
+
+    const result = await query.execute({ customerId: 'customer-1' });
+
+    expect(result.isFail).toBe(true);
+    expect(result.getError()).toBeInstanceOf(GetAssessmentQueryExecutionError);
+    expect(result.getError()).toMatchObject({
+      code: 'GET_ASSESSMENT_QUERY_EXECUTION_FAILED',
+    });
   });
 
   it('falls back to defaults when JSON parsing fails', async () => {
