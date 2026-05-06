@@ -70,6 +70,13 @@ export interface PaymentPlan {
   sustainability: 'HIGH' | 'MEDIUM' | 'LOW';
 }
 
+export interface MandateData {
+  id: string;
+  status: 'PENDING' | 'CREATED' | 'ACTIVE' | 'FAILED' | 'CANCELLED';
+  gocardlessId: string | null;
+  createdAt: string;
+}
+
 export type NextStep =
   | 'ACCOUNT_SETUP'
   | 'ACCOUNT_SETUP_LOADING'
@@ -77,6 +84,8 @@ export type NextStep =
   | 'ASSESSMENT'
   | 'ASSESSMENT_CALCULATING'
   | 'PAYMENT_PLANS'
+  | 'DIRECT_DEBIT_SETUP'
+  | 'DIRECT_DEBIT_PENDING'
   | 'COMPLETE';
 
 export interface ReferenceData {
@@ -84,5 +93,6 @@ export interface ReferenceData {
   bankConnection: BankConnectionData | null;
   assessment: AssessmentData | null;
   paymentPlans: PaymentPlan[];
+  mandate: MandateData | null;
   nextStep: NextStep;
 }
