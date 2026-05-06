@@ -12,6 +12,8 @@ const NEXT_STEP_TO_ROUTE: Record<NextStep, string> = {
   'ASSESSMENT': '/assessment',
   'ASSESSMENT_CALCULATING': '/assessment',
   'PAYMENT_PLANS': '/payment-plans',
+  'DIRECT_DEBIT_SETUP': '/payment-plans/direct-debit',
+  'DIRECT_DEBIT_PENDING': '/payment-plans/direct-debit/holding',
   'COMPLETE': '/assessment',
 };
 
