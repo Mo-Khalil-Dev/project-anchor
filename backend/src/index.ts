@@ -1,4 +1,3 @@
-import 'tsconfig-paths/register';
 import 'dotenv/config';
 import { initConfig } from './features/shared/config';
 import { initLogger } from './features/shared/logging';

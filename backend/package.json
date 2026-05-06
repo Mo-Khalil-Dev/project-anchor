@@ -7,7 +7,7 @@
     "dev": "ts-node src/index.ts",
     "dev:mocks": "ts-node src/__mocks__/dev-server.ts",
     "build": "tsc",
-    "start": "node dist/index.js",
+    "start": "node --require tsconfig-paths/register dist/index.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
