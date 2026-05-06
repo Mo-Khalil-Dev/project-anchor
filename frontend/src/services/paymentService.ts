@@ -16,6 +16,8 @@ export interface SelectPlanResponse {
 
 export interface InitiateDirectDebitInput {
   accountHolderName: string;
+  redirectUri: string;
+  exitUri: string;
 }
 
 export interface InitiateDirectDebitResponse {
