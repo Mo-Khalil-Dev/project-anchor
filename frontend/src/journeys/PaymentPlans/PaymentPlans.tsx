@@ -9,6 +9,9 @@ import { AggressivePlanDetail } from '@/journeys/PaymentPlans/screens/aggressive
 import { TermsAndConditions } from '@/journeys/PaymentPlans/screens/terms/TermsAndConditions';
 import { PaymentSetupScreen } from '@/journeys/PaymentPlans/screens/setup';
 import { DirectDebitSetupScreen } from '@/journeys/PaymentPlans/screens/direct-debit';
+import { DirectDebitCallbackScreen } from '@/journeys/PaymentPlans/screens/direct-debit/DirectDebitCallbackScreen';
+import { DirectDebitHoldingScreen } from '@/journeys/PaymentPlans/screens/direct-debit/DirectDebitHoldingScreen';
+import { DirectDebitSuccessScreen } from '@/journeys/PaymentPlans/screens/direct-debit/DirectDebitSuccessScreen';
 
 export function PaymentPlans() {
   const location = useLocation();
@@ -33,6 +36,15 @@ export function PaymentPlans() {
 
   const pathname = location.pathname;
 
+  if (pathname.includes('/direct-debit/success')) {
+    return <DirectDebitSuccessScreen />;
+  }
+  if (pathname.includes('/direct-debit/holding')) {
+    return <DirectDebitHoldingScreen />;
+  }
+  if (pathname.includes('/dd-callback')) {
+    return <DirectDebitCallbackScreen />;
+  }
   if (pathname.includes('/direct-debit')) {
     return <DirectDebitSetupScreen />;
   }
