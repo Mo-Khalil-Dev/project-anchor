@@ -6,6 +6,9 @@
   "_moduleAliases": {
     "@": "dist"
   },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "scripts": {
     "dev": "ts-node src/index.ts",
     "dev:mocks": "ts-node src/__mocks__/dev-server.ts",
