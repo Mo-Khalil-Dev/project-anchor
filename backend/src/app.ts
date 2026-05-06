@@ -2,7 +2,6 @@ import express, { Express, Request, Response, NextFunction } from 'express';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import { PrismaClient } from '@prisma/client';
-import { globalErrorHandler } from './features/shared/middleware/globalErrorHandler';
 import { createBankConnectionRouter } from './features/bankConnection/router';
 import { createAuthRouter } from './features/auth/router';
 import { createCustomerRouter } from './features/customer/router';
@@ -11,6 +10,7 @@ import { createReferenceDataRouter } from '@/features/referenceData/main/router'
 import { initAuthProvider } from './features/shared/config/providers/auth-provider.factory';
 import type { AppConfig } from './features/shared/config';
 import type { ILogger } from './features/shared/logging';
+import { globalErrorHandler } from '@/features/shared/middleware';
 
 export function createApp(config: AppConfig, logger: ILogger, prisma: PrismaClient): Express {
   const app: Express = express();

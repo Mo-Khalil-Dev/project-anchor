@@ -2,7 +2,7 @@ import { Response, NextFunction } from 'express';
 import type { InitiateBankOAuthUseCase } from '../services/InitiateBankOAuthUseCase';
 import type { HandleBankOAuthCallbackUseCase } from '../services/HandleBankOAuthCallbackUseCase';
 import type { ICustomerRepository } from '../../customer/types/customer.types';
-import { ApplicationError } from '@/core/domain/errors/applicationError';
+import { ApplicationError } from '../../../core/domain/errors/applicationError';
 import type { AuthenticatedRequest } from '../../shared/types/auth';
 
 export class BankConnectionController {

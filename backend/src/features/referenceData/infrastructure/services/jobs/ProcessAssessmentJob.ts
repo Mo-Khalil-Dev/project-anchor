@@ -20,38 +20,24 @@ export class ProcessAssessmentJob implements IBackgroundJob<string> {
     private failAssessmentUseCase: FailAssessmentUseCase,
   ) {}
 
-  async execute(jobId: string): Promise<Result<void, Error>> {
-    let job: any;
+  async execute(assessmentId: string): Promise<Result<void, Error>> {
     try {
-      job = await this.prisma.assessmentJob.findUnique({
-        where: { id: jobId },
-        include: { assessment: true },
-      });
-
-      if (!job) {
-        const error = new Error(`Assessment job not found: ${jobId}`);
-        this.logger.error('Job lookup failed', { jobId, error: error.message });
-        return Result.fail(error);
-      }
-
-      const assessmentResult = await this.assessmentRepository.findById(job.assessmentId);
+      const assessmentResult = await this.assessmentRepository.findById(assessmentId);
       if (assessmentResult.isFail) {
         const reason = assessmentResult.getError()?.message || 'Failed to fetch assessment';
-        await this.updateJobStatus(jobId, 'FAILED', reason);
+        await this.markAssessmentFailed(assessmentId, reason);
         return Result.fail(assessmentResult.getError() || new Error(reason));
       }
 
       const assessment = assessmentResult.getOrThrow();
       if (!assessment) {
-        const reason = `Assessment not found for job ${jobId}`;
-        await this.updateJobStatus(jobId, 'FAILED', reason);
+        const reason = `Assessment not found: ${assessmentId}`;
         return Result.fail(new Error(reason));
       }
 
       if (!assessment.getBankConnectionId()) {
         const reason = 'Assessment missing bank connection';
-        await this.markAssessmentFailed(job.assessmentId, reason);
-        await this.updateJobStatus(jobId, 'FAILED', reason);
+        await this.markAssessmentFailed(assessmentId, reason);
         return Result.fail(new Error(reason));
       }
 
@@ -61,8 +47,7 @@ export class ProcessAssessmentJob implements IBackgroundJob<string> {
 
       if (!bankReport) {
         const reason = 'Bank report not found';
-        await this.markAssessmentFailed(job.assessmentId, reason);
-        await this.updateJobStatus(jobId, 'FAILED', reason);
+        await this.markAssessmentFailed(assessmentId, reason);
         return Result.fail(new Error(reason));
       }
 
@@ -74,24 +59,21 @@ export class ProcessAssessmentJob implements IBackgroundJob<string> {
         expenseData = JSON.parse(bankReport.expensesJson);
       } catch (parseError) {
         const reason = 'Failed to parse bank report JSON';
-        await this.markAssessmentFailed(job.assessmentId, reason);
-        await this.updateJobStatus(jobId, 'FAILED', reason);
+        await this.markAssessmentFailed(assessmentId, reason);
         return Result.fail(new Error(reason));
       }
 
       const incomeResult = BankDataExtractionService.extractIncome(incomeData);
       if (incomeResult.isFail) {
         const reason = incomeResult.getError()?.message || 'Failed to extract income';
-        await this.markAssessmentFailed(job.assessmentId, reason);
-        await this.updateJobStatus(jobId, 'FAILED', reason);
+        await this.markAssessmentFailed(assessmentId, reason);
         return Result.fail(incomeResult.getError() || new Error(reason));
       }
 
       const expenseResult = BankDataExtractionService.extractExpenses(expenseData);
       if (expenseResult.isFail) {
         const reason = expenseResult.getError()?.message || 'Failed to extract expenses';
-        await this.markAssessmentFailed(job.assessmentId, reason);
-        await this.updateJobStatus(jobId, 'FAILED', reason);
+        await this.markAssessmentFailed(assessmentId, reason);
         return Result.fail(expenseResult.getError() || new Error(reason));
       }
 
@@ -144,7 +126,6 @@ export class ProcessAssessmentJob implements IBackgroundJob<string> {
 
       const enrichmentResult = await this.assessmentRepository.update(enrichedAssessment);
       if (enrichmentResult.isFail) {
-        await this.updateJobStatus(jobId, 'FAILED', enrichmentResult.getError()?.message);
         return Result.fail(enrichmentResult.getError() || new Error('Failed to enrich assessment'));
       }
 
@@ -154,21 +135,11 @@ export class ProcessAssessmentJob implements IBackgroundJob<string> {
       });
 
       if (completeResult.isFail) {
-        await this.updateJobStatus(jobId, 'FAILED', completeResult.getError()?.message);
         return Result.fail(completeResult.getError() || new Error('Failed to complete assessment'));
       }
 
-      await this.prisma.assessmentJob.update({
-        where: { id: jobId },
-        data: {
-          status: 'SUCCESS',
-          processedAt: new Date(),
-        },
-      });
-
-      this.logger.info('Assessment job processed successfully', {
-        jobId,
-        assessmentId: job.assessmentId,
+      this.logger.info('Assessment processed successfully', {
+        assessmentId,
         monthlyIncome: income.total,
         monthlyExpenses: expenses.total,
         disposableIncome,
@@ -178,15 +149,9 @@ export class ProcessAssessmentJob implements IBackgroundJob<string> {
       return Result.ok(undefined);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      this.logger.error('Assessment job processing failed', { jobId, error: message });
-
-      // Attempt to mark assessment as failed if we have the job context
-      if (jobId && job?.assessmentId) {
-        await this.markAssessmentFailed(job.assessmentId, message);
-      }
-
-      await this.updateJobStatus(jobId, 'FAILED', message);
-      return Result.fail(new Error(`Job processing failed: ${message}`));
+      this.logger.error('Assessment processing failed', { assessmentId, error: message });
+      await this.markAssessmentFailed(assessmentId, message);
+      return Result.fail(new Error(`Assessment processing failed: ${message}`));
     }
   }
 
@@ -206,22 +171,6 @@ export class ProcessAssessmentJob implements IBackgroundJob<string> {
       }
     } catch (error) {
       this.logger.error('Error marking assessment as failed', { assessmentId, error });
-    }
-  }
-
-  private async updateJobStatus(jobId: string, status: 'FAILED' | 'SUCCESS', errorMessage?: string): Promise<void> {
-    try {
-      await this.prisma.assessmentJob.update({
-        where: { id: jobId },
-        data: {
-          status,
-          errorMessage: errorMessage || null,
-          retryCount: status === 'FAILED' ? { increment: 1 } : undefined,
-          processedAt: new Date(),
-        },
-      });
-    } catch (error) {
-      this.logger.error('Failed to update job status', { jobId, error });
     }
   }
 }

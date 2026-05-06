@@ -4,16 +4,19 @@ import type { IBankConnectionRepository } from '../types/bankConnection.types';
 import type { ILogger } from '../../shared/logging';
 import type { TinkOAuthService } from './TinkOAuthService';
 import { BankDataExtractionService, IncomeBreakdown, ExpenseBreakdown } from './BankDataExtractionService';
-import type { IJobDispatcher } from '../../../core/application/services/IJobDispatcher';
-import { ASSESSMENT_STATUS } from '@/features/referenceData/domain/entities/assessment-status';
+import type { IEventHandler } from '../../../core/application/services/IEventHandler';
+import type { AssessmentReadyForProcessingEvent } from '@/features/referenceData/domain/events/AssessmentReadyForProcessingEvent';
+import { Assessment } from '@/features/referenceData/domain/entities';
+import type { IAssessmentRepository } from '@/features/referenceData/domain/entities';
 
 export class HandleBankOAuthCallbackUseCase {
   constructor(
     private repository: IBankConnectionRepository,
+    private assessmentRepository: IAssessmentRepository,
     private tinkService: TinkOAuthService,
     private prisma: PrismaClient,
     private logger: ILogger,
-    private jobDispatcher: IJobDispatcher,
+    private eventHandler: IEventHandler<AssessmentReadyForProcessingEvent>,
   ) { }
 
   async execute(
@@ -109,29 +112,43 @@ export class HandleBankOAuthCallbackUseCase {
         },
       });
 
-      // Create Assessment record with status PENDING
-      const assessmentData = {
-        customerId: connection.customerId,
-        bankConnectionId: connection.id,
-        monthlyIncome: income.total,
-        monthlyExpenses: expenses.total,
-        monthlyBill: customer.monthlyBill ?? 0,
-        arrears: customer.arrears ?? null,
-        status: ASSESSMENT_STATUS.PENDING,
-      };
+      // Artificial delay to allow frontend to show holding screen
+      const assessmentCreationDelayMs = parseInt(process.env.ASSESSMENT_CREATION_DELAY_MS ?? '0', 10);
+      if (assessmentCreationDelayMs > 0) {
+        this.logger.info('Delaying assessment creation', { delayMs: assessmentCreationDelayMs });
+        await new Promise(resolve => setTimeout(resolve, assessmentCreationDelayMs));
+      }
 
-      // Generate ID before saving
-      const { id: assessmentId } = await this.prisma.assessment.create({
-        data: assessmentData,
+      // Create Assessment aggregate
+      const assessment = Assessment.create(connection.customerId, connection.id);
+
+      // Set customer billing information
+      assessment.setBillingInfo(
+        customer.monthlyBill ?? 0,
+        customer.arrears ?? null
+      );
+
+      // Enrich with bank data
+      assessment.enrichWithBankData(income.total, expenses.total, {
+        incomeBreakdown: JSON.stringify(income),
+        expenseBreakdown: JSON.stringify(expenses),
+        expensesByCategory: JSON.stringify(expenseData),
+        incomeHistory: JSON.stringify(incomeData),
+        incomeSources: JSON.stringify(income),
+        factors: null,
+        paymentPlans: null,
       });
 
-      // Create AssessmentJob record
-      const { id: jobId } = await this.prisma.assessmentJob.create({
-        data: {
-          assessmentId,
-          status: 'PENDING',
-        },
-      });
+      // Mark as ready for processing (raises AssessmentReadyForProcessingEvent)
+      assessment.markReadyForProcessing();
+
+      // Save assessment with raised event
+      const saveResult = await this.assessmentRepository.save(assessment);
+      if (saveResult.isFail) {
+        return Result.fail(saveResult.getError() || new Error('Failed to save assessment'));
+      }
+
+      const savedAssessment = saveResult.getOrThrow();
 
       // Mark connection as data retrieved
       connection.markDataRetrieved();
@@ -142,13 +159,18 @@ export class HandleBankOAuthCallbackUseCase {
         );
       }
 
-      // Dispatch job for background processing — returns immediately
-      await this.jobDispatcher.dispatch(jobId);
+      // Get domain events from the aggregate and publish them
+      const events = assessment.getDomainEvents();
+      for (const event of events) {
+        if (event.getEventName() === 'AssessmentReadyForProcessing') {
+          await this.eventHandler.handle(event as AssessmentReadyForProcessingEvent);
+        }
+      }
 
-      this.logger.info('OAuth callback handled and referenceData created', {
+      this.logger.info('OAuth callback handled and assessment created with event published', {
         connectionId: connection.id,
         customerId: connection.customerId,
-        assessmentId,
+        assessmentId: savedAssessment.getId(),
         monthlyIncome: income.total,
         monthlyExpenses: expenses.total,
       });
@@ -157,7 +179,7 @@ export class HandleBankOAuthCallbackUseCase {
         connectionId: connection.id,
         totalExpenses: expenses.total,
         totalIncome: income.total,
-        assessmentId,
+        assessmentId: savedAssessment.getId(),
         incomeBreakdown: income,
         expenseBreakdown: expenses,
       });

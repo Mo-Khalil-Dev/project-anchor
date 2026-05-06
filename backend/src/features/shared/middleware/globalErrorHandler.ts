@@ -1,9 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { DomainError } from '@/core/domain/errors/domainError';
-import { ApplicationError } from '@/core/domain/errors/applicationError';
-import { ValidationError } from '@/core/domain/errors/validationError';
 import { v4 as uuidv4 } from 'uuid';
 import type { ILogger } from '../logging';
+import { ApplicationError, ValidationError, DomainError } from '../../../core/domain/errors';
 
 export function globalErrorHandler(logger: ILogger) {
   return (err: unknown, req: Request, res: Response, _next: NextFunction): void => {

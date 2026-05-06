@@ -12,22 +12,22 @@ import {
   SUSTAINABILITY_SCORE,
   type SustainabilityScore,
 } from '@/features/referenceData/domain/entities/sustainability-score';
-import { AssessmentCreatedEvent, AssessmentCompletedEvent, AssessmentFailedEvent, PaymentPlanSelectedEvent } from '../events';
+import { AssessmentCreatedEvent, AssessmentCompletedEvent, AssessmentFailedEvent, PaymentPlanSelectedEvent, AssessmentReadyForProcessingEvent } from '../events';
 
 export class Assessment extends AggregateRoot<string> {
   private readonly customerId: string;
   private readonly bankConnectionId: string | null;
-  private readonly monthlyIncome: number;
-  private readonly monthlyExpenses: number;
-  private readonly monthlyBill: number;
-  private readonly arrears: number | null;
-  private readonly incomeBreakdown: string | null;
-  private readonly expenseBreakdown: string | null;
-  private readonly expensesByCategory: string | null;
-  private readonly incomeHistory: string | null;
-  private readonly incomeSources: string | null;
-  private readonly factors: string | null;
-  private readonly paymentPlans: string | null;
+  private monthlyIncome: number;
+  private monthlyExpenses: number;
+  private monthlyBill: number;
+  private arrears: number | null;
+  private incomeBreakdown: string | null;
+  private expenseBreakdown: string | null;
+  private expensesByCategory: string | null;
+  private incomeHistory: string | null;
+  private incomeSources: string | null;
+  private factors: string | null;
+  private paymentPlans: string | null;
   private selectedPlan: string | null;
   private updatedAt: Date;
   private status: AssessmentStatus;
@@ -259,6 +259,48 @@ export class Assessment extends AggregateRoot<string> {
       new PaymentPlanSelectedEvent(this.id, this.getVersion(), {
         planType,
         selectedAt: new Date(),
+      })
+    );
+  }
+
+  setBillingInfo(monthlyBill: number, arrears: number | null): void {
+    this.monthlyBill = monthlyBill;
+    this.arrears = arrears;
+  }
+
+  enrichWithBankData(
+    income: number,
+    expenses: number,
+    breakdown: {
+      incomeBreakdown?: string | null;
+      expenseBreakdown?: string | null;
+      expensesByCategory?: string | null;
+      incomeHistory?: string | null;
+      incomeSources?: string | null;
+      factors?: string | null;
+      paymentPlans?: string | null;
+    }
+  ): void {
+    this.monthlyIncome = income;
+    this.monthlyExpenses = expenses;
+    this.incomeBreakdown = breakdown.incomeBreakdown ?? null;
+    this.expenseBreakdown = breakdown.expenseBreakdown ?? null;
+    this.expensesByCategory = breakdown.expensesByCategory ?? null;
+    this.incomeHistory = breakdown.incomeHistory ?? null;
+    this.incomeSources = breakdown.incomeSources ?? null;
+    this.factors = breakdown.factors ?? null;
+    this.paymentPlans = breakdown.paymentPlans ?? null;
+    this.updatedAt = new Date();
+  }
+
+  markReadyForProcessing(): void {
+    this.status = ASSESSMENT_STATUS.PENDING;
+    this.updatedAt = new Date();
+    this.incrementVersion();
+
+    this.addDomainEvent(
+      new AssessmentReadyForProcessingEvent(this.id, this.getVersion(), {
+        assessmentId: this.id,
       })
     );
   }

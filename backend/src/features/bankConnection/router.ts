@@ -10,12 +10,14 @@ import { TinkOAuthService } from './services/TinkOAuthService';
 import { PrismaBankConnectionRepository } from './repositories/PrismaBankConnectionRepository';
 import { PrismaCustomerRepository } from '../customer/repositories/PrismaCustomerRepository';
 import { PrismaAssessmentRepository } from '@/features/referenceData/infrastructure/repositories/prisma/PrismaAssessmentRepository';
+import { AssessmentReadyLocalDatabaseHandler } from '@/features/referenceData/infrastructure/handlers/AssessmentReadyLocalDatabaseHandler';
+import { AssessmentReadySnsEventHandler } from '@/features/referenceData/infrastructure/handlers/AssessmentReadySnsEventHandler';
+import type { IEventHandler } from '@/core/application/services/IEventHandler';
+import type { AssessmentReadyForProcessingEvent } from '@/features/referenceData/domain/events/AssessmentReadyForProcessingEvent';
+import type { IBackgroundJob } from '@/core/application/services/IBackgroundJob';
 import { ProcessAssessmentJob } from '@/features/referenceData/infrastructure/services/jobs/ProcessAssessmentJob';
 import { CompleteAssessmentUseCase } from '@/features/referenceData/application/useCases/CompleteAssessmentUseCase';
 import { FailAssessmentUseCase } from '@/features/referenceData/application/useCases/FailAssessmentUseCase';
-import { LocalJobDispatcher } from '../../core/infrastructure/jobDispatchers/LocalJobDispatcher';
-import { AwsSqsJobDispatcher } from '../../core/infrastructure/jobDispatchers/AwsSqsJobDispatcher';
-import type { IJobDispatcher } from '../../core/application/services/IJobDispatcher';
 
 export function createBankConnectionRouter(
   config: AppConfig,
@@ -39,22 +41,35 @@ export function createBankConnectionRouter(
     completeAssessmentUseCase,
     failAssessmentUseCase,
   );
-  const dispatchMode = process.env.JOB_DISPATCH_MODE ?? 'local';
-  const delayMs = parseInt(process.env.JOB_DISPATCH_DELAY_MS ?? '35000', 10);
-  const sqsQueueUrl = process.env.AWS_BACKGROUND_JOB_QUEUE_URL;
 
-  let jobDispatcher: IJobDispatcher;
-  if (dispatchMode === 'sqs') {
-    if (!sqsQueueUrl) {
-      throw new Error('AWS_BACKGROUND_JOB_QUEUE_URL must be set when JOB_DISPATCH_MODE=sqs');
-    }
-    jobDispatcher = new AwsSqsJobDispatcher(sqsQueueUrl, logger);
+  // Environment-based event handler selection
+  const environment = process.env.NODE_ENV ?? 'development';
+  let eventHandler: IEventHandler<AssessmentReadyForProcessingEvent>;
+
+  if (environment === 'production') {
+    // Production: use SNS for event publishing
+    const awsRegion = process.env.AWS_REGION ?? 'us-east-1';
+    const topicArn = process.env.AWS_ASSESSMENT_TOPIC_ARN;
+    eventHandler = new AssessmentReadySnsEventHandler(logger, awsRegion, topicArn);
   } else {
-    jobDispatcher = new LocalJobDispatcher(processJobService, logger, delayMs);
+    // Development/local: use local database handler for simple event processing
+    const delayMs = parseInt(process.env.JOB_DISPATCH_DELAY_MS ?? '35000', 10);
+    eventHandler = new AssessmentReadyLocalDatabaseHandler(
+      processJobService as unknown as IBackgroundJob<string>,
+      logger,
+      delayMs
+    );
   }
 
   const initiateOAuth = new InitiateBankOAuthUseCase(bankConnectionRepository, customerRepository, tinkService, logger);
-  const handleCallback = new HandleBankOAuthCallbackUseCase(bankConnectionRepository, tinkService, prisma, logger, jobDispatcher);
+  const handleCallback = new HandleBankOAuthCallbackUseCase(
+    bankConnectionRepository,
+    assessmentRepository,
+    tinkService,
+    prisma,
+    logger,
+    eventHandler
+  );
 
   const controller = new BankConnectionController(initiateOAuth, handleCallback, customerRepository);
 
