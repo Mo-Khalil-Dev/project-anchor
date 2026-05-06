@@ -48,6 +48,7 @@ export class GetReferenceDataUseCase {
           accountSetup: null,
           bankConnection: null,
           assessment: null,
+          mandate: null,
           paymentPlans: [],
           nextStep: 'ACCOUNT_SETUP',
         });
@@ -73,13 +74,38 @@ export class GetReferenceDataUseCase {
         : bankConnectionResult.getOrElse(null);
       const assessment = assessmentResult.isFail ? null : assessmentResult.getOrElse(null);
 
-      const nextStep = this.determineNextStep(accountSetup, bankConnection, assessment);
+      // Fetch mandate data if assessment exists
+      let mandate = null;
+      if (assessment) {
+        const mandateRecord = await prisma.mandate.findFirst({
+          where: { customerId },
+          orderBy: { createdAt: 'desc' },
+          select: {
+            id: true,
+            status: true,
+            gocardlessId: true,
+            createdAt: true,
+          },
+        });
+
+        if (mandateRecord) {
+          mandate = {
+            id: mandateRecord.id,
+            status: mandateRecord.status as 'PENDING' | 'CREATED' | 'ACTIVE' | 'FAILED' | 'CANCELLED',
+            gocardlessId: mandateRecord.gocardlessId,
+            createdAt: mandateRecord.createdAt.toISOString(),
+          };
+        }
+      }
+
+      const nextStep = this.determineNextStep(accountSetup, bankConnection, assessment, mandate);
       this.logger.info('Determined next step', { userId, customerId, nextStep });
 
       const referenceData: ReferenceData = {
         accountSetup,
         bankConnection,
         assessment,
+        mandate,
         paymentPlans:
           assessment?.status === 'COMPLETED' ? (assessment as any).paymentPlans || [] : [],
         nextStep,
@@ -95,7 +121,7 @@ export class GetReferenceDataUseCase {
     }
   }
 
-  private determineNextStep(accountSetup: any, bankConnection: any, assessment: any): NextStep {
+  private determineNextStep(accountSetup: any, bankConnection: any, assessment: any, mandate: any): NextStep {
     // Step 1: Check account setup
     if (!accountSetup) {
       return 'ACCOUNT_SETUP';
@@ -124,7 +150,18 @@ export class GetReferenceDataUseCase {
     }
 
     if (assessment.status === 'COMPLETED') {
-      return 'PAYMENT_PLANS';
+      // Step 4: Check mandate status if assessment is complete
+      if (!mandate) {
+        return 'DIRECT_DEBIT_SETUP';
+      }
+
+      if (mandate.status === 'PENDING') {
+        return 'DIRECT_DEBIT_PENDING';
+      }
+
+      if (mandate.status === 'CREATED' || mandate.status === 'ACTIVE') {
+        return 'PAYMENT_PLANS';
+      }
     }
 
     return 'COMPLETE';
