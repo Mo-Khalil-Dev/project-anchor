@@ -12,16 +12,18 @@ COPY package*.json ./
 # Install all dependencies (including dev)
 RUN npm ci
 
-# Copy source and prisma files
-COPY src ./src
+# Copy prisma files first
 COPY prisma ./prisma
+
+# Generate Prisma Client BEFORE TypeScript compilation
+RUN npx prisma generate
+
+# Copy source code
+COPY src ./src
 COPY tsconfig.json ./
 
 # Compile TypeScript
 RUN npm run build
-
-# Generate Prisma Client with Linux targets
-RUN npx prisma generate
 
 # Runtime stage
 FROM node:18-alpine
