@@ -51,10 +51,15 @@ export function useDirectDebitSetup() {
     setError(null);
 
     try {
+      const baseUrl = window.location.origin;
       const { authorizationUrl } = await paymentService.initiateDirectDebit({
         accountHolderName: form.accountHolderName.trim(),
+        redirectUri: `${baseUrl}/payment-plans/dd-callback`,
+        exitUri: `${baseUrl}/payment-plans/direct-debit`,
       });
+
       // Redirect to GoCardless hosted authorization page
+      // After user authorizes, GC will redirect to /payment-plans/dd-callback
       window.location.href = authorizationUrl;
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to initiate Direct Debit setup';
