@@ -7,7 +7,7 @@ import { GetBankConnectionQuery } from './GetBankConnectionQuery';
 import { GetAssessmentQuery } from './GetAssessmentQuery';
 import type { ICustomerRepository } from '../../../customer/types/customer.types';
 import type { IBankConnectionRepository } from '../../../bankConnection/types/bankConnection.types';
-import type { IAssessmentRepository } from '../../domain/entities';
+import type { IAssessmentRepository } from '@/features/assessment/domain/entities';
 
 export class GetReferenceDataUseCase {
   private getAccountSetupQuery: GetAccountSetupQuery;

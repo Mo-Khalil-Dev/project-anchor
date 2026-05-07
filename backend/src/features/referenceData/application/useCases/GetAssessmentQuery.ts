@@ -1,13 +1,13 @@
 import { Result } from '../../../shared/result';
 import type { ILogger } from '../../../shared/logging';
-import type { IAssessmentRepository } from '../../domain/entities';
+import type { IAssessmentRepository } from '@/features/assessment/domain/entities';
 import type { AssessmentData } from './GetAssessmentQuery.dto';
 import type { ApplicationError } from '../../../../core/domain/errors';
-import { AssessmentMapper } from '../../infrastructure/mappers';
+import { AssessmentMapper } from '../../../assessment/infrastructure/mappers';
 import {
   AssessmentRepositoryQueryError,
   GetAssessmentQueryExecutionError,
-} from '../errors/GetAssessmentQuery.errors';
+} from '@/features/assessment/application/errors/GetAssessmentQuery.errors';
 
 export class GetAssessmentQuery {
   private assessmentMapper: AssessmentMapper;

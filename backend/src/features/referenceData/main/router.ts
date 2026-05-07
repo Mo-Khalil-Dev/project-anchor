@@ -3,13 +3,14 @@ import { Router as ExpressRouter } from 'express';
 import type { ILogger } from '../../shared/logging';
 import { PrismaCustomerRepository } from '../../customer/repositories/PrismaCustomerRepository';
 import { PrismaBankConnectionRepository } from '../../bankConnection/repositories/PrismaBankConnectionRepository';
-import { PrismaAssessmentRepository } from '../infrastructure/repositories/prisma/PrismaAssessmentRepository';
-import { ReferenceDataController, type AuthenticatedRequest } from '@/features/referenceData/infrastructure/controllers/ReferenceDataController';
+import { PrismaAssessmentRepository } from '@/features/assessment/infrastructure/repositories/prisma/PrismaAssessmentRepository';
 import { GetReferenceDataUseCase } from '../application/useCases/GetReferenceDataUseCase';
-import { CompleteAssessmentUseCase } from '../application/useCases/CompleteAssessmentUseCase';
-import { FailAssessmentUseCase } from '../application/useCases/FailAssessmentUseCase';
-import { SelectPaymentPlanUseCase } from '../application/useCases/SelectPaymentPlanUseCase';
+import { CompleteAssessmentUseCase } from '@/features/assessment/application/useCases/CompleteAssessmentUseCase';
+import { FailAssessmentUseCase } from '@/features/assessment/application/useCases/FailAssessmentUseCase';
+
 import { asyncHandler } from '../../shared/middleware/globalErrorHandler';
+import { ReferenceDataController } from '@/features/referenceData/infrastructure/controllers/ReferenceDataController';
+import prisma from '@/features/shared/utils/db';
 
 export function createReferenceDataRouter(
   logger: ILogger,
@@ -21,7 +22,7 @@ export function createReferenceDataRouter(
   // Create repositories
   const customerRepository = new PrismaCustomerRepository();
   const bankConnectionRepository = new PrismaBankConnectionRepository();
-  const assessmentRepository = new PrismaAssessmentRepository(logger);
+  const assessmentRepository = new PrismaAssessmentRepository(prisma, logger);
 
   // Create use cases
   const getReferenceDataUseCase = new GetReferenceDataUseCase(
@@ -32,14 +33,12 @@ export function createReferenceDataRouter(
   );
   const completeAssessmentUseCase = new CompleteAssessmentUseCase(assessmentRepository, logger);
   const failAssessmentUseCase = new FailAssessmentUseCase(assessmentRepository, logger);
-  const selectPaymentPlanUseCase = new SelectPaymentPlanUseCase(assessmentRepository, logger);
 
   // Create controller
   const controller = new ReferenceDataController(
     getReferenceDataUseCase,
     completeAssessmentUseCase,
     failAssessmentUseCase,
-    selectPaymentPlanUseCase,
   );
 
   // ============ ROUTES ============
@@ -55,45 +54,6 @@ export function createReferenceDataRouter(
       await controller.getReferenceData(req, res);
     }),
   );
-
-  /**
-   * POST /api/reference-data/assessments/:assessmentId/complete
-   * Protected: requires authentication
-   * Marks assessment as completed
-   */
-  router.post(
-    '/assessments/:assessmentId/complete',
-    authenticateRequest,
-    asyncHandler(async (req, res) => {
-      await controller.completeAssessment(req as AuthenticatedRequest, res);
-    }),
-  );
-
-  /**
-   * POST /api/reference-data/assessments/:assessmentId/fail
-   * Protected: requires authentication
-   * Marks assessment as failed with reason
-   */
-  router.post(
-    '/assessments/:assessmentId/fail',
-    authenticateRequest,
-    asyncHandler(async (req, res) => {
-      await controller.failAssessment(req as AuthenticatedRequest, res);
-    }),
-  );
-
-  /**
-   * POST /api/reference-data/assessments/:assessmentId/select-plan
-   * Protected: requires authentication
-   * Records selected payment plan
-   */
-  router.post(
-    '/assessments/:assessmentId/select-plan',
-    authenticateRequest,
-    asyncHandler(async (req, res) => {
-      await controller.selectPaymentPlan(req as AuthenticatedRequest, res);
-    }),
-  );
-
+  
   return router;
 }

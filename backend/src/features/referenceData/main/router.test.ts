@@ -8,7 +8,7 @@ jest.mock('../../bankConnection/repositories/PrismaBankConnectionRepository', ()
   PrismaBankConnectionRepository: jest.fn().mockImplementation(() => ({})),
 }));
 
-jest.mock('../infrastructure/repositories/prisma/PrismaAssessmentRepository', () => ({
+jest.mock('@/features/assessment/infrastructure/repositories/prisma/PrismaAssessmentRepository', () => ({
   PrismaAssessmentRepository: jest.fn().mockImplementation(() => ({})),
 }));
 

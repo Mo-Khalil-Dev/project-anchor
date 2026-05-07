@@ -1,12 +1,12 @@
 import { Result } from '../../../shared/result';
 import type { ILogger } from '../../../shared/logging';
-import { Assessment } from '../../domain/entities';
-import { ASSESSMENT_STATUS } from '../../domain/entities/assessment-status';
+import { Assessment } from '@/features/assessment/domain/entities';
+import { ASSESSMENT_STATUS } from '@/features/assessment/domain/entities/assessment-status';
 import { GetAssessmentQuery } from './GetAssessmentQuery';
 import {
   AssessmentRepositoryQueryError,
   GetAssessmentQueryExecutionError,
-} from '../errors/GetAssessmentQuery.errors';
+} from '@/features/assessment/application/errors/GetAssessmentQuery.errors';
 
 const createAssessmentProps = () => ({
     id: 'assessment-1',
