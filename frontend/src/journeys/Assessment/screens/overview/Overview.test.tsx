@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { makeAssessment } from '@/test/fixtures';
-import { AssessmentOverview } from './Overview';
+import { AssessmentOverview } from '.';
 
 vi.mock('./useOverview');
 vi.mock('@/components/layouts/CustomerLayout', () => ({

@@ -1,7 +1,7 @@
 import { findUtilityType } from '../../data/utilityTypes';
 import type { UtilityType } from '../../types';
-import { InputField } from '../inputField/InputField';
-import { PrimaryButton } from '../primaryButton/PrimaryButton';
+import { InputField } from '../inputField';
+import { PrimaryButton } from '../primaryButton';
 import { useAccountDetailsStep } from './useAccountDetailsStep';
 import styles from './AccountDetailsStep.module.css';
 

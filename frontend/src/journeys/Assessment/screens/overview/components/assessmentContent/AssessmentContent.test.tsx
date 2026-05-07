@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { makeAssessment } from '@/test/fixtures';
-import { AssessmentContent } from './AssessmentContent';
+import { AssessmentContent } from '.';
 
 vi.mock('../assessmentPendingView/AssessmentPendingView', () => ({
   AssessmentPendingView: () => <div>pending-view</div>,

@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { OverviewLoadingState } from './OverviewLoadingState';
+import { OverviewLoadingState } from '.';
 
 describe('OverviewLoadingState', () => {
   it('renders the loading message', () => {

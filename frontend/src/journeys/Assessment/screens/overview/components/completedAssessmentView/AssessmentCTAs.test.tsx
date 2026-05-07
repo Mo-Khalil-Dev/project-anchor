@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { AssessmentCTAs } from './AssessmentCTAs';
+import { AssessmentCTAs } from '.';
 
 describe('AssessmentCTAs', () => {
   it('renders the Explore Payment Plans button', () => {

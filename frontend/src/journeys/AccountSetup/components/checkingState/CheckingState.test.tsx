@@ -1,5 +1,5 @@
 import { act, render, screen } from '@testing-library/react';
-import { CheckingState } from './CheckingState';
+import { CheckingState } from '.';
 
 describe('CheckingState', () => {
   beforeEach(() => vi.useFakeTimers());

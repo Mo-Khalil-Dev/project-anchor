@@ -1,5 +1,5 @@
 import styles from './StatCardsGrid.module.css';
-import { StatCard } from './StatCard';
+import { StatCard } from '.';
 
 interface Props { monthlyIncome: number; monthlyExpenses: number; disposableIncome: number; }
 

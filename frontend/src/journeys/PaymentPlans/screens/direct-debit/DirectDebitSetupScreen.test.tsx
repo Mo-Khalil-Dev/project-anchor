@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { configureStore } from '@reduxjs/toolkit';
 import customerReducer from '@/store/slices/customerSlice';
-import { DirectDebitSetupScreen } from './DirectDebitSetupScreen';
+import { DirectDebitSetupScreen } from '.';
 import { useAssessmentBreakdown } from '@/hooks/useAssessmentBreakdown';
 import type { AssessmentDetailedDTO } from '@/types';
 

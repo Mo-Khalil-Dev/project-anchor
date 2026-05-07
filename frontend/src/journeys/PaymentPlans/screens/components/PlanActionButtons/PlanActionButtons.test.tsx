@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { PlanActionButtons } from './PlanActionButtons';
+import { PlanActionButtons } from '.';
 
 describe('PlanActionButtons', () => {
   it('renders select and back buttons', () => {

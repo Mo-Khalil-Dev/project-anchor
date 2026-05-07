@@ -1,7 +1,7 @@
 import type { LinkDetails } from '../../types';
-import { AccountDetailsStep } from '../accountDetailsStep/AccountDetailsStep';
-import { AccountSetupHeader } from '../accountSetupHeader/AccountSetupHeader';
-import { UtilityTypeStep } from '../utilityTypeStep/UtilityTypeStep';
+import { AccountDetailsStep } from '../accountDetailsStep';
+import { AccountSetupHeader } from '../accountSetupHeader';
+import { UtilityTypeStep } from '../utilityTypeStep';
 import { useLinkingState } from './useLinkingState';
 import styles from './LinkingState.module.css';
 

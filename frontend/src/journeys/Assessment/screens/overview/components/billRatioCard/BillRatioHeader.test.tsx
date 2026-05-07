@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { BillRatioHeader } from './BillRatioHeader';
+import { BillRatioHeader } from '.';
 
 describe('BillRatioHeader', () => {
   it('renders the ratio percentage', () => {

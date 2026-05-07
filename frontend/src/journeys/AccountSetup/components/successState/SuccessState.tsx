@@ -1,9 +1,9 @@
 import { findUtilityType } from '../../data/utilityTypes';
 import type { LinkDetails } from '../../types';
-import { NextStepCallout } from '../nextStepCallout/NextStepCallout';
-import { PrimaryButton } from '../primaryButton/PrimaryButton';
-import { StatusIcon } from '../statusIcon/StatusIcon';
-import { SummaryCard, type SummaryRow } from '../summaryCard/SummaryCard';
+import { NextStepCallout } from '../nextStepCallout';
+import { PrimaryButton } from '../primaryButton';
+import { StatusIcon } from '../statusIcon';
+import { SummaryCard, type SummaryRow } from '../summaryCard';
 import styles from './SuccessState.module.css';
 
 interface Props {

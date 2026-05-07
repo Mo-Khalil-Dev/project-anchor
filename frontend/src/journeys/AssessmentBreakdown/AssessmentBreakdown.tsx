@@ -3,10 +3,10 @@ import { useAssessmentBreakdown } from '@/hooks/useAssessmentBreakdown';
 import { useJourneyGuard } from '@/hooks/useJourneyGuard';
 import { CustomerLayout } from '@/components/layouts/CustomerLayout';
 import { Button } from '@/components/core';
-import { OverviewTab } from './OverviewTab';
-import { ExpensesTab } from './ExpensesTab';
-import { IncomeStabilityTab } from './IncomeStabilityTab';
-import { WhyThisHappenedTab } from './WhyThisHappenedTab';
+import { OverviewTab } from '.';
+import { ExpensesTab } from '.';
+import { IncomeStabilityTab } from '.';
+import { WhyThisHappenedTab } from '.';
 
 const TABS = [
   { id: 'overview', label: 'Overview' },

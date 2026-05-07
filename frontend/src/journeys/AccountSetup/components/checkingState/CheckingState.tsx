@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { SpinnerScreen } from '../spinnerScreen/SpinnerScreen';
+import { SpinnerScreen } from '../spinnerScreen';
 
 interface Props {
   onAdvance: () => void;

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { BalancedPlanDetail } from './BalancedPlanDetail';
+import { BalancedPlanDetail } from '.';
 import type { AssessmentDetailedDTO } from '@/types';
 
 vi.mock('./useBalancedPlanDetail', () => ({

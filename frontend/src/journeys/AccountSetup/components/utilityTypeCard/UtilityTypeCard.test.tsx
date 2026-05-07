@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { UTILITY_TYPES } from '../../data/utilityTypes';
-import { UtilityTypeCard } from './UtilityTypeCard';
+import { UtilityTypeCard } from '.';
 
 const water = UTILITY_TYPES[0];
 

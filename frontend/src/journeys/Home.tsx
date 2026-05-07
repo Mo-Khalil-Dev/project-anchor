@@ -340,7 +340,11 @@ export const Home = () => {
               }}
               onClick={(e) => {
                 e.stopPropagation();
-                option.primary ? handleBankConnection() : handleUploadStatements();
+                if (option.primary) {
+                  handleBankConnection();
+                } else {
+                  handleUploadStatements();
+                }
               }}
             >
               {option.cta}

@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { configureStore } from '@reduxjs/toolkit';
 import customerReducer from '@/store/slices/customerSlice';
-import { TermsAndConditions } from './TermsAndConditions';
+import { TermsAndConditions } from '.';
 import type { AssessmentDetailedDTO } from '@/types';
 
 const mockAssessment: AssessmentDetailedDTO = {

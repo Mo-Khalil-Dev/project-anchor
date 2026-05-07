@@ -1,8 +1,8 @@
 import { Assessment } from '@/journeys/Assessment/models/assessment';
-import { AssessmentPendingView } from '../assessmentPendingView/AssessmentPendingView';
-import { CompletedAssessmentView } from '../completedAssessmentView/CompletedAssessmentView';
+import { AssessmentPendingView } from '../assessmentPendingView';
+import { CompletedAssessmentView } from '../completedAssessmentView';
 import styles from './AssessmentContent.module.css';
-import { FailedBanner } from './FailedBanner';
+import { FailedBanner } from '.';
 
 interface Props {
   assessment: Assessment;

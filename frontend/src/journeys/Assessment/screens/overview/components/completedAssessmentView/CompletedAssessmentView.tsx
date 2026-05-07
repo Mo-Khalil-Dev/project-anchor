@@ -1,9 +1,9 @@
 import { HardshipBadge } from '@/components/core/HardshipBadge';
 import { Assessment } from '@/journeys/Assessment/models/assessment';
-import { BillRatioCard } from '../billRatioCard/BillRatioCard';
-import { FormulaCard } from '../formulaCard/FormulaCard';
-import { StatCardsGrid } from '../statCardsGrid/StatCardsGrid';
-import { AssessmentCTAs } from './AssessmentCTAs';
+import { BillRatioCard } from '../billRatioCard';
+import { FormulaCard } from '../formulaCard';
+import { StatCardsGrid } from '../statCardsGrid';
+import { AssessmentCTAs } from '.';
 import styles from './CompletedAssessmentView.module.css';
 
 interface Props {

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { WarningBanner } from './WarningBanner';
+import { WarningBanner } from '.';
 
 describe('WarningBanner', () => {
   it('renders warning title', () => {

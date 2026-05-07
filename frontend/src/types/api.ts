@@ -47,7 +47,7 @@ export interface PaymentPlansResponse extends ApiResponse<PaymentPlan[]> {
 }
 
 // ── Cases API ──────────────────────────────────────────────────
-export interface GetCaseResponse extends ApiResponse<Case> {}
+export type GetCaseResponse = ApiResponse<Case>;
 
 export interface ListCasesRequest {
   page?: number;
@@ -57,8 +57,7 @@ export interface ListCasesRequest {
   assignedTo?: string;
 }
 
-export interface ListCasesResponse
-  extends ApiResponse<PaginatedResponse<Case>> {}
+export type ListCasesResponse = ApiResponse<PaginatedResponse<Case>>;
 
 export interface UpdateCaseRequest {
   status?: string;
@@ -67,7 +66,7 @@ export interface UpdateCaseRequest {
   assignedTo?: string;
 }
 
-export interface UpdateCaseResponse extends ApiResponse<Case> {}
+export type UpdateCaseResponse = ApiResponse<Case>;
 
 // ── Officer Actions ───────────────────────────────────────────
 export interface ModifyPlanRequest {
@@ -93,7 +92,7 @@ export interface EscalateRequest {
 }
 
 // ── Health Check ───────────────────────────────────────────────
-export interface HealthCheckResponse extends ApiResponse<{
+export type HealthCheckResponse = ApiResponse<{
   status: 'healthy' | 'degraded' | 'unhealthy';
   timestamp: string;
-}> {}
+}>;

@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { BillExplanation } from './BillExplanation';
+import { BillExplanation } from '.';
 
 describe('BillExplanation', () => {
   it('renders the rounded percentage in context', () => {

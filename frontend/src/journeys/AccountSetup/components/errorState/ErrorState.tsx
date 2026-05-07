@@ -1,10 +1,10 @@
 import { findUtilityType } from '../../data/utilityTypes';
 import type { LinkDetails } from '../../types';
-import { CommonReasonsList } from '../commonReasonsList/CommonReasonsList';
-import { PrimaryButton } from '../primaryButton/PrimaryButton';
-import { SecondaryButton } from '../secondaryButton/SecondaryButton';
-import { StatusIcon } from '../statusIcon/StatusIcon';
-import { SummaryCard, type SummaryRow } from '../summaryCard/SummaryCard';
+import { CommonReasonsList } from '../commonReasonsList';
+import { PrimaryButton } from '../primaryButton';
+import { SecondaryButton } from '../secondaryButton';
+import { StatusIcon } from '../statusIcon';
+import { SummaryCard, type SummaryRow } from '../summaryCard';
 import styles from './ErrorState.module.css';
 
 const COMMON_REASONS = [

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ConfirmationGate } from './ConfirmationGate';
+import { ConfirmationGate } from '.';
 
 describe('ConfirmationGate', () => {
   it('renders checkbox when not confirmed', () => {

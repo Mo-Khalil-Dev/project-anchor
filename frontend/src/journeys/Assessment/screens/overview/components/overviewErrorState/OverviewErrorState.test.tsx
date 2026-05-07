@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { OverviewErrorState } from './OverviewErrorState';
+import { OverviewErrorState } from '.';
 
 describe('OverviewErrorState', () => {
   it('renders the error message', () => {

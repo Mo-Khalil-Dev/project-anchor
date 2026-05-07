@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { EmailNotifyCard } from './EmailNotifyCard';
+import { EmailNotifyCard } from '.';
 
 describe('EmailNotifyCard', () => {
   it('renders the title', () => {

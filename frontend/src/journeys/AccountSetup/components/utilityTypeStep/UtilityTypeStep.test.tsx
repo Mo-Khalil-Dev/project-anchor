@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react';
-import { UtilityTypeStep } from './UtilityTypeStep';
+import { UtilityTypeStep } from '.';
 
 describe('UtilityTypeStep', () => {
   it('renders the title and all three utility options', () => {

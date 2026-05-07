@@ -1,9 +1,9 @@
-import {CheckingState} from './components/checkingState/CheckingState';
-import {ErrorState} from './components/errorState/ErrorState';
-import {HelpState} from './components/helpState/HelpState';
-import {LinkingState} from './components/linkingState/LinkingState';
-import {RedirectState} from './components/redirectState/RedirectState';
-import {SuccessState} from './components/successState/SuccessState';
+import {CheckingState} from './components/checkingState';
+import {ErrorState} from './components/errorState';
+import {HelpState} from './components/helpState';
+import {LinkingState} from './components/linkingState';
+import {RedirectState} from './components/redirectState';
+import {SuccessState} from './components/successState';
 import {useAccountSetupPage} from './useAccountSetupPage';
 
 export function AccountSetupPage() {

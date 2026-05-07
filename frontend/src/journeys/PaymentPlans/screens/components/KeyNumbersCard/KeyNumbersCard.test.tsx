@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { KeyNumbersCard } from './KeyNumbersCard';
+import { KeyNumbersCard } from '.';
 
 describe('KeyNumbersCard', () => {
   it('renders all four key numbers', () => {

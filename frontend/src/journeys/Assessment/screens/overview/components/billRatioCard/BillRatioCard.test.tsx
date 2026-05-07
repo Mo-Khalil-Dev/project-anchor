@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { BillRatioCard } from './BillRatioCard';
+import { BillRatioCard } from '.';
 
 describe('BillRatioCard', () => {
   const defaultProps = { billRatio: 37.5, monthlyBill: 450, hardshipLevel: 'SEVERE' as const };

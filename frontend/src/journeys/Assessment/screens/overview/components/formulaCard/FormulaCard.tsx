@@ -1,5 +1,5 @@
 import styles from './FormulaCard.module.css';
-import { FormulaItem } from './FormulaItem';
+import { FormulaItem } from '.';
 
 interface Props { monthlyIncome: number; monthlyExpenses: number; disposableIncome: number; }
 

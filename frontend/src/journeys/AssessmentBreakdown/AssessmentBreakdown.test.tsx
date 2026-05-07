@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
-import { AssessmentBreakdown } from './AssessmentBreakdown';
+import { AssessmentBreakdown } from '.';
 import { useAssessmentBreakdown } from '../../hooks/useAssessmentBreakdown';
 import { useJourneyGuard } from '@/hooks/useJourneyGuard';
 import { MOCK_ASSESSMENT_DETAILED } from '../../mocks/assessmentMockData';

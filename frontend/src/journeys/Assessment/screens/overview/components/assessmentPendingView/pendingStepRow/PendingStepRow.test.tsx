@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { PendingStepRow } from './PendingStepRow';
+import { PendingStepRow } from '.';
 
 describe('PendingStepRow', () => {
   it('renders the label', () => {

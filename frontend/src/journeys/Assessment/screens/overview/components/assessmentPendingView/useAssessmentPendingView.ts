@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '@/types';
-import type { PendingStepStatus } from './pendingStepRow/PendingStepRow';
+import type { PendingStepStatus } from './pendingStepRow';
 
 export interface PendingStep {
   label: string;

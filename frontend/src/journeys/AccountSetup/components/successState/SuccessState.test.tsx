@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import type { LinkDetails } from '../../types';
-import { SuccessState } from './SuccessState';
+import { SuccessState } from '.';
 
 const details: LinkDetails = { utilityType: 'water', postcode: 'SW1A 1AA', accountRef: '12345' };
 

@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { FormulaItem } from './FormulaItem';
+import { FormulaItem } from '.';
 
 describe('FormulaItem', () => {
   it('renders the label', () => {

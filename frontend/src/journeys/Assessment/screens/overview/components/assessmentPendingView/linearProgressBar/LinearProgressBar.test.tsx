@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { LinearProgressBar } from './LinearProgressBar';
+import { LinearProgressBar } from '.';
 
 describe('LinearProgressBar', () => {
   it('renders fill width matching the progress value', () => {

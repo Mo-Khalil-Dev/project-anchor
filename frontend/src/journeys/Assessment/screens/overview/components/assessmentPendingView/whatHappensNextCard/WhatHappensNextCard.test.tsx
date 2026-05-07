@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { WhatHappensNextCard } from './WhatHappensNextCard';
+import { WhatHappensNextCard } from '.';
 
 describe('WhatHappensNextCard', () => {
   it('renders the section label', () => {

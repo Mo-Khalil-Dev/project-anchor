@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { makeAssessment } from '@/test/fixtures';
-import { CompletedAssessmentView } from './CompletedAssessmentView';
+import { CompletedAssessmentView } from '.';
 
 vi.mock('../statCardsGrid/StatCardsGrid', () => ({ StatCardsGrid: () => <div>stat-cards</div> }));
 vi.mock('../billRatioCard/BillRatioCard', () => ({ BillRatioCard: () => <div>bill-ratio-card</div> }));

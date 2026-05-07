@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { FormulaCard } from './FormulaCard';
+import { FormulaCard } from '.';
 
 describe('FormulaCard', () => {
   const defaultProps = { monthlyIncome: 3000, monthlyExpenses: 1800, disposableIncome: 1200 };

@@ -5,7 +5,7 @@ import authReducer, { setUser } from '@/store/slices/authSlice';
 import customerReducer from '@/store/slices/customerSlice';
 import adminReducer from '@/store/slices/adminSlice';
 import type { AuthUser } from '@/types';
-import { AssessmentPendingView } from './AssessmentPendingView';
+import { AssessmentPendingView } from '.';
 
 vi.mock('./circularProgress/CircularProgress', () => ({
   CircularProgress: ({ progress }: { progress: number }) => <div data-testid="circular">{progress}%</div>,

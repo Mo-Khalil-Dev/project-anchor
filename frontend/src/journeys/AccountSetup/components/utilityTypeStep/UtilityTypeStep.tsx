@@ -1,7 +1,7 @@
 import { UTILITY_TYPES } from '../../data/utilityTypes';
 import type { UtilityType } from '../../types';
-import { PrimaryButton } from '../primaryButton/PrimaryButton';
-import { UtilityTypeCard } from '../utilityTypeCard/UtilityTypeCard';
+import { PrimaryButton } from '../primaryButton';
+import { UtilityTypeCard } from '../utilityTypeCard';
 import styles from './UtilityTypeStep.module.css';
 
 interface Props {

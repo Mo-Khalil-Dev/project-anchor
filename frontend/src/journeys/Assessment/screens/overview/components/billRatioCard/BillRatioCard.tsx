@@ -1,8 +1,8 @@
 import { Assessment } from '@/journeys/Assessment/models/assessment';
 import styles from './BillRatioCard.module.css';
-import { BenchmarkBar } from './BenchmarkBar';
-import { BillExplanation } from './BillExplanation';
-import { BillRatioHeader } from './BillRatioHeader';
+import { BenchmarkBar } from '.';
+import { BillExplanation } from '.';
+import { BillRatioHeader } from '.';
 
 interface Props {
   billRatio: number;

@@ -1,9 +1,9 @@
-import { CircularProgress } from './circularProgress/CircularProgress';
-import { EmailNotifyCard } from './emailNotifyCard/EmailNotifyCard';
-import { LinearProgressBar } from './linearProgressBar/LinearProgressBar';
-import { PendingStepRow } from './pendingStepRow/PendingStepRow';
+import { CircularProgress } from './circularProgress';
+import { EmailNotifyCard } from './emailNotifyCard';
+import { LinearProgressBar } from './linearProgressBar';
+import { PendingStepRow } from './pendingStepRow';
 import { useAssessmentPendingView } from './useAssessmentPendingView';
-import { WhatHappensNextCard } from './whatHappensNextCard/WhatHappensNextCard';
+import { WhatHappensNextCard } from './whatHappensNextCard';
 import styles from './AssessmentPendingView.module.css';
 
 interface Props {

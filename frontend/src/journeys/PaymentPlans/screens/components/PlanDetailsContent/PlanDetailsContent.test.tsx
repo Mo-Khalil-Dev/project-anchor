@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { PlanDetailsContent } from './PlanDetailsContent';
+import { PlanDetailsContent } from '.';
 import type { PaymentPlanDTO, AssessmentDetailedDTO } from '../../../types';
 
 describe('PlanDetailsContent', () => {

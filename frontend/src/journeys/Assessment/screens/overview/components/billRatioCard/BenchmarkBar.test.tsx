@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { BenchmarkBar } from './BenchmarkBar';
+import { BenchmarkBar } from '.';
 
 describe('BenchmarkBar', () => {
   it('renders the rounded ratio label', () => {

@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { StatCardsGrid } from './StatCardsGrid';
+import { StatCardsGrid } from '.';
 
 describe('StatCardsGrid', () => {
   const defaultProps = { monthlyIncome: 3000, monthlyExpenses: 1800, disposableIncome: 1200 };

@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { CircularProgress } from './CircularProgress';
+import { CircularProgress } from '.';
 
 describe('CircularProgress', () => {
   it('renders the progress percentage', () => {

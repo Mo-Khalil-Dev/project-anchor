@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import type { LinkDetails } from '../../types';
-import { ErrorState } from './ErrorState';
+import { ErrorState } from '.';
 
 const details: LinkDetails = { utilityType: 'gas', postcode: 'SW1A 1AA', accountRef: 'ERR99' };
 

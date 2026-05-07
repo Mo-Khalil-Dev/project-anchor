@@ -1,7 +1,7 @@
 import { CustomerLayout } from '@/components/layouts/CustomerLayout';
-import { AssessmentContent } from './components/assessmentContent/AssessmentContent';
-import { OverviewErrorState } from './components/overviewErrorState/OverviewErrorState';
-import { OverviewLoadingState } from './components/overviewLoadingState/OverviewLoadingState';
+import { AssessmentContent } from './components/assessmentContent';
+import { OverviewErrorState } from './components/overviewErrorState';
+import { OverviewLoadingState } from './components/overviewLoadingState';
 import { useOverview } from './useOverview';
 import { useJourneyGuard } from '@/hooks/useJourneyGuard';
 

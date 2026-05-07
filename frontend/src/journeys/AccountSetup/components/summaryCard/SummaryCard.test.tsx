@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { SummaryCard } from './SummaryCard';
+import { SummaryCard } from '.';
 
 describe('SummaryCard', () => {
   it('renders the title and every row', () => {

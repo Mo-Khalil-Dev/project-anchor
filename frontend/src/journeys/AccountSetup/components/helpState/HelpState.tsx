@@ -1,5 +1,5 @@
 import { BridgeLogo } from '@/components/core/icons';
-import { HelpSection } from '../helpSection/HelpSection';
+import { HelpSection } from '../helpSection';
 import styles from './HelpState.module.css';
 
 interface Props {

@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { FailedBanner } from './FailedBanner';
+import { FailedBanner } from '.';
 
 describe('FailedBanner', () => {
   it('renders the failed message', () => {
