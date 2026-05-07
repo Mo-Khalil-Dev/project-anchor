@@ -1,0 +1,1 @@
+export { AccountSetupHeader } from './AccountSetupHeader';

@@ -22,8 +22,8 @@ describe('GetBankConnectionQuery', () => {
   it('maps DATA_RETRIEVED to CONNECTED', async () => {
     bankConnectionRepository.findByCustomerId.mockResolvedValue(
       Result.ok({
-        status: 'DATA_RETRIEVED',
-        connectedAt: new Date('2026-05-01T00:00:00.000Z'),
+        getStatus: 'DATA_RETRIEVED',
+        getConnectedAt: new Date('2026-05-01T00:00:00.000Z'),
       })
     );
     const query = new GetBankConnectionQuery(bankConnectionRepository as any, logger);
@@ -42,8 +42,8 @@ describe('GetBankConnectionQuery', () => {
   it('maps PENDING to IN_PROGRESS', async () => {
     bankConnectionRepository.findByCustomerId.mockResolvedValue(
       Result.ok({
-        status: 'PENDING',
-        connectedAt: null,
+        getStatus: 'PENDING',
+        getConnectedAt: null,
       })
     );
     const query = new GetBankConnectionQuery(bankConnectionRepository as any, logger);

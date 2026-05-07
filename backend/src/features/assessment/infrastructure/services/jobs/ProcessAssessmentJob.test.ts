@@ -63,8 +63,8 @@ describe('ProcessAssessmentJob', () => {
     jest.clearAllMocks();
   });
 
-  it('returns failed result when job does not exist', async () => {
-    prisma.assessmentJob.findUnique.mockResolvedValue(null);
+  it('returns failed result when assessment does not exist', async () => {
+    assessmentRepository.findById.mockResolvedValue(Result.fail(new Error('Assessment not found')));
     const job = new ProcessAssessmentJob(
       prisma,
       assessmentRepository,
@@ -73,22 +73,18 @@ describe('ProcessAssessmentJob', () => {
       failAssessmentUseCase
     );
 
-    const result = await job.execute('job-404');
+    const result = await job.execute('assessment-404');
 
     expect(result.isFail).toBe(true);
-    expect(result.getError()).toEqual(new Error('Assessment job not found: job-404'));
+    expect(result.getError()?.message).toContain('Assessment not found');
     expect(logger.error).toHaveBeenCalled();
   });
 
-  it('processes job successfully and marks it SUCCESS', async () => {
-    prisma.assessmentJob.findUnique.mockResolvedValue({
-      id: 'job-1',
-      assessmentId: 'assessment-1',
-    });
+  it('processes assessment successfully and completes it', async () => {
     assessmentRepository.findById.mockResolvedValue(Result.ok(buildAssessment()));
     prisma.bankReports.findUnique.mockResolvedValue({
-      incomeJson: '{"ok":true}',
-      expensesJson: '{"ok":true}',
+      incomeJson: '{"salary":2500,"benefits":100,"pension":0,"other":0,"total":2600}',
+      expensesJson: '{"housing":1000,"food":400,"transport":200,"utilities":180,"other":120,"total":1900}',
     });
     assessmentRepository.update.mockResolvedValue(Result.ok(buildAssessment()));
     completeAssessmentUseCase.execute.mockResolvedValue(
@@ -126,18 +122,12 @@ describe('ProcessAssessmentJob', () => {
       failAssessmentUseCase
     );
 
-    const result = await job.execute('job-1');
+    const result = await job.execute('assessment-1');
 
     expect(result.isOk).toBe(true);
     expect(assessmentRepository.update).toHaveBeenCalled();
     expect(completeAssessmentUseCase.execute).toHaveBeenCalledWith({
       assessmentId: 'assessment-1',
     });
-    expect(prisma.assessmentJob.update).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: { id: 'job-1' },
-        data: expect.objectContaining({ status: 'SUCCESS' }),
-      })
-    );
   });
 });
