@@ -1,6 +1,6 @@
 import { Result } from '../../../../shared/result';
 import type { ILogger } from '../../../../shared/logging';
-import { BankDataExtractionService } from '../../../../bankConnection/services/BankDataExtractionService';
+import { TinkResponseParser } from '@/features/bankConnection/infrastructure/services/Tink/TinkResponseParser';
 import { Assessment } from '@/features/assessment/domain/entities';
 import { ASSESSMENT_STATUS } from '@/features/assessment/domain/entities/assessment-status';
 import { ProcessAssessmentJob } from './ProcessAssessmentJob';
@@ -97,7 +97,7 @@ describe('ProcessAssessmentJob', () => {
       hardshipLevel: 'MODERATE',
       disposableIncome: 700,
     }));
-    jest.spyOn(BankDataExtractionService, 'extractIncome').mockReturnValue(
+    jest.spyOn(TinkResponseParser, 'extractIncome').mockReturnValue(
       Result.ok({
         salary: 2500,
         benefits: 100,
@@ -106,7 +106,7 @@ describe('ProcessAssessmentJob', () => {
         total: 2600,
       }) as any,
     );
-    jest.spyOn(BankDataExtractionService, 'extractExpenses').mockReturnValue(
+    jest.spyOn(TinkResponseParser, 'extractExpenses').mockReturnValue(
       Result.ok({
         housing: 1000,
         food: 400,

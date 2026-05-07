@@ -12,3 +12,5 @@ export type SustainabilityScore =
 export function isSustainabilityScore(value: string): value is SustainabilityScore {
   return sustainabilityScoreValues.includes(value as SustainabilityScore);
 }
+
+

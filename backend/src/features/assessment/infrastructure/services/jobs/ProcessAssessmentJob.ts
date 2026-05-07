@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { Result } from '../../../../shared/result';
-import { BankDataExtractionService } from '../../../../bankConnection/services/BankDataExtractionService';
+import { TinkResponseParser } from '@/features/bankConnection/infrastructure/services/Tink/TinkResponseParser';
 import type { IAssessmentRepository } from '@/features/assessment/domain/entities';
 import { Assessment } from '@/features/assessment/domain/entities';
 import type { ILogger } from '../../../../shared/logging';
@@ -63,14 +63,14 @@ export class ProcessAssessmentJob implements IBackgroundJob<string> {
         return Result.fail(new Error(reason));
       }
 
-      const incomeResult = BankDataExtractionService.extractIncome(incomeData);
+      const incomeResult = TinkResponseParser.extractIncome(incomeData);
       if (incomeResult.isFail) {
         const reason = incomeResult.getError()?.message || 'Failed to extract income';
         await this.markAssessmentFailed(assessmentId, reason);
         return Result.fail(incomeResult.getError() || new Error(reason));
       }
 
-      const expenseResult = BankDataExtractionService.extractExpenses(expenseData);
+      const expenseResult = TinkResponseParser.extractExpenses(expenseData);
       if (expenseResult.isFail) {
         const reason = expenseResult.getError()?.message || 'Failed to extract expenses';
         await this.markAssessmentFailed(assessmentId, reason);
