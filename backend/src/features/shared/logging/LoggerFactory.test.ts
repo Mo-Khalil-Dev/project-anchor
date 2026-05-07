@@ -14,7 +14,7 @@ const makeConfig = (overrides: Partial<AppConfig> = {}): AppConfig => ({
   database: { provider: 'sqlite', url: 'file:./dev.db' },
   logging: { level: 'info' },
   auth: {
-    provider : 'mock',
+    provider: 'mock',
     jwtSecret: 'secret',
     cognito: { userPoolId: 'pool', clientId: 'client', region: 'us-east-1' },
   },

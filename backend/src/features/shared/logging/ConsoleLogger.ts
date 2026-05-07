@@ -26,9 +26,9 @@ function formatError(error: unknown, environment: string): ErrorEnvelope {
       envelope.stack = error.stack;
     }
 
-    if ('code' in error)       envelope.code       = (error as any).code as string;
+    if ('code' in error) envelope.code = (error as any).code as string;
     if ('statusCode' in error) envelope.statusCode = (error as any).statusCode as number;
-    if ('details' in error)    envelope.details    = (error as any).details;
+    if ('details' in error) envelope.details = (error as any).details;
 
     return envelope;
   }
@@ -42,7 +42,7 @@ function formatError(error: unknown, environment: string): ErrorEnvelope {
 export class ConsoleLogger implements ILogger {
   constructor(
     private readonly meta: AppMeta,
-    private readonly bindings: LogContext = {},
+    private readonly bindings: LogContext = {}
   ) {}
 
   debug(message: string, context?: LogContext): void {
@@ -80,9 +80,9 @@ export class ConsoleLogger implements ILogger {
       message,
     };
 
-    if (traceId !== undefined)        envelope.traceId = String(traceId);
+    if (traceId !== undefined) envelope.traceId = String(traceId);
     if (Object.keys(rest).length > 0) envelope.context = rest;
-    if (error !== undefined)          envelope.error   = formatError(error, this.meta.environment);
+    if (error !== undefined) envelope.error = formatError(error, this.meta.environment);
 
     const line = JSON.stringify(envelope) + '\n';
 

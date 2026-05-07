@@ -1,5 +1,5 @@
 import type { AppConfig } from '../config.types';
-import {IAuthProvider} from "@/features/auth/application/services/IAuthProvider";
+import { IAuthProvider } from '@/features/auth/application/services/IAuthProvider';
 
 export function initAuthProvider(config: AppConfig): IAuthProvider {
   const provider = config.auth.provider;
@@ -20,7 +20,8 @@ export function initAuthProvider(config: AppConfig): IAuthProvider {
 export const createAuthProvider = initAuthProvider;
 
 function createMockAuthProvider(config: AppConfig): IAuthProvider {
-  const MockAuthProvider = require('../../../auth/infrastructure/services/authProviders/MockAuthProvider').MockAuthProvider;
+  const MockAuthProvider =
+    require('../../../auth/infrastructure/services/authProviders/MockAuthProvider').MockAuthProvider;
   return new MockAuthProvider(config);
 }
 
@@ -31,6 +32,7 @@ function createCognitoAuthProvider(config: AppConfig): IAuthProvider {
     throw new Error('COGNITO_USER_POOL_ID and COGNITO_CLIENT_ID are required for cognito provider');
   }
 
-  const CognitoAuthProvider = require('../../../auth/infrastructure/services/authProviders/CognitoAuthProvider').CognitoAuthProvider;
+  const CognitoAuthProvider =
+    require('../../../auth/infrastructure/services/authProviders/CognitoAuthProvider').CognitoAuthProvider;
   return new CognitoAuthProvider({ userPoolId, clientId, region });
 }

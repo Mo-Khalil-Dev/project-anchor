@@ -63,10 +63,7 @@ export function validateRequest(schema: ZodSchema) {
     } catch (error) {
       if (error instanceof z.ZodError) {
         const details = extractValidationErrors(error);
-        const validationError = new ValidationError(
-          'Request validation failed',
-          details
-        );
+        const validationError = new ValidationError('Request validation failed', details);
         next(validationError);
       } else {
         next(error);
@@ -88,9 +85,7 @@ export function validateRequest(schema: ZodSchema) {
  *   );
  */
 export function createStrictValidator(schema: ZodSchema) {
-  const strictSchema = schema instanceof z.ZodObject
-    ? schema.strict()
-    : schema;
+  const strictSchema = schema instanceof z.ZodObject ? schema.strict() : schema;
 
   return validateRequest(strictSchema);
 }
@@ -107,9 +102,7 @@ export function createStrictValidator(schema: ZodSchema) {
  *   );
  */
 export function createPartialValidator(schema: ZodSchema) {
-  const partialSchema = schema instanceof z.ZodObject
-    ? schema.partial()
-    : schema;
+  const partialSchema = schema instanceof z.ZodObject ? schema.partial() : schema;
 
   return validateRequest(partialSchema);
 }
@@ -147,7 +140,9 @@ export function validateQuery(schema: ZodSchema) {
  *     handler
  *   );
  */
-export function composeValidators(...validators: Array<(req: Request, res: Response, next: NextFunction) => void>) {
+export function composeValidators(
+  ...validators: Array<(req: Request, res: Response, next: NextFunction) => void>
+) {
   return (req: Request, res: Response, next: NextFunction) => {
     let index = 0;
 

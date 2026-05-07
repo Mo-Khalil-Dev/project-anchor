@@ -306,14 +306,12 @@ describe('GetReferenceDataUseCase', () => {
     jest
       .spyOn(GetBankConnectionQuery.prototype, 'execute')
       .mockResolvedValue(Result.ok({ status: 'CONNECTED' }) as any);
-    jest
-      .spyOn(GetAssessmentQuery.prototype, 'execute')
-      .mockResolvedValue(
-        Result.ok({
-          status: 'COMPLETED',
-          paymentPlans: [{ type: 'Balanced', monthlyAmount: 120 }],
-        }) as any
-      );
+    jest.spyOn(GetAssessmentQuery.prototype, 'execute').mockResolvedValue(
+      Result.ok({
+        status: 'COMPLETED',
+        paymentPlans: [{ type: 'Balanced', monthlyAmount: 120 }],
+      }) as any
+    );
 
     const useCase = new GetReferenceDataUseCase(
       customerRepository,

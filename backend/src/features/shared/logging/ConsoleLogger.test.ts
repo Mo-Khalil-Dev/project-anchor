@@ -25,7 +25,10 @@ function captureOutput() {
   return {
     stdout,
     stderr,
-    restore: () => { stdoutSpy.mockRestore(); stderrSpy.mockRestore(); },
+    restore: () => {
+      stdoutSpy.mockRestore();
+      stderrSpy.mockRestore();
+    },
   };
 }
 

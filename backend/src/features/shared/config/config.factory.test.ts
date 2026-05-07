@@ -3,7 +3,9 @@ import { createConfig } from './config.factory';
 jest.mock('./providers/secrets-manager.provider');
 import { fetchSecretsFromManager } from './providers/secrets-manager.provider';
 
-const mockedFetchSecrets = fetchSecretsFromManager as jest.MockedFunction<typeof fetchSecretsFromManager>;
+const mockedFetchSecrets = fetchSecretsFromManager as jest.MockedFunction<
+  typeof fetchSecretsFromManager
+>;
 
 const VALID_ENV: Record<string, string> = {
   NODE_ENV: 'development',
@@ -71,7 +73,12 @@ describe('createConfig', () => {
     });
 
     it('parses ENABLE_* feature flags from strings', async () => {
-      process.env = { ...originalEnv, ...VALID_ENV, ENABLE_EMAIL: 'false', ENABLE_BANK_OAUTH: 'false' };
+      process.env = {
+        ...originalEnv,
+        ...VALID_ENV,
+        ENABLE_EMAIL: 'false',
+        ENABLE_BANK_OAUTH: 'false',
+      };
 
       const config = await createConfig();
 
@@ -148,7 +155,9 @@ describe('createConfig', () => {
       const { DATABASE_URL, ...envWithoutUrl } = VALID_POSTGRESQL_ENV;
       process.env = { ...originalEnv, ...envWithoutUrl };
 
-      await expect(createConfig()).rejects.toThrow('DATABASE_URL is required when DATABASE_PROVIDER=postgresql');
+      await expect(createConfig()).rejects.toThrow(
+        'DATABASE_URL is required when DATABASE_PROVIDER=postgresql'
+      );
     });
   });
 
@@ -186,7 +195,9 @@ describe('createConfig', () => {
 
       expect(mockedFetchSecrets).toHaveBeenCalledWith('bridge/production/secrets', 'us-east-1');
       expect(config.auth.jwtSecret).toBe('production-jwt-secret-from-aws');
-      expect(config.database.url).toBe('postgresql://prod_user:prod_pass@rds.example.com:5432/bridge');
+      expect(config.database.url).toBe(
+        'postgresql://prod_user:prod_pass@rds.example.com:5432/bridge'
+      );
       expect(config.runtime).toBe('ecs');
     });
 
@@ -203,7 +214,9 @@ describe('createConfig', () => {
       const { SECRETS_MANAGER_SECRET_NAME, ...env } = ECS_ENV;
       process.env = { ...originalEnv, ...env };
 
-      await expect(createConfig()).rejects.toThrow('SECRETS_MANAGER_SECRET_NAME is required when RUNTIME=ecs');
+      await expect(createConfig()).rejects.toThrow(
+        'SECRETS_MANAGER_SECRET_NAME is required when RUNTIME=ecs'
+      );
     });
 
     it('propagates Secrets Manager fetch errors', async () => {

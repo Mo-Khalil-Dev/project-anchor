@@ -23,10 +23,12 @@ export const positiveNumber = z.number().positive('Must be a positive number');
 
 export const nonNegativeNumber = z.number().nonnegative('Cannot be negative');
 
-export const paginationSchema = z.object({
-  limit: z.number().int().positive().max(100).default(10),
-  offset: z.number().int().nonnegative().default(0),
-}).optional();
+export const paginationSchema = z
+  .object({
+    limit: z.number().int().positive().max(100).default(10),
+    offset: z.number().int().nonnegative().default(0),
+  })
+  .optional();
 
 // ============ REQUEST SCHEMAS ============
 
@@ -85,10 +87,12 @@ export const listAssessmentsSchema = z.object({
   params: z.object({
     customerId: uuidSchema,
   }),
-  query: z.object({
-    limit: z.string().transform(Number).pipe(positiveNumber).default('10'),
-    offset: z.string().transform(Number).pipe(nonNegativeNumber).default('0'),
-  }).optional(),
+  query: z
+    .object({
+      limit: z.string().transform(Number).pipe(positiveNumber).default('10'),
+      offset: z.string().transform(Number).pipe(nonNegativeNumber).default('0'),
+    })
+    .optional(),
 });
 
 /**
@@ -113,7 +117,10 @@ export const createCustomerSchema = z.object({
     email: emailSchema,
     firstName: z.string().min(1, 'First name is required').max(100),
     lastName: z.string().min(1, 'Last name is required').max(100),
-    phone: z.string().regex(/^\+?[1-9]\d{1,14}$/, 'Invalid phone number').optional(),
+    phone: z
+      .string()
+      .regex(/^\+?[1-9]\d{1,14}$/, 'Invalid phone number')
+      .optional(),
   }),
 });
 
@@ -130,16 +137,18 @@ export const loginSchema = z.object({
 });
 
 export const signupSchema = z.object({
-  body: z.object({
-    email: emailSchema,
-    password: z.string().min(8, 'Password must be at least 8 characters'),
-    passwordConfirm: z.string(),
-    firstName: z.string().min(1),
-    lastName: z.string().min(1),
-  }).refine(data => data.password === data.passwordConfirm, {
-    message: 'Passwords do not match',
-    path: ['passwordConfirm'],
-  }),
+  body: z
+    .object({
+      email: emailSchema,
+      password: z.string().min(8, 'Password must be at least 8 characters'),
+      passwordConfirm: z.string(),
+      firstName: z.string().min(1),
+      lastName: z.string().min(1),
+    })
+    .refine((data) => data.password === data.passwordConfirm, {
+      message: 'Passwords do not match',
+      path: ['passwordConfirm'],
+    }),
 });
 
 /**
@@ -169,10 +178,12 @@ export const tinkCallbackSchema = z.object({
  * Pagination schemas for list endpoints
  */
 export const listWithPaginationSchema = z.object({
-  query: z.object({
-    limit: z.string().transform(Number).pipe(positiveNumber.max(100)).optional(),
-    offset: z.string().transform(Number).pipe(nonNegativeNumber).optional(),
-  }).optional(),
+  query: z
+    .object({
+      limit: z.string().transform(Number).pipe(positiveNumber.max(100)).optional(),
+      offset: z.string().transform(Number).pipe(nonNegativeNumber).optional(),
+    })
+    .optional(),
 });
 
 // ============ ERROR DETAILS SCHEMA ============

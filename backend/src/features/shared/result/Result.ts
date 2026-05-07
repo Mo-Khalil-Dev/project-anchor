@@ -127,10 +127,7 @@ export class Result<T, E = Error> {
    * Execute a function based on whether result is Ok or Fail
    * Returns the result of the matching function
    */
-  match<U>(
-    onOk: (value: T) => U,
-    onFail: (error: E) => U
-  ): U {
+  match<U>(onOk: (value: T) => U, onFail: (error: E) => U): U {
     if (this._isOk && this.value !== undefined) {
       return onOk(this.value);
     }
@@ -140,10 +137,7 @@ export class Result<T, E = Error> {
   /**
    * Execute side effects based on result without transforming it
    */
-  tap(
-    onOk?: (value: T) => void,
-    onFail?: (error: E) => void
-  ): Result<T, E> {
+  tap(onOk?: (value: T) => void, onFail?: (error: E) => void): Result<T, E> {
     if (this._isOk && this.value !== undefined && onOk) {
       onOk(this.value);
     } else if (!this._isOk && onFail) {

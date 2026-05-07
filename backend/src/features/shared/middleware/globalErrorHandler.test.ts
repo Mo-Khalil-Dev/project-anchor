@@ -37,7 +37,7 @@ describe('Async Handler Wrapper', () => {
     });
 
     wrapped(req, res, next);
-    await new Promise(resolve => setTimeout(resolve, 10));
+    await new Promise((resolve) => setTimeout(resolve, 10));
     expect(next).toHaveBeenCalledWith(expect.any(Error));
   });
 });
