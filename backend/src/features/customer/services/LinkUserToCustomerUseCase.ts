@@ -1,6 +1,10 @@
 import { Result } from '../../shared/result';
 import type { ILogger } from '../../shared/logging';
-import type { ICustomerRepository, LinkUserToCustomerInput, LinkUserToCustomerOutput } from '../types/customer.types';
+import type {
+  ICustomerRepository,
+  LinkUserToCustomerInput,
+  LinkUserToCustomerOutput,
+} from '../types/customer.types';
 import { LinkUserToCustomerSchema } from '../types/customer.types';
 
 /**
@@ -17,12 +21,12 @@ import { LinkUserToCustomerSchema } from '../types/customer.types';
 export class LinkUserToCustomerUseCase {
   constructor(
     private customerRepository: ICustomerRepository,
-    private logger: ILogger,
+    private logger: ILogger
   ) {}
 
   async execute(
     userId: string,
-    input: LinkUserToCustomerInput,
+    input: LinkUserToCustomerInput
   ): Promise<Result<LinkUserToCustomerOutput, Error>> {
     try {
       // Validate input
@@ -51,9 +55,8 @@ export class LinkUserToCustomerUseCase {
       // Currently a user submitting accountRef "ACC-001" with utilityType "Gas" will
       // successfully link even if the customer record says "Electricity".
       // Add: if (customer.utilityType !== utilityType) return Result.fail(new Error('Account details do not match our records'))
-      const existingCustomerResult = await this.customerRepository.findByUtilityAccountNumber(
-        accountReference,
-      );
+      const existingCustomerResult =
+        await this.customerRepository.findByUtilityAccountNumber(accountReference);
 
       if (existingCustomerResult.isFail) {
         this.logger.error('Failed to search for existing customer', {
@@ -61,9 +64,7 @@ export class LinkUserToCustomerUseCase {
           accountReference,
           error: existingCustomerResult.getError(),
         });
-        return Result.fail(
-          new Error('Unable to process account setup. Please try again.')
-        );
+        return Result.fail(new Error('Unable to process account setup. Please try again.'));
       }
 
       // Step 3 (cont): Customer MUST exist in the system — no auto-creation

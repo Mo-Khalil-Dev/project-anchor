@@ -26,10 +26,7 @@ export function createCustomerRouter(
   const customerRepository = new PrismaCustomerRepository();
 
   // Create use cases
-  const linkUserToCustomerUseCase = new LinkUserToCustomerUseCase(
-    customerRepository,
-    logger
-  );
+  const linkUserToCustomerUseCase = new LinkUserToCustomerUseCase(customerRepository, logger);
 
   // Create controller
   const controller = new CustomerController(linkUserToCustomerUseCase);

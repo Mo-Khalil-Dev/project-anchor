@@ -4,9 +4,7 @@ import type { LinkUserToCustomerUseCase } from '../services/LinkUserToCustomerUs
 import { ApplicationError } from '../../../core/domain/errors/applicationError';
 
 export class CustomerController {
-  constructor(
-    private linkUserToCustomerUseCase: LinkUserToCustomerUseCase,
-  ) {}
+  constructor(private linkUserToCustomerUseCase: LinkUserToCustomerUseCase) {}
 
   /**
    * POST /api/customer/setup
@@ -34,7 +32,11 @@ export class CustomerController {
    *   }
    * }
    */
-  async linkUserToCustomer(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+  async linkUserToCustomer(
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const userId = req.user?.id;
       if (!userId) {

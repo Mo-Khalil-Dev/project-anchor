@@ -6,7 +6,7 @@ export class PrismaCustomerRepository implements ICustomerRepository {
   async create(email: string): Promise<Result<Customer, Error>> {
     try {
       const customer = await prisma.customer.create({
-        data: { email, monthlyBill:300, arrears: 600 },
+        data: { email, monthlyBill: 300, arrears: 600 },
       });
       return Result.ok(customer);
     } catch (error) {
