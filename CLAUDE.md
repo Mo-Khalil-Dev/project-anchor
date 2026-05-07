@@ -349,3 +349,47 @@ These are tracked TODO comments in the codebase — do not fix inline unless the
 - Screens follow Claude.ai design system (CSS variables for light/dark mode)
 - Focus on plain English explanations (not legal jargon) throughout
 - Emphasis on transparency & fairness in all customer-facing flows
+
+## DDD Aggregate Root Checklist
+
+Use this when reviewing or writing any aggregate root. Each item is a question to answer before calling the model complete.
+
+### Invariants
+- [ ] Does every state-transition method guard against being called in the wrong status? (e.g. can't complete an already-completed aggregate)
+- [ ] Are all numeric inputs validated at the boundary? (non-negative money, non-empty strings, etc.)
+- [ ] Is it impossible to construct the aggregate in an invalid state via the factory?
+
+### Value Objects
+- [ ] Are domain concepts represented as typed value objects, not primitives? (Money, not `number`; `PlanType`, not `string`)
+- [ ] Are JSON/blob fields replaced with typed collections the domain can reason about? (no `string | null` storing serialised arrays)
+- [ ] Are enums/const-maps defined once and imported everywhere — never re-declared inline?
+
+### Ubiquitous Language
+- [ ] Do method names match the words a domain expert would use? (not `enrichWithBankData`, not `setBillingInfo`)
+- [ ] Does the aggregate live in a folder named after the domain concept, not a UI/API concept? (not `referenceData/`)
+- [ ] Are status values named for what they *mean*, not what triggers them? (not `markReadyForProcessing` → PENDING)
+
+### Domain Events
+- [ ] Does every meaningful state change emit a domain event? (not just terminal transitions)
+- [ ] Do silent mutations (`setBillingInfo`, `enrichWith...`) also increment version and fire events?
+- [ ] Does every event carry enough payload for downstream consumers to act without re-fetching?
+
+### State Machine
+- [ ] Is every real lifecycle state represented as an explicit status value? (no missing intermediate states like PROCESSING)
+- [ ] Are all valid transitions documented or enforced in code?
+- [ ] Is the initial state set by the factory, not left as a default that callers might forget?
+
+### Domain Logic Ownership
+- [ ] Do all calculations that only need the aggregate's own data live inside the aggregate (or a domain service)?
+- [ ] Does the application layer orchestrate, not calculate? (no business formulas in use cases or jobs)
+- [ ] Is the aggregate the single source of truth for its derived values — not recomputed in the repository?
+
+### Common Anti-Patterns Seen in This Codebase
+| Anti-pattern | Example found | Correct approach |
+|---|---|---|
+| Bypassing aggregate methods via `reconstruct()` | `ProcessAssessmentJob` rebuilds aggregate directly instead of calling `enrichWithBankData()` | Load → call domain method → save |
+| Opaque blob fields | `paymentPlans: string \| null` in the aggregate | `paymentPlans: PaymentPlan[]` as a typed value object |
+| Silent mutations | `setBillingInfo()` / `enrichWithBankData()` — no event, no version increment | All mutations emit an event and increment version |
+| Dead-end state | `markReadyForProcessing()` sets status to the state it already is | Add the missing status (`PROCESSING`) or remove the method |
+| Status leaking into DTO wrong | `FAILED` silently mapped to `IN_PROGRESS` in mapper | Align DTO status type with domain status type explicitly |
+| `as any` on domain fields | `status: record.status as any` in mapper | Use the existing type guard (`isAssessmentStatus`) and throw on unknown values |
