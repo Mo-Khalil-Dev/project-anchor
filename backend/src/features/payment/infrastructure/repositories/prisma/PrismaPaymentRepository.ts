@@ -1,11 +1,11 @@
-import { Result } from '../../shared/result';
-import { prisma } from '../../shared/utils/db';
+import { Result } from '../../../../shared/result';
+import { prisma } from '../../../../shared/utils/db';
 import type {
   IPaymentRepository,
   SaveMandateInput,
   SavePaymentMethodInput,
   SavePaymentScheduleInput,
-} from './IPaymentRepository';
+} from '../../../application/respositories/IPaymentRepository';
 
 export class PrismaPaymentRepository implements IPaymentRepository {
   async saveMandate(input: SaveMandateInput): Promise<Result<{ id: string }, Error>> {
@@ -68,7 +68,9 @@ export class PrismaPaymentRepository implements IPaymentRepository {
     }
   }
 
-  async findMandateByGocardlessId(gocardlessId: string): Promise<Result<{ id: string } | null, Error>> {
+  async findMandateByGocardlessId(
+    gocardlessId: string
+  ): Promise<Result<{ id: string } | null, Error>> {
     try {
       const mandate = await prisma.mandate.findUnique({
         where: { gocardlessId },
@@ -81,7 +83,9 @@ export class PrismaPaymentRepository implements IPaymentRepository {
     }
   }
 
-  async findPaymentScheduleByAssessmentId(assessmentId: string): Promise<Result<{ id: string; gocardlessId: string } | null, Error>> {
+  async findPaymentScheduleByAssessmentId(
+    assessmentId: string
+  ): Promise<Result<{ id: string; gocardlessId: string } | null, Error>> {
     try {
       const schedule = await prisma.paymentSchedule.findFirst({
         where: { assessmentId },

@@ -1,8 +1,8 @@
 import type { GoCardlessClient } from 'gocardless-nodejs';
-import { Result } from '../../shared/result';
-import type { ILogger } from '../../shared/logging';
-import type { IAssessmentRepository } from '@/features/referenceData/domain/entities';
-import type { IPaymentRepository } from '../repositories/IPaymentRepository';
+import { Result } from '../../../shared/result';
+import type { ILogger } from '../../../shared/logging';
+import type { IAssessmentRepository } from '@/features/assessment/domain/entities';
+import type { IPaymentRepository } from '../respositories/IPaymentRepository';
 import type { CreateInstalmentScheduleUseCase } from './CreateInstalmentScheduleUseCase';
 
 const DEFAULT_DAY_OF_MONTH = 15;
@@ -35,7 +35,7 @@ export class ProcessMandateActiveUseCase {
     private assessmentRepository: IAssessmentRepository,
     private paymentRepository: IPaymentRepository,
     private createInstalmentSchedule: CreateInstalmentScheduleUseCase,
-    private logger: ILogger,
+    private logger: ILogger
   ) {}
 
   async execute(mandateGocardlessId: string): Promise<Result<void, Error>> {
@@ -63,7 +63,8 @@ export class ProcessMandateActiveUseCase {
 
     // 1. Idempotency check
     // A: Check if mandate already processed locally
-    const existingMandateResult = await this.paymentRepository.findPaymentScheduleByAssessmentId(mandateGocardlessId);
+    const existingMandateResult =
+      await this.paymentRepository.findPaymentScheduleByAssessmentId(mandateGocardlessId);
     if (existingMandateResult.isFail) {
       return Result.fail(existingMandateResult.getError() ?? new Error('Mandate lookup failed'));
     }
@@ -71,7 +72,8 @@ export class ProcessMandateActiveUseCase {
     // B: Check if schedule already created for this referenceData
     // This is CRITICAL because a mandate might be saved but the process failed before GC schedule creation
     // OR GC schedule was created but local persistence failed.
-    const existingScheduleResult = await this.paymentRepository.findPaymentScheduleByAssessmentId(assessmentId);
+    const existingScheduleResult =
+      await this.paymentRepository.findPaymentScheduleByAssessmentId(assessmentId);
     if (existingScheduleResult.isFail) {
       return Result.fail(existingScheduleResult.getError() ?? new Error('Schedule lookup failed'));
     }
@@ -115,14 +117,13 @@ export class ProcessMandateActiveUseCase {
       return Result.fail(new Error('Invalid paymentPlans JSON on referenceData'));
     }
 
-    const plan = plans.find(p => p.type === selectedPlan);
+    const plan = plans.find((p) => p.type === selectedPlan);
     if (!plan) {
       return Result.fail(new Error(`Plan ${selectedPlan} not found in assessment.paymentPlans`));
     }
 
     // 4. Save Mandate + PaymentMethod
-    const accountHolderName = (gcMandate.payer_resource as any)?.name
-      ?? 'Unknown';
+    const accountHolderName = (gcMandate.payer_resource as any)?.name ?? 'Unknown';
 
     let localMandateId: string;
     if (existingMandate) {
@@ -162,10 +163,13 @@ export class ProcessMandateActiveUseCase {
 
     if (existingSchedule) {
       instalmentScheduleId = existingSchedule.gocardlessId;
-      this.logger.info('GC Schedule already exists but local record was missing — using existing ID', {
-        assessmentId,
-        instalmentScheduleId,
-      });
+      this.logger.info(
+        'GC Schedule already exists but local record was missing — using existing ID',
+        {
+          assessmentId,
+          instalmentScheduleId,
+        }
+      );
     } else {
       const scheduleResult = await this.createInstalmentSchedule.execute({
         mandateId: mandateGocardlessId,

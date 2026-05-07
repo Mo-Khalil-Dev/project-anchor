@@ -1,6 +1,6 @@
 import type { GoCardlessClient } from 'gocardless-nodejs';
-import { Result } from '../../shared/result';
-import type { ILogger } from '../../shared/logging';
+import { Result } from '../../../shared/result';
+import type { ILogger } from '../../../shared/logging';
 
 export interface CreateInstalmentScheduleInput {
   mandateId: string;
@@ -32,11 +32,11 @@ export interface CreateInstalmentScheduleOutput {
 export class CreateInstalmentScheduleUseCase {
   constructor(
     private gocardless: GoCardlessClient,
-    private logger: ILogger,
+    private logger: ILogger
   ) {}
 
   async execute(
-    input: CreateInstalmentScheduleInput,
+    input: CreateInstalmentScheduleInput
   ): Promise<Result<CreateInstalmentScheduleOutput, Error>> {
     try {
       const schedule = await this.gocardless.instalmentSchedules.createWithSchedule({

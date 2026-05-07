@@ -1,6 +1,6 @@
 import type { GoCardlessClient } from 'gocardless-nodejs';
-import { Result } from '../../shared/result';
-import type { ILogger } from '../../shared/logging';
+import { Result } from '../../../shared/result';
+import type { ILogger } from '../../../shared/logging';
 
 export interface CreateBillingRequestFlowInput {
   billingRequestId: string;
@@ -31,11 +31,11 @@ export interface CreateBillingRequestFlowOutput {
 export class CreateBillingRequestFlowUseCase {
   constructor(
     private gocardless: GoCardlessClient,
-    private logger: ILogger,
+    private logger: ILogger
   ) {}
 
   async execute(
-    input: CreateBillingRequestFlowInput,
+    input: CreateBillingRequestFlowInput
   ): Promise<Result<CreateBillingRequestFlowOutput, Error>> {
     try {
       const flow = await this.gocardless.billingRequestFlows.create({

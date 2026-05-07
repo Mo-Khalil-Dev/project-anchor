@@ -1,40 +1,38 @@
 import { Router, type RequestHandler, raw } from 'express';
-import type { ILogger } from '../shared/logging';
-import type { AppConfig } from '../shared/config';
-import { asyncHandler } from '../shared/middleware/globalErrorHandler';
-import { initGoCardlessClient } from '../shared/utils/gocardlessClient';
-import { PaymentController } from './controllers/PaymentController';
-import { SelectPlanUseCase } from './services/SelectPlanUseCase';
-import { CreateBillingRequestUseCase } from './services/CreateBillingRequestUseCase';
-import { CollectCustomerDetailsUseCase } from './services/CollectCustomerDetailsUseCase';
-import { CollectBankAccountUseCase } from './services/CollectBankAccountUseCase';
-import { CreateBillingRequestFlowUseCase } from './services/CreateBillingRequestFlowUseCase';
-import { InitiateDirectDebitSetupUseCase } from './services/InitiateDirectDebitSetupUseCase';
-import { HandleWebhookEventUseCase } from './services/HandleWebhookEventUseCase';
-import { CreateInstalmentScheduleUseCase } from './services/CreateInstalmentScheduleUseCase';
-import { ProcessMandateActiveUseCase } from './services/ProcessMandateActiveUseCase';
-import { PrismaAssessmentRepository } from '@/features/referenceData/infrastructure/repositories/prisma/PrismaAssessmentRepository';
-import { PrismaCustomerRepository } from '../customer/repositories/PrismaCustomerRepository';
-import { PrismaPaymentRepository } from './repositories/PrismaPaymentRepository';
+import { PrismaClient } from '@prisma/client';
+import type { ILogger } from '../../shared/logging';
+import type { AppConfig } from '../../shared/config';
+import { asyncHandler } from '../../shared/middleware/globalErrorHandler';
+import { initGoCardlessClient } from '../../shared/utils/gocardlessClient';
+import { PaymentController } from '@/features/payment/infrastructure/controllers/PaymentController';
+import { SelectPlanUseCase } from '@/features/payment/application/usecases/SelectPlanUseCase';
+import { CreateBillingRequestUseCase } from '@/features/payment/application/usecases/CreateBillingRequestUseCase';
+import { CollectCustomerDetailsUseCase } from '@/features/payment/application/usecases/CollectCustomerDetailsUseCase';
+import { CollectBankAccountUseCase } from '@/features/payment/application/usecases/CollectBankAccountUseCase';
+import { CreateBillingRequestFlowUseCase } from '@/features/payment/application/usecases/CreateBillingRequestFlowUseCase';
+import { InitiateDirectDebitSetupUseCase } from '@/features/payment/application/usecases/InitiateDirectDebitSetupUseCase';
+import { HandleWebhookEventUseCase } from '@/features/payment/application/usecases/HandleWebhookEventUseCase';
+import { CreateInstalmentScheduleUseCase } from '@/features/payment/application/usecases/CreateInstalmentScheduleUseCase';
+import { ProcessMandateActiveUseCase } from '@/features/payment/application/usecases/ProcessMandateActiveUseCase';
+import { PrismaAssessmentRepository } from '@/features/assessment/infrastructure/repositories/prisma/PrismaAssessmentRepository';
+import { PrismaCustomerRepository } from '../../customer/repositories/PrismaCustomerRepository';
+import { PrismaPaymentRepository } from '@/features/payment/infrastructure/repositories/prisma/PrismaPaymentRepository';
 
 export function createPaymentRouter(
   config: AppConfig,
   logger: ILogger,
   authMiddleware: RequestHandler,
+  prisma: PrismaClient
 ): Router {
   const router = Router();
 
   // ============ DEPENDENCY INJECTION ============
-  const assessmentRepository = new PrismaAssessmentRepository(logger);
+  const assessmentRepository = new PrismaAssessmentRepository(prisma, logger);
   const customerRepository = new PrismaCustomerRepository();
   const paymentRepository = new PrismaPaymentRepository();
   const gocardless = initGoCardlessClient(config.gocardless.accessToken);
 
-  const selectPlanUseCase = new SelectPlanUseCase(
-    assessmentRepository,
-    customerRepository,
-    logger,
-  );
+  const selectPlanUseCase = new SelectPlanUseCase(assessmentRepository, customerRepository, logger);
 
   const createBillingRequestUseCase = new CreateBillingRequestUseCase(gocardless, logger);
   const collectCustomerDetailsUseCase = new CollectCustomerDetailsUseCase(gocardless, logger);
@@ -49,7 +47,7 @@ export function createPaymentRouter(
     collectCustomerDetailsUseCase,
     collectBankAccountUseCase,
     createBillingRequestFlowUseCase,
-    logger,
+    logger
   );
 
   const processMandateActiveUseCase = new ProcessMandateActiveUseCase(
@@ -57,7 +55,7 @@ export function createPaymentRouter(
     assessmentRepository,
     paymentRepository,
     createInstalmentScheduleUseCase,
-    logger,
+    logger
   );
 
   // When a mandate becomes active, run the full post-authorization flow:
@@ -80,21 +78,17 @@ export function createPaymentRouter(
     handleWebhookEventUseCase,
     config.server.frontendUrl,
     config.gocardless.webhookKey,
-    logger,
+    logger
   );
 
   // ============ ROUTES ============
 
-  router.post(
-    '/select-plan',
-    authMiddleware,
-    asyncHandler(controller.selectPlan.bind(controller)),
-  );
+  router.post('/select-plan', authMiddleware, asyncHandler(controller.selectPlan.bind(controller)));
 
   router.post(
     '/initiate-direct-debit',
     authMiddleware,
-    asyncHandler(controller.initiateDirectDebit.bind(controller)),
+    asyncHandler(controller.initiateDirectDebit.bind(controller))
   );
 
   // Webhook route — uses raw body for HMAC signature verification.
@@ -102,7 +96,7 @@ export function createPaymentRouter(
   router.post(
     '/webhook',
     raw({ type: 'application/json' }),
-    asyncHandler(controller.handleWebhook.bind(controller)),
+    asyncHandler(controller.handleWebhook.bind(controller))
   );
 
   return router;

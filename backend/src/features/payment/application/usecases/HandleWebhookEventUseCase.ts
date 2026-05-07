@@ -1,5 +1,5 @@
-import { Result } from '../../shared/result';
-import type { ILogger } from '../../shared/logging';
+import { Result } from '../../../shared/result';
+import type { ILogger } from '../../../shared/logging';
 
 export interface WebhookEvent {
   id: string;
@@ -32,7 +32,7 @@ export interface WebhookEvent {
 export class HandleWebhookEventUseCase {
   constructor(
     private logger: ILogger,
-    private onMandateActive?: (mandateId: string) => Promise<void>,
+    private onMandateActive?: (mandateId: string) => Promise<void>
   ) {}
 
   async execute(event: WebhookEvent): Promise<Result<void, Error>> {

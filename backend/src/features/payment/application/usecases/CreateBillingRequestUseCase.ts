@@ -1,6 +1,6 @@
 import type { GoCardlessClient } from 'gocardless-nodejs';
-import { Result } from '../../shared/result';
-import type { ILogger } from '../../shared/logging';
+import { Result } from '../../../shared/result';
+import type { ILogger } from '../../../shared/logging';
 
 export interface CreateBillingRequestInput {
   /** Free-form metadata for tracing in GC dashboard */
@@ -29,10 +29,12 @@ export interface CreateBillingRequestOutput {
 export class CreateBillingRequestUseCase {
   constructor(
     private gocardless: GoCardlessClient,
-    private logger: ILogger,
+    private logger: ILogger
   ) {}
 
-  async execute(input: CreateBillingRequestInput): Promise<Result<CreateBillingRequestOutput, Error>> {
+  async execute(
+    input: CreateBillingRequestInput
+  ): Promise<Result<CreateBillingRequestOutput, Error>> {
     try {
       const billingRequest = await this.gocardless.billingRequests.create({
         mandate_request: {

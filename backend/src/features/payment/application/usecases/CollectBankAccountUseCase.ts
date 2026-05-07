@@ -1,6 +1,6 @@
 import type { GoCardlessClient } from 'gocardless-nodejs';
-import { Result } from '../../shared/result';
-import type { ILogger } from '../../shared/logging';
+import { Result } from '../../../shared/result';
+import type { ILogger } from '../../../shared/logging';
 
 export interface CollectBankAccountInput {
   billingRequestId: string;
@@ -33,7 +33,7 @@ const SANDBOX_DEFAULTS = {
 export class CollectBankAccountUseCase {
   constructor(
     private gocardless: GoCardlessClient,
-    private logger: ILogger,
+    private logger: ILogger
   ) {}
 
   async execute(input: CollectBankAccountInput): Promise<Result<void, Error>> {

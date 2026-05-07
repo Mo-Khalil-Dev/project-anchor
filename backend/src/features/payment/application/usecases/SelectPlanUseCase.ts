@@ -1,8 +1,8 @@
-import { Result } from '../../shared/result';
-import type { ILogger } from '../../shared/logging';
-import type { IAssessmentRepository } from '@/features/referenceData/domain/entities';
-import type { ICustomerRepository } from '../../customer/types/customer.types';
-import type { SelectPlanInput, SelectPlanOutput, PlanType } from '../types/payment.types';
+import { Result } from '../../../shared/result';
+import type { ILogger } from '../../../shared/logging';
+import type { IAssessmentRepository } from '@/features/assessment/domain/entities';
+import type { ICustomerRepository } from '../../../customer/types/customer.types';
+import type { SelectPlanInput, SelectPlanOutput, PlanType } from '../../types/payment.types';
 
 const VALID_PLAN_TYPES: PlanType[] = ['Conservative', 'Balanced', 'Aggressive'];
 
@@ -22,7 +22,7 @@ export class SelectPlanUseCase {
   constructor(
     private assessmentRepository: IAssessmentRepository,
     private customerRepository: ICustomerRepository,
-    private logger: ILogger,
+    private logger: ILogger
   ) {}
 
   async execute(input: SelectPlanInput): Promise<Result<SelectPlanOutput, Error>> {
@@ -73,7 +73,7 @@ export class SelectPlanUseCase {
       return Result.fail(new Error('Invalid payment plans JSON'));
     }
 
-    const planExists = plans.some(p => p.type === planType);
+    const planExists = plans.some((p) => p.type === planType);
     if (!planExists) {
       return Result.fail(new Error(`Plan type ${planType} not available for this assessment`));
     }
@@ -81,7 +81,7 @@ export class SelectPlanUseCase {
     // Persist selection
     const updateResult = await this.assessmentRepository.updateSelectedPlan(
       assessment.getId(),
-      planType,
+      planType
     );
     if (updateResult.isFail) {
       this.logger.error('Failed to update selected plan', {

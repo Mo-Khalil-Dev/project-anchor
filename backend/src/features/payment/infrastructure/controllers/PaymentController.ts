@@ -1,11 +1,14 @@
 import { Request, Response } from 'express';
 import { parse as parseGCWebhook, InvalidSignatureError } from 'gocardless-nodejs';
-import type { ILogger } from '../../shared/logging';
-import type { AuthenticatedRequest } from '../../shared/middleware/authenticateRequest';
-import type { SelectPlanUseCase } from '../services/SelectPlanUseCase';
-import type { InitiateDirectDebitSetupUseCase } from '../services/InitiateDirectDebitSetupUseCase';
-import type { HandleWebhookEventUseCase, WebhookEvent } from '../services/HandleWebhookEventUseCase';
-import type { PlanType } from '../types/payment.types';
+import type { ILogger } from '../../../shared/logging';
+import type { AuthenticatedRequest } from '../../../shared/middleware/authenticateRequest';
+import type { SelectPlanUseCase } from '@/features/payment/application/usecases/SelectPlanUseCase';
+import type { InitiateDirectDebitSetupUseCase } from '@/features/payment/application/usecases/InitiateDirectDebitSetupUseCase';
+import type {
+  HandleWebhookEventUseCase,
+  WebhookEvent,
+} from '@/features/payment/application/usecases/HandleWebhookEventUseCase';
+import type { PlanType } from '../../types/payment.types';
 
 export class PaymentController {
   constructor(
@@ -14,7 +17,7 @@ export class PaymentController {
     private handleWebhookEventUseCase: HandleWebhookEventUseCase,
     private frontendUrl: string,
     private webhookSecret: string,
-    private logger: ILogger,
+    private logger: ILogger
   ) {}
 
   /**
@@ -125,7 +128,10 @@ export class PaymentController {
       // parseGCWebhook validates signature AND parses events in one go
       events = parseGCWebhook(rawBody, this.webhookSecret, signature) as unknown as WebhookEvent[];
     } catch (error) {
-      if (error instanceof InvalidSignatureError || (error as Error).name === 'InvalidSignatureError') {
+      if (
+        error instanceof InvalidSignatureError ||
+        (error as Error).name === 'InvalidSignatureError'
+      ) {
         this.logger.warn('GC webhook rejected: invalid signature');
         res.status(498).send('Invalid signature');
         return;

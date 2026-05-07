@@ -1,7 +1,7 @@
-import { Result } from '../../shared/result';
-import type { ILogger } from '../../shared/logging';
-import type { ICustomerRepository } from '../../customer/types/customer.types';
-import type { IAssessmentRepository } from '@/features/referenceData/domain/entities';
+import { Result } from '../../../shared/result';
+import type { ILogger } from '../../../shared/logging';
+import type { ICustomerRepository } from '../../../customer/types/customer.types';
+import type { IAssessmentRepository } from '@/features/assessment/domain/entities';
 import type { CreateBillingRequestUseCase } from './CreateBillingRequestUseCase';
 import type { CollectCustomerDetailsUseCase } from './CollectCustomerDetailsUseCase';
 import type { CollectBankAccountUseCase } from './CollectBankAccountUseCase';
@@ -42,11 +42,11 @@ export class InitiateDirectDebitSetupUseCase {
     private collectCustomerDetails: CollectCustomerDetailsUseCase,
     private collectBankAccount: CollectBankAccountUseCase,
     private createBillingRequestFlow: CreateBillingRequestFlowUseCase,
-    private logger: ILogger,
+    private logger: ILogger
   ) {}
 
   async execute(
-    input: InitiateDirectDebitSetupInput,
+    input: InitiateDirectDebitSetupInput
   ): Promise<Result<InitiateDirectDebitSetupOutput, Error>> {
     const { userId, accountHolderName, redirectUri, exitUri } = input;
 
@@ -95,7 +95,8 @@ export class InitiateDirectDebitSetupUseCase {
     // 4. Step 2: collect customer details
     const fullName = accountHolderName.trim().split(/\s+/);
     const givenName = fullName.slice(0, -1).join(' ') || customer.firstName || 'Customer';
-    const familyName = fullName.length > 1 ? fullName[fullName.length - 1] : (customer.lastName || 'Unknown');
+    const familyName =
+      fullName.length > 1 ? fullName[fullName.length - 1] : customer.lastName || 'Unknown';
 
     const detailsResult = await this.collectCustomerDetails.execute({
       billingRequestId,

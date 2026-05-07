@@ -1,6 +1,6 @@
 import type { GoCardlessClient } from 'gocardless-nodejs';
-import { Result } from '../../shared/result';
-import type { ILogger } from '../../shared/logging';
+import { Result } from '../../../shared/result';
+import type { ILogger } from '../../../shared/logging';
 
 export interface CollectCustomerDetailsInput {
   billingRequestId: string;
@@ -25,7 +25,7 @@ export interface CollectCustomerDetailsInput {
 export class CollectCustomerDetailsUseCase {
   constructor(
     private gocardless: GoCardlessClient,
-    private logger: ILogger,
+    private logger: ILogger
   ) {}
 
   async execute(input: CollectCustomerDetailsInput): Promise<Result<void, Error>> {

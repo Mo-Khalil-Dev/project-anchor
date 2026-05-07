@@ -1,4 +1,4 @@
-import type { Result } from '../../shared/result';
+import type { Result } from '@/features/shared/result';
 
 export type MandateStatus = 'PENDING' | 'ACTIVE' | 'FAILED' | 'CANCELLED' | 'EXPIRED';
 export type ScheduleStatus = 'ACTIVE' | 'COMPLETED' | 'CANCELLED' | 'FAILED';
@@ -44,5 +44,7 @@ export interface IPaymentRepository {
   savePaymentSchedule(input: SavePaymentScheduleInput): Promise<Result<void, Error>>;
 
   /** Find existing payment schedule by referenceData ID — used for idempotency */
-  findPaymentScheduleByAssessmentId(assessmentId: string): Promise<Result<{ id: string; gocardlessId: string } | null, Error>>;
+  findPaymentScheduleByAssessmentId(
+    assessmentId: string
+  ): Promise<Result<{ id: string; gocardlessId: string } | null, Error>>;
 }

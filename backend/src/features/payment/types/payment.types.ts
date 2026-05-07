@@ -1,4 +1,4 @@
-import type { PlanType } from '@/features/referenceData/domain/entities';
+import type { PlanType } from '@/features/assessment/domain/entities';
 
 export type { PlanType };
 
