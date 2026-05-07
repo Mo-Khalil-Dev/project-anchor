@@ -1,4 +1,4 @@
-import { AggregateRoot } from '@/features/shared/domain/AggregateRoot';
+import { AggregateRoot } from '@/core/domain/common/AggregateRoot';
 import { UserCreatedEvent, UserProfileUpdatedEvent } from '../events';
 
 export class User extends AggregateRoot<string> {

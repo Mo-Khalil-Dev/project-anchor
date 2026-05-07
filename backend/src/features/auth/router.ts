@@ -24,7 +24,7 @@ import { PrismaUserRepository } from '@/features/auth/infrastructure/repositorie
 import { PrismaSessionLogRepository } from '@/features/auth/infrastructure/repositories/PrismaSessionLogRepository';
 import { PrismaRefreshTokenRepository } from '@/features/auth/infrastructure/repositories/PrismaRefreshTokenRepository';
 
-// Import services
+// Import usecases
 import { TokenService } from '@/features/auth/application/services/TokenService';
 
 export interface AuthSetup {
@@ -44,7 +44,7 @@ export function createAuthRouter(
   const sessionLogRepository = new PrismaSessionLogRepository(prisma);
   const tokensRepository = new PrismaRefreshTokenRepository(prisma);
 
-  // Create services
+  // Create usecases
   const tokenService = new TokenService(authProvider, tokensRepository);
 
   // Create all use cases

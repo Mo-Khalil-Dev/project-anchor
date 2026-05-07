@@ -1,4 +1,4 @@
-import { DomainEvent } from '@/features/shared/domain/DomainEvent';
+import { DomainEvent } from '@/core/domain/common/DomainEvent';
 
 export interface UserLoggedInEventPayload {
   accessTokenExpiresAt: Date;
