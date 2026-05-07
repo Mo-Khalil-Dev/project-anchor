@@ -71,6 +71,10 @@ export class BankConnection extends AggregateRoot<string> {
     return connection;
   }
 
+  static reconstruct(props: BankConnectionProps): BankConnection {
+    return new BankConnection(props);
+  }
+
   markDataRetrieved(): void {
     this.status = BANK_CONNECTION_STATUS.DATA_RETRIEVED;
     if (!this.connectedAt) {

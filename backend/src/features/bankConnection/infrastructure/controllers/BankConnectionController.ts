@@ -9,7 +9,7 @@ export class BankConnectionController {
   constructor(
     private initiateOAuth: InitiateBankConnectionUseCase,
     private handleCallbackUseCase: FinalizeBankConnectionUseCase,
-    private customerRepository: ICustomerRepository,
+    private customerRepository: ICustomerRepository
   ) {}
 
   async initiateOAuthFlow(
@@ -29,7 +29,13 @@ export class BankConnectionController {
 
     const customerId = customerIdResult.getOrThrow();
     if (!customerId) {
-      return next(new ApplicationError('CUSTOMER_NOT_LINKED', 'No customer account linked to this user. Please complete account setup first.', 400));
+      return next(
+        new ApplicationError(
+          'CUSTOMER_NOT_LINKED',
+          'No customer account linked to this user. Please complete account setup first.',
+          400
+        )
+      );
     }
 
     const result = await this.initiateOAuth.execute({ customerId });

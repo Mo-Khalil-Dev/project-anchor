@@ -41,7 +41,7 @@ export function createBankConnectionRouter(
     assessmentRepository,
     logger,
     completeAssessmentUseCase,
-    failAssessmentUseCase,
+    failAssessmentUseCase
   );
 
   const environment = process.env.NODE_ENV ?? 'development';
@@ -60,17 +60,26 @@ export function createBankConnectionRouter(
     );
   }
 
-  const initiateOAuth = new InitiateBankConnectionUseCase(bankConnectionRepository, customerRepository, tinkService, logger);
+  const initiateOAuth = new InitiateBankConnectionUseCase(
+    bankConnectionRepository,
+    customerRepository,
+    tinkService,
+    logger
+  );
   const handleCallback = new FinalizeBankConnectionUseCase(
     bankConnectionRepository,
     assessmentRepository,
     bankDataProvider,
     prisma,
     logger,
-    eventHandler,
+    eventHandler
   );
 
-  const controller = new BankConnectionController(initiateOAuth, handleCallback, customerRepository);
+  const controller = new BankConnectionController(
+    initiateOAuth,
+    handleCallback,
+    customerRepository
+  );
 
   // ============ ROUTES ============
 
@@ -80,10 +89,7 @@ export function createBankConnectionRouter(
     asyncHandler(controller.initiateOAuthFlow.bind(controller))
   );
 
-  router.get(
-    '/callback',
-    asyncHandler(controller.handleCallback.bind(controller))
-  );
+  router.get('/callback', asyncHandler(controller.handleCallback.bind(controller)));
 
   return router;
 }

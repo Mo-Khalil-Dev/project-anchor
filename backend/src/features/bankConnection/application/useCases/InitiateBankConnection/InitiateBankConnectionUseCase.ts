@@ -18,7 +18,9 @@ export class InitiateBankConnectionUseCase {
     private logger: ILogger
   ) {}
 
-  async execute(request: InitiateBankConnectionInput): Promise<Result<InitiateBankConnectionOutput, Error>> {
+  async execute(
+    request: InitiateBankConnectionInput
+  ): Promise<Result<InitiateBankConnectionOutput, Error>> {
     try {
       // Load the existing customer — they must be linked before reaching bank connection
       const customerResult = await this.customerRepository.findById(request.customerId);

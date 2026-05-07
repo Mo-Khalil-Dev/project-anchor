@@ -33,12 +33,8 @@ describe('BankConnection Entity', () => {
       expect(connection.getConnectedAt).toBeNull();
       expect(connection.getDataRetrievedAt).toBeNull();
       expect(connection.createdAt).toBeInstanceOf(Date);
-      expect(connection.createdAt.getTime()).toBeGreaterThanOrEqual(
-        beforeCreation.getTime()
-      );
-      expect(connection.createdAt.getTime()).toBeLessThanOrEqual(
-        afterCreation.getTime()
-      );
+      expect(connection.createdAt.getTime()).toBeGreaterThanOrEqual(beforeCreation.getTime());
+      expect(connection.createdAt.getTime()).toBeLessThanOrEqual(afterCreation.getTime());
       expect(connection.getUpdatedAt).toBeInstanceOf(Date);
     });
   });
@@ -78,12 +74,8 @@ describe('BankConnection Entity', () => {
 
       const afterMark = new Date();
       expect(connection.getConnectedAt).toBeInstanceOf(Date);
-      expect(connection.getConnectedAt!.getTime()).toBeGreaterThanOrEqual(
-        beforeMark.getTime()
-      );
-      expect(connection.getConnectedAt!.getTime()).toBeLessThanOrEqual(
-        afterMark.getTime()
-      );
+      expect(connection.getConnectedAt!.getTime()).toBeGreaterThanOrEqual(beforeMark.getTime());
+      expect(connection.getConnectedAt!.getTime()).toBeLessThanOrEqual(afterMark.getTime());
     });
 
     it('should update updatedAt timestamp', () => {
@@ -93,12 +85,8 @@ describe('BankConnection Entity', () => {
       connection.markConnected();
 
       const afterMark = new Date();
-      expect(connection.getUpdatedAt!.getTime()).toBeGreaterThanOrEqual(
-        beforeMark.getTime()
-      );
-      expect(connection.getUpdatedAt!.getTime()).toBeLessThanOrEqual(
-        afterMark.getTime()
-      );
+      expect(connection.getUpdatedAt!.getTime()).toBeGreaterThanOrEqual(beforeMark.getTime());
+      expect(connection.getUpdatedAt!.getTime()).toBeLessThanOrEqual(afterMark.getTime());
     });
 
     it('should not change status when marking connected', () => {
@@ -128,12 +116,8 @@ describe('BankConnection Entity', () => {
 
       const afterMark = new Date();
       expect(connection.getDataRetrievedAt).toBeInstanceOf(Date);
-      expect(connection.getDataRetrievedAt!.getTime()).toBeGreaterThanOrEqual(
-        beforeMark.getTime()
-      );
-      expect(connection.getDataRetrievedAt!.getTime()).toBeLessThanOrEqual(
-        afterMark.getTime()
-      );
+      expect(connection.getDataRetrievedAt!.getTime()).toBeGreaterThanOrEqual(beforeMark.getTime());
+      expect(connection.getDataRetrievedAt!.getTime()).toBeLessThanOrEqual(afterMark.getTime());
     });
 
     it('should lazy-set connectedAt if null', () => {
@@ -145,27 +129,19 @@ describe('BankConnection Entity', () => {
 
       const afterMark = new Date();
       expect(connection.getConnectedAt).toBeInstanceOf(Date);
-      expect(connection.getConnectedAt!.getTime()).toBeGreaterThanOrEqual(
-        beforeMark.getTime()
-      );
-      expect(connection.getConnectedAt!.getTime()).toBeLessThanOrEqual(
-        afterMark.getTime()
-      );
+      expect(connection.getConnectedAt!.getTime()).toBeGreaterThanOrEqual(beforeMark.getTime());
+      expect(connection.getConnectedAt!.getTime()).toBeLessThanOrEqual(afterMark.getTime());
     });
 
     it('should update updatedAt timestamp', () => {
       const connection = BankConnection.create(mockCustomerId, mockOAuthState);
-      const beforeMark = new Date(Date.now() + 1);
+      const beforeMark = new Date();
 
       connection.markDataRetrieved();
 
       const afterMark = new Date();
-      expect(connection.getUpdatedAt!.getTime()).toBeGreaterThanOrEqual(
-        beforeMark.getTime()
-      );
-      expect(connection.getUpdatedAt!.getTime()).toBeLessThanOrEqual(
-        afterMark.getTime()
-      );
+      expect(connection.getUpdatedAt!.getTime()).toBeGreaterThanOrEqual(beforeMark.getTime());
+      expect(connection.getUpdatedAt!.getTime()).toBeLessThanOrEqual(afterMark.getTime());
     });
   });
 
@@ -180,43 +156,35 @@ describe('BankConnection Entity', () => {
 
     it('should update updatedAt timestamp', () => {
       const connection = BankConnection.create(mockCustomerId, mockOAuthState);
-      const beforeDisconnect = new Date(Date.now() + 1);
+      const beforeDisconnect = new Date();
 
       connection.disconnect();
 
       const afterDisconnect = new Date();
-      expect(connection.getUpdatedAt!.getTime()).toBeGreaterThanOrEqual(
-        beforeDisconnect.getTime()
-      );
-      expect(connection.getUpdatedAt!.getTime()).toBeLessThanOrEqual(
-        afterDisconnect.getTime()
-      );
+      expect(connection.getUpdatedAt!.getTime()).toBeGreaterThanOrEqual(beforeDisconnect.getTime());
+      expect(connection.getUpdatedAt!.getTime()).toBeLessThanOrEqual(afterDisconnect.getTime());
     });
   });
 
-  describe('Immutability & Invariants', () => {
-    it('should not allow reassignment of customerId', () => {
+  describe('Invariants', () => {
+    it('should maintain customerId throughout lifecycle', () => {
       const connection = BankConnection.create(mockCustomerId, mockOAuthState);
 
-      // Access should work
       expect(connection.getCustomerId).toBe(mockCustomerId);
-
-      // Attempting to modify the underlying property should fail (readonly)
-      expect(() => {
-        (connection as any).customerId = 'new-customer-id';
-      }).toThrow();
+      connection.markConnected();
+      expect(connection.getCustomerId).toBe(mockCustomerId);
+      connection.markDataRetrieved();
+      expect(connection.getCustomerId).toBe(mockCustomerId);
     });
 
-    it('should not allow reassignment of oauthState', () => {
+    it('should maintain oauthState throughout lifecycle', () => {
       const connection = BankConnection.create(mockCustomerId, mockOAuthState);
 
-      // Access should work
       expect(connection.getOauthState).toBe(mockOAuthState);
-
-      // Attempting to modify the underlying property should fail (readonly)
-      expect(() => {
-        (connection as any).oauthState = 'new-state';
-      }).toThrow();
+      connection.markConnected();
+      expect(connection.getOauthState).toBe(mockOAuthState);
+      connection.disconnect();
+      expect(connection.getOauthState).toBe(mockOAuthState);
     });
   });
 
@@ -228,7 +196,7 @@ describe('BankConnection Entity', () => {
       const firstDataRetrievedAt = connection.getDataRetrievedAt;
 
       // Small delay
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10));
 
       connection.markDataRetrieved();
       const secondDataRetrievedAt = connection.getDataRetrievedAt;

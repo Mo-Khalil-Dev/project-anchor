@@ -6,9 +6,7 @@ import type { IEventHandler } from '@/core/application/services/IEventHandler';
 import type { AssessmentReadyForProcessingEvent } from '@/features/assessment/domain/events/AssessmentReadyForProcessingEvent';
 import { Assessment } from '@/features/assessment/domain/entities';
 import type { IAssessmentRepository } from '@/features/assessment/domain/entities';
-import {
-  IBankConnectionRepository
-} from '@/features/bankConnection/application/respositories/IBankConnectionRepository';
+import { IBankConnectionRepository } from '@/features/bankConnection/application/respositories/IBankConnectionRepository';
 import type { FinalizeBankConnectionOutput } from './FinalizeBankConnection.dto';
 
 export class FinalizeBankConnectionUseCase {
@@ -21,10 +19,7 @@ export class FinalizeBankConnectionUseCase {
     private eventHandler: IEventHandler<AssessmentReadyForProcessingEvent>
   ) {}
 
-  async execute(
-    code: string,
-    state: string
-  ): Promise<Result<FinalizeBankConnectionOutput, Error>> {
+  async execute(code: string, state: string): Promise<Result<FinalizeBankConnectionOutput, Error>> {
     try {
       const connResult = await this.bankConnectionRepository.findByOAuthState(state);
       if (connResult.isFail) {

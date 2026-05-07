@@ -1,8 +1,6 @@
 import { prisma } from '../../../shared/utils/db';
 import { Result } from '../../../shared/result';
-import {
-  IBankConnectionRepository
-} from '@/features/bankConnection/application/respositories/IBankConnectionRepository';
+import { IBankConnectionRepository } from '@/features/bankConnection/application/respositories/IBankConnectionRepository';
 import { BankConnection } from '@/features/bankConnection/domain/entites/bankConnection';
 
 export class PrismaBankConnectionRepository implements IBankConnectionRepository {
@@ -11,12 +9,12 @@ export class PrismaBankConnectionRepository implements IBankConnectionRepository
       await prisma.bankConnection.create({
         data: {
           id: connection.id,
-          customerId: connection.customerId,
-          oauthState: connection.oauthState,
-          status: connection.status,
-          connectedAt: connection.connectedAt,
-          dataRetrievedAt: connection.dataRetrievedAt,
-          updatedAt: connection.updatedAt || new Date(),
+          customerId: connection.getCustomerId,
+          oauthState: connection.getOauthState,
+          status: connection.getStatus,
+          connectedAt: connection.getConnectedAt,
+          dataRetrievedAt: connection.getDataRetrievedAt,
+          updatedAt: connection.getUpdatedAt || new Date(),
         },
       });
       return Result.ok(connection);
@@ -67,10 +65,10 @@ export class PrismaBankConnectionRepository implements IBankConnectionRepository
       await prisma.bankConnection.update({
         where: { id: connection.id },
         data: {
-          status: connection.status,
-          connectedAt: connection.connectedAt,
-          dataRetrievedAt: connection.dataRetrievedAt,
-          updatedAt: connection.updatedAt || new Date(),
+          status: connection.getStatus,
+          connectedAt: connection.getConnectedAt,
+          dataRetrievedAt: connection.getDataRetrievedAt,
+          updatedAt: connection.getUpdatedAt || new Date(),
         },
       });
       return Result.ok(connection);
@@ -80,7 +78,7 @@ export class PrismaBankConnectionRepository implements IBankConnectionRepository
   }
 
   private toDomain(record: any): BankConnection {
-    return new BankConnection({
+    return BankConnection.reconstruct({
       id: record.id,
       customerId: record.customerId,
       oauthState: record.oauthState,

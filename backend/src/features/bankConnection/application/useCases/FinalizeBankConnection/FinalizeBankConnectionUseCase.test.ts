@@ -105,9 +105,7 @@ describe('FinalizeBankConnectionUseCase', () => {
         Result.ok(mockBankConnection as any)
       );
       (prisma.customer.findUnique as jest.Mock).mockResolvedValue(mockCustomer);
-      bankDataProvider.fetchFinancialData.mockResolvedValue(
-        Result.ok(mockFinancialData as any)
-      );
+      bankDataProvider.fetchFinancialData.mockResolvedValue(Result.ok(mockFinancialData as any));
       (prisma.bankReports.upsert as jest.Mock).mockResolvedValue({});
       assessmentRepository.save.mockResolvedValue(
         Result.ok({
@@ -134,9 +132,7 @@ describe('FinalizeBankConnectionUseCase', () => {
       expect(output.incomeBreakdown).toEqual(mockFinancialData.income);
       expect(output.expenseBreakdown).toEqual(mockFinancialData.expenses);
 
-      expect(bankConnectionRepository.findByOAuthState).toHaveBeenCalledWith(
-        'state-token-456'
-      );
+      expect(bankConnectionRepository.findByOAuthState).toHaveBeenCalledWith('state-token-456');
       expect(bankDataProvider.fetchFinancialData).toHaveBeenCalledWith('auth-code-123');
       expect(prisma.bankReports.upsert).toHaveBeenCalled();
       expect(assessmentRepository.save).toHaveBeenCalled();
@@ -216,9 +212,7 @@ describe('FinalizeBankConnectionUseCase', () => {
         Result.ok(mockBankConnection as any)
       );
       (prisma.customer.findUnique as jest.Mock).mockResolvedValue(mockCustomer);
-      bankDataProvider.fetchFinancialData.mockResolvedValue(
-        Result.ok(mockFinancialData as any)
-      );
+      bankDataProvider.fetchFinancialData.mockResolvedValue(Result.ok(mockFinancialData as any));
       (prisma.bankReports.upsert as jest.Mock).mockResolvedValue({});
       assessmentRepository.save.mockResolvedValue(Result.fail(saveError));
 
@@ -237,9 +231,7 @@ describe('FinalizeBankConnectionUseCase', () => {
         Result.ok(mockBankConnection as any)
       );
       (prisma.customer.findUnique as jest.Mock).mockResolvedValue(mockCustomer);
-      bankDataProvider.fetchFinancialData.mockResolvedValue(
-        Result.ok(mockFinancialData as any)
-      );
+      bankDataProvider.fetchFinancialData.mockResolvedValue(Result.ok(mockFinancialData as any));
       (prisma.bankReports.upsert as jest.Mock).mockResolvedValue({});
       assessmentRepository.save.mockResolvedValue(
         Result.ok({
@@ -263,9 +255,7 @@ describe('FinalizeBankConnectionUseCase', () => {
         Result.ok(mockBankConnection as any)
       );
       (prisma.customer.findUnique as jest.Mock).mockResolvedValue(mockCustomer);
-      bankDataProvider.fetchFinancialData.mockResolvedValue(
-        Result.ok(mockFinancialData as any)
-      );
+      bankDataProvider.fetchFinancialData.mockResolvedValue(Result.ok(mockFinancialData as any));
       (prisma.bankReports.upsert as jest.Mock).mockResolvedValue({});
       assessmentRepository.save.mockResolvedValue(
         Result.ok({
@@ -301,9 +291,7 @@ describe('FinalizeBankConnectionUseCase', () => {
         Result.ok(mockBankConnection as any)
       );
       (prisma.customer.findUnique as jest.Mock).mockResolvedValue(mockCustomer);
-      bankDataProvider.fetchFinancialData.mockResolvedValue(
-        Result.ok(mockFinancialData as any)
-      );
+      bankDataProvider.fetchFinancialData.mockResolvedValue(Result.ok(mockFinancialData as any));
       (prisma.bankReports.upsert as jest.Mock).mockResolvedValue({});
 
       // Create a more realistic mock event
@@ -334,9 +322,7 @@ describe('FinalizeBankConnectionUseCase', () => {
 
     it('should handle unexpected errors', async () => {
       // Arrange
-      bankConnectionRepository.findByOAuthState.mockRejectedValue(
-        new Error('Unexpected error')
-      );
+      bankConnectionRepository.findByOAuthState.mockRejectedValue(new Error('Unexpected error'));
 
       // Act
       const result = await useCase.execute('auth-code-123', 'state-token');
@@ -357,9 +343,7 @@ describe('FinalizeBankConnectionUseCase', () => {
         Result.ok(mockBankConnection as any)
       );
       (prisma.customer.findUnique as jest.Mock).mockResolvedValue(customerWithoutDebt);
-      bankDataProvider.fetchFinancialData.mockResolvedValue(
-        Result.ok(mockFinancialData as any)
-      );
+      bankDataProvider.fetchFinancialData.mockResolvedValue(Result.ok(mockFinancialData as any));
       (prisma.bankReports.upsert as jest.Mock).mockResolvedValue({});
       assessmentRepository.save.mockResolvedValue(
         Result.ok({

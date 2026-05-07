@@ -27,7 +27,14 @@ export const MOCK_TINK_INCOME_REPORT = {
           lastSixMonths: {
             mean: scaled(1750),
             count: 6,
-            values: [scaled(1750), scaled(1795), scaled(1780), scaled(1750), scaled(1680), scaled(1745)],
+            values: [
+              scaled(1750),
+              scaled(1795),
+              scaled(1780),
+              scaled(1750),
+              scaled(1680),
+              scaled(1745),
+            ],
           },
           lastTwelveMonths: {
             mean: scaled(1728),
@@ -66,17 +73,24 @@ export const MOCK_TINK_INCOME_REPORT = {
         confidence: 'HIGH',
         summaryByMonths: {
           lastThreeMonths: {
-            mean: scaled(87.20),
+            mean: scaled(87.2),
             count: 3,
-            values: [scaled(87.20), scaled(87.20), scaled(87.20)],
+            values: [scaled(87.2), scaled(87.2), scaled(87.2)],
           },
           lastSixMonths: {
-            mean: scaled(87.20),
+            mean: scaled(87.2),
             count: 6,
-            values: [scaled(87.20), scaled(87.20), scaled(87.20), scaled(87.20), scaled(87.20), scaled(87.20)],
+            values: [
+              scaled(87.2),
+              scaled(87.2),
+              scaled(87.2),
+              scaled(87.2),
+              scaled(87.2),
+              scaled(87.2),
+            ],
           },
           lastTwelveMonths: {
-            mean: scaled(87.20),
+            mean: scaled(87.2),
             count: 12,
           },
         },

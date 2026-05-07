@@ -1,5 +1,8 @@
 import type { Result } from '../../../shared/result';
-import type { IncomeBreakdown, ExpenseBreakdown } from '@/features/bankConnection/infrastructure/services/Tink/TinkResponseParser';
+import type {
+  IncomeBreakdown,
+  ExpenseBreakdown,
+} from '@/features/bankConnection/infrastructure/services/Tink/TinkResponseParser';
 
 export interface BankFinancialData {
   income: IncomeBreakdown;

@@ -91,9 +91,7 @@ describe('InitiateBankConnectionUseCase', () => {
 
     it('should fail when customer is not found', async () => {
       // Arrange
-      customerRepository.findById.mockResolvedValue(
-        Result.fail(new Error('Customer not found'))
-      );
+      customerRepository.findById.mockResolvedValue(Result.fail(new Error('Customer not found')));
 
       // Act
       const result = await useCase.execute({ customerId: 'nonexistent' });
@@ -101,10 +99,7 @@ describe('InitiateBankConnectionUseCase', () => {
       // Assert
       expect(result.isFail).toBe(true);
       expect(result.getError()?.message).toBe('Customer not found');
-      expect(mockLogger.error).toHaveBeenCalledWith(
-        'Failed to fetch customer',
-        expect.any(Object)
-      );
+      expect(mockLogger.error).toHaveBeenCalledWith('Failed to fetch customer', expect.any(Object));
       expect(bankConnectionRepository.save).not.toHaveBeenCalled();
     });
 
@@ -118,18 +113,13 @@ describe('InitiateBankConnectionUseCase', () => {
       // Assert
       expect(result.isFail).toBe(true);
       expect(result.getError()?.message).toBe('Customer not found');
-      expect(mockLogger.error).toHaveBeenCalledWith(
-        'Customer not found',
-        expect.any(Object)
-      );
+      expect(mockLogger.error).toHaveBeenCalledWith('Customer not found', expect.any(Object));
     });
 
     it('should fail when saving bank connection fails', async () => {
       // Arrange
       customerRepository.findById.mockResolvedValue(Result.ok(mockCustomer as any));
-      bankConnectionRepository.save.mockResolvedValue(
-        Result.fail(new Error('Database error'))
-      );
+      bankConnectionRepository.save.mockResolvedValue(Result.fail(new Error('Database error')));
 
       // Act
       const result = await useCase.execute({ customerId: 'customer-1' });
@@ -153,10 +143,7 @@ describe('InitiateBankConnectionUseCase', () => {
       // Assert
       expect(result.isFail).toBe(true);
       expect(result.getError()?.message).toContain('OAuth initiation failed');
-      expect(mockLogger.error).toHaveBeenCalledWith(
-        'OAuth initiation failed',
-        expect.any(Object)
-      );
+      expect(mockLogger.error).toHaveBeenCalledWith('OAuth initiation failed', expect.any(Object));
     });
 
     it('should generate different states for each call', async () => {

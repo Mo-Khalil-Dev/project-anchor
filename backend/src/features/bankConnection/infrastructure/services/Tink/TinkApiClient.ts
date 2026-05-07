@@ -14,9 +14,8 @@ export class TinkApiClient {
   constructor(
     private config: AppConfig,
     private logger: ILogger
-  ) {
-  }
-  
+  ) {}
+
   generateAuthorizationUrl(state: string, _customerId: string): string {
     const params = new URLSearchParams({
       client_id: this.config.tink.clientId,
@@ -48,7 +47,10 @@ export class TinkApiClient {
 
       if (!response.ok) {
         const error = await response.text();
-        this.logger.error('Failed to exchange code for access token', { status: response.status, error });
+        this.logger.error('Failed to exchange code for access token', {
+          status: response.status,
+          error,
+        });
         return Result.fail(new Error(`Failed to exchange code: ${error}`));
       }
 
@@ -67,8 +69,12 @@ export class TinkApiClient {
   async getIncomeReport(_: string): Promise<Result<any, Error>> {
     return Result.ok(await MOCK_TINK_INCOME_REPORT);
   }
-  
-  private async getCheckReport(type: string, customerId: string, accessToken: string): Promise<Result<any, Error>> {
+
+  private async getCheckReport(
+    type: string,
+    customerId: string,
+    accessToken: string
+  ): Promise<Result<any, Error>> {
     try {
       const response = await fetch(`${this.config.tink.expensesApiBaseUrl}/${type}/${customerId}`, {
         headers: {

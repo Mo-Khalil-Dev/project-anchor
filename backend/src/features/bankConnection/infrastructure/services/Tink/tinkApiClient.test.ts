@@ -27,12 +27,14 @@ describe('TinkApiClient with MSW mocks', () => {
       error: jest.fn(),
       warn: jest.fn(),
       debug: jest.fn(),
-      child: jest.fn(function() { return this; }),
+      child: jest.fn(function () {
+        return this;
+      }),
     };
 
     service = new TinkApiClient(mockConfig as any, mockLogger);
   });
-  
+
   describe('generateAuthorizationUrl', () => {
     it('should generate correct authorization URL', () => {
       const url = service.generateAuthorizationUrl('test-state', 'customer-123');
