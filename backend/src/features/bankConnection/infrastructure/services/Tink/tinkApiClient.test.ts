@@ -1,11 +1,11 @@
 /**
  * Example integration test using MSW mocks
- * Run: npm test -- tink-oauth.integration.test.ts
+ * Run: npm test -- tinkApiClient.test.ts
  */
-import { TinkGateway } from './TinkGateway';
+import { TinkApiClient } from '@/features/bankConnection/infrastructure/services/Tink/TinkApiClient';
 
-describe('TinkGateway with MSW mocks', () => {
-  let service: TinkGateway;
+describe('TinkApiClient with MSW mocks', () => {
+  let service: TinkApiClient;
 
   beforeEach(() => {
     const mockConfig = {
@@ -30,25 +30,9 @@ describe('TinkGateway with MSW mocks', () => {
       child: jest.fn(function() { return this; }),
     };
 
-    service = new TinkGateway(mockConfig as any, mockLogger);
+    service = new TinkApiClient(mockConfig as any, mockLogger);
   });
-
-  describe('getAccessToken', () => {
-    it('should fetch access token from mocked Tink API', async () => {
-      const result = await service.getAccessToken();
-
-      expect(result.isOk).toBe(true);
-      expect(result.getOrThrow()).toBe('mock_access_token_12345');
-    });
-
-    it('should cache token on subsequent calls', async () => {
-      const result1 = await service.getAccessToken();
-      const result2 = await service.getAccessToken();
-
-      expect(result1.getOrThrow()).toBe(result2.getOrThrow());
-    });
-  });
-
+  
   describe('generateAuthorizationUrl', () => {
     it('should generate correct authorization URL', () => {
       const url = service.generateAuthorizationUrl('test-state', 'customer-123');

@@ -1,4 +1,4 @@
-import { Result } from '../../shared/result';
+import { Result } from '../../../../shared/result';
 
 export interface IncomeBreakdown {
   salary: number;
@@ -18,7 +18,7 @@ export interface ExpenseBreakdown {
   total: number;
 }
 
-export class BankDataExtractionService {
+export class TinkResponseParser {
   private static decodeScaledValue(unscaledValue: string, scale: string): number {
     const value = BigInt(unscaledValue);
     const scaleNum = parseInt(scale, 10);

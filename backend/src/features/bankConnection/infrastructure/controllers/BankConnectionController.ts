@@ -1,14 +1,14 @@
 import { Response, NextFunction } from 'express';
-import type { InitiateBankOAuthUseCase } from '../services/InitiateBankOAuthUseCase';
-import type { HandleBankOAuthCallbackUseCase } from '../services/HandleBankOAuthCallbackUseCase';
-import type { ICustomerRepository } from '../../customer/types/customer.types';
-import { ApplicationError } from '../../../core/domain/errors/applicationError';
-import type { AuthenticatedRequest } from '../../shared/types/auth';
+import type { InitiateBankConnectionUseCase } from '../../application/useCases/InitiateBankConnection/InitiateBankConnectionUseCase';
+import type { FinalizeBankConnectionUseCase } from '../../application/useCases/FinalizeBankConnection/FinalizeBankConnectionUseCase';
+import type { ICustomerRepository } from '../../../customer/types/customer.types';
+import { ApplicationError } from '../../../../core/domain/errors/applicationError';
+import type { AuthenticatedRequest } from '../../../shared/types/auth';
 
 export class BankConnectionController {
   constructor(
-    private initiateOAuth: InitiateBankOAuthUseCase,
-    private handleCallbackUseCase: HandleBankOAuthCallbackUseCase,
+    private initiateOAuth: InitiateBankConnectionUseCase,
+    private handleCallbackUseCase: FinalizeBankConnectionUseCase,
     private customerRepository: ICustomerRepository,
   ) {}
 
@@ -32,7 +32,7 @@ export class BankConnectionController {
       return next(new ApplicationError('CUSTOMER_NOT_LINKED', 'No customer account linked to this user. Please complete account setup first.', 400));
     }
 
-    const result = await this.initiateOAuth.execute(customerId);
+    const result = await this.initiateOAuth.execute({ customerId });
     result.match(
       (data) => {
         res.json({ success: true, data });

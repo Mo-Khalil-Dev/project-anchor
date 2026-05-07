@@ -1,12 +1,12 @@
-import { Result } from '../../shared/result';
-import type { ILogger } from '../../shared/logging';
-import type { TinkGateway } from './TinkGateway';
-import { BankDataExtractionService } from './BankDataExtractionService';
-import type { IBankDataProvider, BankFinancialData } from './IBankDataProvider';
+import { Result } from '../../../../shared/result';
+import type { ILogger } from '../../../../shared/logging';
+import type { TinkApiClient } from './TinkApiClient';
+import { TinkResponseParser } from './TinkResponseParser';
+import type { IBankDataProvider, BankFinancialData } from '../../../application/services/IBankDataProvider';
 
-export class TinkBankDataProvider implements IBankDataProvider {
+export class TinkFinancialDataProvider implements IBankDataProvider {
   constructor(
-    private tink: TinkGateway,
+    private tink: TinkApiClient,
     private logger: ILogger,
   ) {}
 
@@ -33,13 +33,13 @@ export class TinkBankDataProvider implements IBankDataProvider {
     const rawIncomeData = incomeResult.getOrThrow();
     const rawExpenseData = expenseResult.getOrThrow();
 
-    const extractedIncome = BankDataExtractionService.extractIncome(rawIncomeData);
+    const extractedIncome = TinkResponseParser.extractIncome(rawIncomeData);
     if (extractedIncome.isFail) {
       this.logger.error('Failed to extract income figures', { error: extractedIncome.getError()?.message });
       return Result.fail(extractedIncome.getError()!);
     }
 
-    const extractedExpenses = BankDataExtractionService.extractExpenses(rawExpenseData);
+    const extractedExpenses = TinkResponseParser.extractExpenses(rawExpenseData);
     if (extractedExpenses.isFail) {
       this.logger.error('Failed to extract expense figures', { error: extractedExpenses.getError()?.message });
       return Result.fail(extractedExpenses.getError()!);

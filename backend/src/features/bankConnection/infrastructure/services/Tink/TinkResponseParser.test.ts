@@ -1,4 +1,4 @@
-import { BankDataExtractionService } from './BankDataExtractionService';
+import { TinkResponseParser } from '@/features/bankConnection/infrastructure/services/Tink/TinkResponseParser';
 
 describe('BankDataExtractionService', () => {
   describe('extractIncome', () => {
@@ -21,7 +21,7 @@ describe('BankDataExtractionService', () => {
         },
       };
 
-      const result = BankDataExtractionService.extractIncome(tinkData);
+      const result = TinkResponseParser.extractIncome(tinkData);
 
       expect(result.isOk).toBe(true);
       const income = result.getOrThrow();
@@ -53,7 +53,7 @@ describe('BankDataExtractionService', () => {
         },
       };
 
-      const result = BankDataExtractionService.extractIncome(tinkData);
+      const result = TinkResponseParser.extractIncome(tinkData);
       const income = result.getOrThrow();
 
       expect(income.salary).toBe(3000);
@@ -93,7 +93,7 @@ describe('BankDataExtractionService', () => {
         },
       };
 
-      const result = BankDataExtractionService.extractIncome(tinkData);
+      const result = TinkResponseParser.extractIncome(tinkData);
       const income = result.getOrThrow();
 
       expect(income.benefits).toBe(1000);
@@ -103,7 +103,7 @@ describe('BankDataExtractionService', () => {
     });
 
     it('should use default response when input is undefined', () => {
-      const result = BankDataExtractionService.extractIncome(undefined);
+      const result = TinkResponseParser.extractIncome(undefined);
 
       expect(result.isOk).toBe(true);
       const income = result.getOrThrow();
@@ -112,7 +112,7 @@ describe('BankDataExtractionService', () => {
     });
 
     it('should fail when streams array is missing', () => {
-      const result = BankDataExtractionService.extractIncome({
+      const result = TinkResponseParser.extractIncome({
         income: {},
       });
 
@@ -141,7 +141,7 @@ describe('BankDataExtractionService', () => {
         },
       };
 
-      const result = BankDataExtractionService.extractIncome(tinkData);
+      const result = TinkResponseParser.extractIncome(tinkData);
       const income = result.getOrThrow();
 
       expect(income.salary).toBe(3000);
@@ -165,7 +165,7 @@ describe('BankDataExtractionService', () => {
         },
       };
 
-      const result = BankDataExtractionService.extractIncome(tinkData);
+      const result = TinkResponseParser.extractIncome(tinkData);
       const income = result.getOrThrow();
 
       expect(income.salary).toBe(3000);
@@ -197,7 +197,7 @@ describe('BankDataExtractionService', () => {
         },
       };
 
-      const result = BankDataExtractionService.extractExpenses(tinkData);
+      const result = TinkResponseParser.extractExpenses(tinkData);
 
       expect(result.isOk).toBe(true);
       const expenses = result.getOrThrow();
@@ -257,7 +257,7 @@ describe('BankDataExtractionService', () => {
         },
       };
 
-      const result = BankDataExtractionService.extractExpenses(tinkData);
+      const result = TinkResponseParser.extractExpenses(tinkData);
       const expenses = result.getOrThrow();
 
       expect(expenses.housing).toBe(1000);
@@ -269,7 +269,7 @@ describe('BankDataExtractionService', () => {
     });
 
     it('should use default response when input is undefined', () => {
-      const result = BankDataExtractionService.extractExpenses(undefined);
+      const result = TinkResponseParser.extractExpenses(undefined);
 
       expect(result.isOk).toBe(true);
       const expenses = result.getOrThrow();
@@ -278,7 +278,7 @@ describe('BankDataExtractionService', () => {
     });
 
     it('should fail when expenses object is missing', () => {
-      const result = BankDataExtractionService.extractExpenses({});
+      const result = TinkResponseParser.extractExpenses({});
 
       expect(result.isFail).toBe(true);
     });
@@ -303,7 +303,7 @@ describe('BankDataExtractionService', () => {
         },
       };
 
-      const result = BankDataExtractionService.extractExpenses(tinkData);
+      const result = TinkResponseParser.extractExpenses(tinkData);
       const expenses = result.getOrThrow();
 
       expect(expenses.housing).toBe(1000);
@@ -335,7 +335,7 @@ describe('BankDataExtractionService', () => {
         },
       };
 
-      const result = BankDataExtractionService.extractExpenses(tinkData);
+      const result = TinkResponseParser.extractExpenses(tinkData);
       const expenses = result.getOrThrow();
 
       expect(expenses.other).toBe(800);
@@ -357,7 +357,7 @@ describe('BankDataExtractionService', () => {
         },
       };
 
-      const result = BankDataExtractionService.extractExpenses(tinkData);
+      const result = TinkResponseParser.extractExpenses(tinkData);
       const expenses = result.getOrThrow();
 
       expect(expenses.housing).toBe(800.01);

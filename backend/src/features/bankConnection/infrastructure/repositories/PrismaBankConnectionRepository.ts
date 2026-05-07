@@ -1,7 +1,9 @@
-import { prisma } from '../../shared/utils/db';
-import { BankConnection } from '../types/bankConnection.types';
-import type { IBankConnectionRepository } from '../types/bankConnection.types';
-import { Result } from '../../shared/result';
+import { prisma } from '../../../shared/utils/db';
+import { Result } from '../../../shared/result';
+import {
+  IBankConnectionRepository
+} from '@/features/bankConnection/application/respositories/IBankConnectionRepository';
+import { BankConnection } from '@/features/bankConnection/domain/entites/bankConnection';
 
 export class PrismaBankConnectionRepository implements IBankConnectionRepository {
   async save(connection: BankConnection): Promise<Result<BankConnection, Error>> {
@@ -14,6 +16,7 @@ export class PrismaBankConnectionRepository implements IBankConnectionRepository
           status: connection.status,
           connectedAt: connection.connectedAt,
           dataRetrievedAt: connection.dataRetrievedAt,
+          updatedAt: connection.updatedAt || new Date(),
         },
       });
       return Result.ok(connection);
@@ -67,6 +70,7 @@ export class PrismaBankConnectionRepository implements IBankConnectionRepository
           status: connection.status,
           connectedAt: connection.connectedAt,
           dataRetrievedAt: connection.dataRetrievedAt,
+          updatedAt: connection.updatedAt || new Date(),
         },
       });
       return Result.ok(connection);
@@ -76,15 +80,15 @@ export class PrismaBankConnectionRepository implements IBankConnectionRepository
   }
 
   private toDomain(record: any): BankConnection {
-    return new BankConnection(
-      record.id,
-      record.customerId,
-      record.oauthState,
-      record.status,
-      record.connectedAt,
-      record.dataRetrievedAt,
-      record.createdAt,
-      record.updatedAt,
-    );
+    return new BankConnection({
+      id: record.id,
+      customerId: record.customerId,
+      oauthState: record.oauthState,
+      status: record.status,
+      connectedAt: record.connectedAt,
+      dataRetrievedAt: record.dataRetrievedAt,
+      createdAt: record.createdAt,
+      updatedAt: record.updatedAt,
+    });
   }
 }
