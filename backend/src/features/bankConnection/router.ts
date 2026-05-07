@@ -7,6 +7,7 @@ import { BankConnectionController } from './controllers/BankConnectionController
 import { InitiateBankOAuthUseCase } from './services/InitiateBankOAuthUseCase';
 import { HandleBankOAuthCallbackUseCase } from './services/HandleBankOAuthCallbackUseCase';
 import { TinkGateway } from './services/TinkGateway';
+import { TinkBankDataProvider } from './services/TinkBankDataProvider';
 import { PrismaBankConnectionRepository } from './repositories/PrismaBankConnectionRepository';
 import { PrismaCustomerRepository } from '../customer/repositories/PrismaCustomerRepository';
 import { PrismaAssessmentRepository } from '@/features/referenceData/infrastructure/repositories/prisma/PrismaAssessmentRepository';
@@ -29,6 +30,7 @@ export function createBankConnectionRouter(
 
   // ============ DEPENDENCY INJECTION ============
   const tinkService = new TinkGateway(config, logger);
+  const bankDataProvider = new TinkBankDataProvider(tinkService, logger);
   const bankConnectionRepository = new PrismaBankConnectionRepository();
   const customerRepository = new PrismaCustomerRepository();
   const assessmentRepository = new PrismaAssessmentRepository(logger);
@@ -42,17 +44,14 @@ export function createBankConnectionRouter(
     failAssessmentUseCase,
   );
 
-  // Environment-based event handler selection
   const environment = process.env.NODE_ENV ?? 'development';
   let eventHandler: IEventHandler<AssessmentReadyForProcessingEvent>;
 
   if (environment === 'production') {
-    // Production: use SNS for event publishing
     const awsRegion = process.env.AWS_REGION ?? 'us-east-1';
     const topicArn = process.env.AWS_ASSESSMENT_TOPIC_ARN;
     eventHandler = new AssessmentReadySnsEventHandler(logger, awsRegion, topicArn);
   } else {
-    // Development/local: use local database handler for simple event processing
     const delayMs = parseInt(process.env.JOB_DISPATCH_DELAY_MS ?? '35000', 10);
     eventHandler = new AssessmentReadyLocalDatabaseHandler(
       processJobService as unknown as IBackgroundJob<string>,
@@ -65,10 +64,10 @@ export function createBankConnectionRouter(
   const handleCallback = new HandleBankOAuthCallbackUseCase(
     bankConnectionRepository,
     assessmentRepository,
-    tinkService,
+    bankDataProvider,
     prisma,
     logger,
-    eventHandler
+    eventHandler,
   );
 
   const controller = new BankConnectionController(initiateOAuth, handleCallback, customerRepository);
