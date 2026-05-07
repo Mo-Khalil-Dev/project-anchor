@@ -44,7 +44,9 @@ export class HandleAuthCallbackUseCase {
       });
       dbUser = createResult.match(
         (user) => user,
-        (error) => { throw error; }
+        (error) => {
+          throw error;
+        }
       );
     } else {
       // Update user info and externalId if changed
@@ -62,24 +64,21 @@ export class HandleAuthCallbackUseCase {
         });
         dbUser = updateResult.match(
           (user) => user,
-          (error) => { throw error; }
+          (error) => {
+            throw error;
+          }
         );
       }
     }
 
     // Store tokens and get issued tokens back
-    const issuedTokens = await this.tokenService.issueTokens(
-      accessToken,
-      refreshToken,
-      expiresIn,
-      {
-        id: dbUser.id,
-        email: dbUser.getEmail(),
-        externalId: dbUser.getExternalId(),
-        firstName: dbUser.getFirstName(),
-        lastName: dbUser.getLastName(),
-      }
-    );
+    const issuedTokens = await this.tokenService.issueTokens(accessToken, refreshToken, expiresIn, {
+      id: dbUser.id,
+      email: dbUser.getEmail(),
+      externalId: dbUser.getExternalId(),
+      firstName: dbUser.getFirstName(),
+      lastName: dbUser.getLastName(),
+    });
 
     // Record successful login event
     dbUser.recordDomainEvent(

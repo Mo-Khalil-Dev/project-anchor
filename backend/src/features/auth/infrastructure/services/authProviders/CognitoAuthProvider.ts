@@ -2,7 +2,11 @@ import AWS from 'aws-sdk';
 import jwt from 'jsonwebtoken';
 import axios from 'axios';
 import type { AuthTokens, AuthUser } from '../../../types/auth.types';
-import { AuthenticationError, InvalidTokenError, ProviderConfigError } from '../../../application/errors';
+import {
+  AuthenticationError,
+  InvalidTokenError,
+  ProviderConfigError,
+} from '../../../application/errors';
 import { IAuthProvider } from '@/features/auth/application/services/IAuthProvider';
 
 interface CognitoConfig {
@@ -28,7 +32,8 @@ export class CognitoAuthProvider implements IAuthProvider {
 
   async initiateLogin(redirectUri: string): Promise<{ loginUrl: string; state: string }> {
     const state = Math.random().toString(36).substring(7);
-    const loginUrl = `https://${this.config.userPoolId}.auth.${this.userPoolRegion}.amazoncognito.com/oauth2/authorize?` +
+    const loginUrl =
+      `https://${this.config.userPoolId}.auth.${this.userPoolRegion}.amazoncognito.com/oauth2/authorize?` +
       `client_id=${this.config.clientId}&` +
       `response_type=code&` +
       `scope=openid+email+profile&` +
@@ -38,7 +43,11 @@ export class CognitoAuthProvider implements IAuthProvider {
     return { loginUrl, state };
   }
 
-  async handleCallback(code: string, _state: string, redirectUri: string): Promise<AuthTokens & { user: AuthUser }> {
+  async handleCallback(
+    code: string,
+    _state: string,
+    redirectUri: string
+  ): Promise<AuthTokens & { user: AuthUser }> {
     try {
       const tokenUrl = `https://${this.config.userPoolId}.auth.${this.userPoolRegion}.amazoncognito.com/oauth2/token`;
 
@@ -113,9 +122,15 @@ export class CognitoAuthProvider implements IAuthProvider {
     try {
       const response = await this.cognitoIdp.getUser({ AccessToken: token }).promise();
 
-      const emailAttr = response.UserAttributes?.find((attr: AWS.CognitoIdentityServiceProvider.AttributeType) => attr.Name === 'email');
-      const firstNameAttr = response.UserAttributes?.find((attr: AWS.CognitoIdentityServiceProvider.AttributeType) => attr.Name === 'given_name');
-      const lastNameAttr = response.UserAttributes?.find((attr: AWS.CognitoIdentityServiceProvider.AttributeType) => attr.Name === 'family_name');
+      const emailAttr = response.UserAttributes?.find(
+        (attr: AWS.CognitoIdentityServiceProvider.AttributeType) => attr.Name === 'email'
+      );
+      const firstNameAttr = response.UserAttributes?.find(
+        (attr: AWS.CognitoIdentityServiceProvider.AttributeType) => attr.Name === 'given_name'
+      );
+      const lastNameAttr = response.UserAttributes?.find(
+        (attr: AWS.CognitoIdentityServiceProvider.AttributeType) => attr.Name === 'family_name'
+      );
 
       return {
         id: response.Username || '',

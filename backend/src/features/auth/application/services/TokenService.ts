@@ -11,7 +11,12 @@ export class TokenService implements ITokenService {
     private tokensRepository: ITokensRepository
   ) {}
 
-  async issueTokens(accessToken: string, refreshToken: string, expiresIn: number, user: AuthUser): Promise<IssuedTokens> {
+  async issueTokens(
+    accessToken: string,
+    refreshToken: string,
+    expiresIn: number,
+    user: AuthUser
+  ): Promise<IssuedTokens> {
     const refreshTokenExpiry = 7 * 24 * 60 * 60; // 7 days
     const expiresAt = new Date(Date.now() + refreshTokenExpiry * 1000);
 

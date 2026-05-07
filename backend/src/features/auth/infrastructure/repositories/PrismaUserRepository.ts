@@ -1,7 +1,12 @@
 import type { PrismaClient } from '@prisma/client';
 import { Result } from '../../../shared/result';
 import type { User } from '../../domain/entities/User';
-import type { IUserRepository, CreateUserInput, UpdateUserInput, UserWithCustomerJourney } from '../../application/repositories/IUserRepository';
+import type {
+  IUserRepository,
+  CreateUserInput,
+  UpdateUserInput,
+  UserWithCustomerJourney,
+} from '../../application/repositories/IUserRepository';
 import { UserMapper } from '../mappers/UserMapper';
 
 export class PrismaUserRepository implements IUserRepository {
@@ -83,7 +88,9 @@ export class PrismaUserRepository implements IUserRepository {
     }
   }
 
-  async findWithCustomerJourney(userId: string): Promise<Result<UserWithCustomerJourney | null, Error>> {
+  async findWithCustomerJourney(
+    userId: string
+  ): Promise<Result<UserWithCustomerJourney | null, Error>> {
     try {
       const user = await this.prisma.user.findUnique({
         where: { id: userId },

@@ -2,8 +2,12 @@ import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import type { AppConfig } from '../../../../shared/config/config.types';
 import type { AuthTokens, AuthUser } from '../../../types/auth.types';
-import { InvalidTokenError, InvalidStateError, AuthenticationError } from '../../../application/errors';
-import { IAuthProvider } from "@/features/auth/application/services/IAuthProvider";
+import {
+  InvalidTokenError,
+  InvalidStateError,
+  AuthenticationError,
+} from '../../../application/errors';
+import { IAuthProvider } from '@/features/auth/application/services/IAuthProvider';
 
 export class MockAuthProvider implements IAuthProvider {
   private config: AppConfig;
@@ -24,7 +28,11 @@ export class MockAuthProvider implements IAuthProvider {
     return { loginUrl, state };
   }
 
-  async handleCallback(code: string, state: string, redirectUri: string): Promise<AuthTokens & { user: AuthUser }> {
+  async handleCallback(
+    code: string,
+    state: string,
+    redirectUri: string
+  ): Promise<AuthTokens & { user: AuthUser }> {
     // Special case: 'mock' state bypasses state validation (development shortcut only)
     // Disabled in production to prevent auth bypass attacks
     const isDirectMockLogin = state === 'mock' && process.env.NODE_ENV !== 'production';

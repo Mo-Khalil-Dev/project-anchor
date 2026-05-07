@@ -29,9 +29,7 @@ export class LogoutUseCase {
       // Record logout event on user aggregate
       if (user) {
         const reason = input.allSessions ? 'logout_all_sessions' : 'logout_single_session';
-        user.recordDomainEvent(
-          new UserLoggedOutEvent(user.id, user.getVersion(), { reason })
-        );
+        user.recordDomainEvent(new UserLoggedOutEvent(user.id, user.getVersion(), { reason }));
 
         // Publish domain events
         const domainEvents = user.getDomainEvents();

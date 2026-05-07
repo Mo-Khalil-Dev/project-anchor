@@ -10,11 +10,14 @@ export interface ITokensRepository {
 
   findRefreshToken(token: string): Promise<RefreshToken | null>;
 
-  updateRefreshToken(id: string, data: {
-    token: string;
-    tokenHash: string;
-    expiresAt: Date;
-  }): Promise<RefreshToken>;
+  updateRefreshToken(
+    id: string,
+    data: {
+      token: string;
+      tokenHash: string;
+      expiresAt: Date;
+    }
+  ): Promise<RefreshToken>;
 
   revokeRefreshToken(id: string): Promise<void>;
 

@@ -1,4 +1,7 @@
-import type { GetRedirectToJourneyInput, GetRedirectToJourneyOutput } from './GetRedirectToJourney.dto';
+import type {
+  GetRedirectToJourneyInput,
+  GetRedirectToJourneyOutput,
+} from './GetRedirectToJourney.dto';
 import type { IUserRepository } from '../../repositories/IUserRepository';
 
 export class GetRedirectToJourneyUseCase {

@@ -25,11 +25,14 @@ export class PrismaRefreshTokenRepository implements ITokensRepository {
     return refreshToken ? RefreshTokenMapper.toDomain(refreshToken) : null;
   }
 
-  async updateRefreshToken(id: string, data: {
-    token: string;
-    tokenHash: string;
-    expiresAt: Date;
-  }): Promise<RefreshToken> {
+  async updateRefreshToken(
+    id: string,
+    data: {
+      token: string;
+      tokenHash: string;
+      expiresAt: Date;
+    }
+  ): Promise<RefreshToken> {
     const refreshToken = await this.prisma.refreshToken.update({
       where: { id },
       data,

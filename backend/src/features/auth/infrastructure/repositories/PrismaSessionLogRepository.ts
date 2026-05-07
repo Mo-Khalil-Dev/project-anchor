@@ -1,7 +1,10 @@
 import type { PrismaClient } from '@prisma/client';
 import { Result } from '../../../shared/result';
 import type { SessionLog } from '../../domain/entities/SessionLog';
-import type { ISessionLogRepository, CreateSessionLogInput } from '../../application/repositories/ISessionLogRepository';
+import type {
+  ISessionLogRepository,
+  CreateSessionLogInput,
+} from '../../application/repositories/ISessionLogRepository';
 import { SessionLogMapper } from '../mappers/SessionLogMapper';
 
 export class PrismaSessionLogRepository implements ISessionLogRepository {
