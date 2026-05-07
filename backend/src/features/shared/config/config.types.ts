@@ -32,7 +32,6 @@ export interface AppConfig {
     clientId: string;
     clientSecret: string;
     environment: 'sandbox' | 'production';
-    linkBaseUrl: string;
     apiBaseUrl: string;
     expensesApiBaseUrl: string;
   };

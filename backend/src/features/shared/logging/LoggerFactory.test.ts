@@ -23,7 +23,6 @@ const makeConfig = (overrides: Partial<AppConfig> = {}): AppConfig => ({
     clientId: 'id',
     clientSecret: 'secret',
     environment: 'sandbox',
-    linkBaseUrl: 'https://link.tink.com',
     apiBaseUrl: 'https://api.tink.com',
     expensesApiBaseUrl: 'https://expenses.tink.com',
   },

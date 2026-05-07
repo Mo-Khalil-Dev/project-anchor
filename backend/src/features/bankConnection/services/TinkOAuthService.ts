@@ -78,7 +78,7 @@ export class TinkOAuthService {
       state,
     });
 
-    return `${this.config.tink.linkBaseUrl}/1.0/expense-check/create-report?${params.toString()}`;
+    return `https://link.tink.com/1.0/expense-check/create-report?${params.toString()}`;
   }
 
   async exchangeCodeForAccessToken(): Promise<Result<string, Error>> {

@@ -14,7 +14,6 @@ describe('TinkOAuthService with MSW mocks', () => {
         clientSecret: 'test-client-secret',
         environment: 'sandbox' as const,
         apiBaseUrl: 'https://api.tink.com',
-        linkBaseUrl: 'https://link.tink.com',
         expensesApiBaseUrl: 'https://api.tink.com/risk/v1',
       },
       server: {
