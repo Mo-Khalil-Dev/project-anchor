@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { Result } from '../../shared/result';
 import type { IBankConnectionRepository } from '../types/bankConnection.types';
 import type { ILogger } from '../../shared/logging';
-import type { TinkOAuthService } from './TinkOAuthService';
+import type { TinkGateway } from './TinkGateway';
 import { BankDataExtractionService, IncomeBreakdown, ExpenseBreakdown } from './BankDataExtractionService';
 import type { IEventHandler } from '../../../core/application/services/IEventHandler';
 import type { AssessmentReadyForProcessingEvent } from '@/features/referenceData/domain/events/AssessmentReadyForProcessingEvent';
@@ -13,7 +13,7 @@ export class HandleBankOAuthCallbackUseCase {
   constructor(
     private repository: IBankConnectionRepository,
     private assessmentRepository: IAssessmentRepository,
-    private tinkService: TinkOAuthService,
+    private tinkService: TinkGateway,
     private prisma: PrismaClient,
     private logger: ILogger,
     private eventHandler: IEventHandler<AssessmentReadyForProcessingEvent>,

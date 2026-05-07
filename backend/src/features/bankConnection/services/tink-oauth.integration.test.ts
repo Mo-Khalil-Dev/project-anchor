@@ -2,10 +2,10 @@
  * Example integration test using MSW mocks
  * Run: npm test -- tink-oauth.integration.test.ts
  */
-import { TinkOAuthService } from './TinkOAuthService';
+import { TinkGateway } from './TinkGateway';
 
-describe('TinkOAuthService with MSW mocks', () => {
-  let service: TinkOAuthService;
+describe('TinkGateway with MSW mocks', () => {
+  let service: TinkGateway;
 
   beforeEach(() => {
     const mockConfig = {
@@ -30,7 +30,7 @@ describe('TinkOAuthService with MSW mocks', () => {
       child: jest.fn(function() { return this; }),
     };
 
-    service = new TinkOAuthService(mockConfig as any, mockLogger);
+    service = new TinkGateway(mockConfig as any, mockLogger);
   });
 
   describe('getAccessToken', () => {

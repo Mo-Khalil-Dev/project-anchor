@@ -6,7 +6,7 @@ import { asyncHandler } from '../shared/middleware/globalErrorHandler';
 import { BankConnectionController } from './controllers/BankConnectionController';
 import { InitiateBankOAuthUseCase } from './services/InitiateBankOAuthUseCase';
 import { HandleBankOAuthCallbackUseCase } from './services/HandleBankOAuthCallbackUseCase';
-import { TinkOAuthService } from './services/TinkOAuthService';
+import { TinkGateway } from './services/TinkGateway';
 import { PrismaBankConnectionRepository } from './repositories/PrismaBankConnectionRepository';
 import { PrismaCustomerRepository } from '../customer/repositories/PrismaCustomerRepository';
 import { PrismaAssessmentRepository } from '@/features/referenceData/infrastructure/repositories/prisma/PrismaAssessmentRepository';
@@ -28,7 +28,7 @@ export function createBankConnectionRouter(
   const router = Router();
 
   // ============ DEPENDENCY INJECTION ============
-  const tinkService = new TinkOAuthService(config, logger);
+  const tinkService = new TinkGateway(config, logger);
   const bankConnectionRepository = new PrismaBankConnectionRepository();
   const customerRepository = new PrismaCustomerRepository();
   const assessmentRepository = new PrismaAssessmentRepository(logger);

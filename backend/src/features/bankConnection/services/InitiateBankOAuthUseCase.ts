@@ -3,14 +3,14 @@ import { Result } from '../../shared/result';
 import { BankConnection } from '../types/bankConnection.types';
 import type { IBankConnectionRepository } from '../types/bankConnection.types';
 import type { ILogger } from '../../shared/logging';
-import type { TinkOAuthService } from './TinkOAuthService';
+import type { TinkGateway } from './TinkGateway';
 import type { ICustomerRepository } from '../../customer/types/customer.types';
 
 export class InitiateBankOAuthUseCase {
   constructor(
     private repository: IBankConnectionRepository,
     private customerRepository: ICustomerRepository,
-    private tinkService: TinkOAuthService,
+    private tinkService: TinkGateway,
     private logger: ILogger,
   ) {}
 

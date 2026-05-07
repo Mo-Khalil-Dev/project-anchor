@@ -10,7 +10,7 @@ interface TinkTokenResponse {
   token_type: string;
 }
 
-export class TinkOAuthService {
+export class TinkGateway {
   private cachedToken: { token: string; expiresAt: number } | null = null;
   private readonly tinkBaseUrl: string;
 
