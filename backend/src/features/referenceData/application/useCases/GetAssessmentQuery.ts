@@ -19,7 +19,9 @@ export class GetAssessmentQuery {
     this.assessmentMapper = new AssessmentMapper(logger);
   }
 
-  async execute(input: { customerId: string }): Promise<Result<AssessmentData | null, ApplicationError>> {
+  async execute(input: {
+    customerId: string;
+  }): Promise<Result<AssessmentData | null, ApplicationError>> {
     try {
       const { customerId } = input;
 
@@ -37,7 +39,10 @@ export class GetAssessmentQuery {
       const assessment = assessmentResult.getOrElse(null);
 
       if (!assessment) {
-        return Result.ok<AssessmentData | null>(null) as Result<AssessmentData | null, ApplicationError>;
+        return Result.ok<AssessmentData | null>(null) as Result<
+          AssessmentData | null,
+          ApplicationError
+        >;
       }
 
       const assessmentData = this.assessmentMapper.toDTO(assessment, customerId);

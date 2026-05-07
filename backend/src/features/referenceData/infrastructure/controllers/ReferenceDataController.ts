@@ -1,4 +1,4 @@
-import type {  Response } from 'express';
+import type { Response } from 'express';
 import type { GetReferenceDataUseCase } from '../../application/useCases/GetReferenceDataUseCase';
 import type { CompleteAssessmentUseCase } from '@/features/assessment/application/useCases/CompleteAssessmentUseCase';
 import type { FailAssessmentUseCase } from '@/features/assessment/application/useCases/FailAssessmentUseCase';
@@ -8,7 +8,7 @@ export class ReferenceDataController {
   constructor(
     private getReferenceDataUseCase: GetReferenceDataUseCase,
     private completeAssessmentUseCase: CompleteAssessmentUseCase,
-    private failAssessmentUseCase: FailAssessmentUseCase,
+    private failAssessmentUseCase: FailAssessmentUseCase
   ) {}
 
   async getReferenceData(req: AuthenticatedRequest, res: Response): Promise<void> {

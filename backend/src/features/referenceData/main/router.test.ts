@@ -4,13 +4,19 @@ jest.mock('../../customer/repositories/PrismaCustomerRepository', () => ({
   PrismaCustomerRepository: jest.fn().mockImplementation(() => ({})),
 }));
 
-jest.mock('../../bankConnection/repositories/PrismaBankConnectionRepository', () => ({
-  PrismaBankConnectionRepository: jest.fn().mockImplementation(() => ({})),
-}));
+jest.mock(
+  '@/features/bankConnection/infrastructure/repositories/PrismaBankConnectionRepository',
+  () => ({
+    PrismaBankConnectionRepository: jest.fn().mockImplementation(() => ({})),
+  })
+);
 
-jest.mock('@/features/assessment/infrastructure/repositories/prisma/PrismaAssessmentRepository', () => ({
-  PrismaAssessmentRepository: jest.fn().mockImplementation(() => ({})),
-}));
+jest.mock(
+  '@/features/assessment/infrastructure/repositories/prisma/PrismaAssessmentRepository',
+  () => ({
+    PrismaAssessmentRepository: jest.fn().mockImplementation(() => ({})),
+  })
+);
 
 describe('createReferenceDataRouter', () => {
   it('registers a protected GET route on root path', () => {
@@ -26,7 +32,7 @@ describe('createReferenceDataRouter', () => {
     const router = createReferenceDataRouter(logger, authenticateRequest);
 
     const rootGetRoute = (router as any).stack.find(
-      (layer: any) => layer.route?.path === '/' && layer.route?.methods?.get,
+      (layer: any) => layer.route?.path === '/' && layer.route?.methods?.get
     );
     expect(rootGetRoute).toBeDefined();
   });

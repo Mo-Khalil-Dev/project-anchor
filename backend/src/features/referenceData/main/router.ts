@@ -2,7 +2,7 @@ import type { Router, RequestHandler } from 'express';
 import { Router as ExpressRouter } from 'express';
 import type { ILogger } from '../../shared/logging';
 import { PrismaCustomerRepository } from '../../customer/repositories/PrismaCustomerRepository';
-import { PrismaBankConnectionRepository } from '../../bankConnection/repositories/PrismaBankConnectionRepository';
+import { PrismaBankConnectionRepository } from '@/features/bankConnection/infrastructure/repositories/PrismaBankConnectionRepository';
 import { PrismaAssessmentRepository } from '@/features/assessment/infrastructure/repositories/prisma/PrismaAssessmentRepository';
 import { GetReferenceDataUseCase } from '../application/useCases/GetReferenceDataUseCase';
 import { CompleteAssessmentUseCase } from '@/features/assessment/application/useCases/CompleteAssessmentUseCase';
@@ -14,7 +14,7 @@ import prisma from '@/features/shared/utils/db';
 
 export function createReferenceDataRouter(
   logger: ILogger,
-  authenticateRequest: RequestHandler,
+  authenticateRequest: RequestHandler
 ): Router {
   const router = ExpressRouter();
 
@@ -29,7 +29,7 @@ export function createReferenceDataRouter(
     customerRepository,
     bankConnectionRepository,
     assessmentRepository,
-    logger,
+    logger
   );
   const completeAssessmentUseCase = new CompleteAssessmentUseCase(assessmentRepository, logger);
   const failAssessmentUseCase = new FailAssessmentUseCase(assessmentRepository, logger);
@@ -38,7 +38,7 @@ export function createReferenceDataRouter(
   const controller = new ReferenceDataController(
     getReferenceDataUseCase,
     completeAssessmentUseCase,
-    failAssessmentUseCase,
+    failAssessmentUseCase
   );
 
   // ============ ROUTES ============
@@ -52,8 +52,8 @@ export function createReferenceDataRouter(
     authenticateRequest,
     asyncHandler(async (req, res) => {
       await controller.getReferenceData(req, res);
-    }),
+    })
   );
-  
+
   return router;
 }

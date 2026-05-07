@@ -1,12 +1,12 @@
 import { Result } from '../../../shared/result';
 import type { ILogger } from '../../../shared/logging';
-import type { IBankConnectionRepository } from '../../../bankConnection/types/bankConnection.types';
 import type { BankConnectionData } from './GetReferenceDataUseCase.dto';
+import { IBankConnectionRepository } from '@/features/bankConnection/application/respositories/IBankConnectionRepository';
 
 export class GetBankConnectionQuery {
   constructor(
     private bankConnectionRepository: IBankConnectionRepository,
-    private logger: ILogger,
+    private logger: ILogger
   ) {}
 
   async execute(input: { customerId: string }): Promise<Result<BankConnectionData | null, Error>> {
@@ -29,17 +29,20 @@ export class GetBankConnectionQuery {
         return Result.ok(null);
       }
 
-      const status = bankConnection.status === 'DATA_RETRIEVED'
-        ? 'CONNECTED'
-        : bankConnection.status === 'PENDING'
-        ? 'IN_PROGRESS'
-        : 'NOT_STARTED';
+      const status =
+        bankConnection.getStatus === 'DATA_RETRIEVED'
+          ? 'CONNECTED'
+          : bankConnection.getStatus === 'PENDING'
+            ? 'IN_PROGRESS'
+            : 'NOT_STARTED';
 
       const bankConnectionData: BankConnectionData = {
         status,
         bankName: null, // TODO: Extract from bank data when available
         accountNumber: null, // TODO: Extract and mask last 4 digits when available
-        connectedAt: bankConnection.connectedAt ? bankConnection.connectedAt.toISOString() : null,
+        connectedAt: bankConnection.getConnectedAt
+          ? bankConnection.getConnectedAt.toISOString()
+          : null,
       };
 
       return Result.ok(bankConnectionData);

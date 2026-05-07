@@ -27,7 +27,7 @@ describe('GetAccountSetupQuery', () => {
         utilityAccountNo: 'UTIL-123',
         postcode: 'SW1A 1AA',
         createdAt: new Date('2026-04-10T00:00:00.000Z'),
-      }),
+      })
     );
     const query = new GetAccountSetupQuery(customerRepository as any, logger);
 
@@ -72,14 +72,16 @@ describe('GetAccountSetupQuery', () => {
         utilityAccountNo: null,
         postcode: 'SW1A 1AA',
         createdAt: new Date('2026-04-10T00:00:00.000Z'),
-      }),
+      })
     );
     const query = new GetAccountSetupQuery(customerRepository as any, logger);
 
     const result = await query.execute({ customerId: 'customer-1' });
 
     expect(result.isFail).toBe(true);
-    expect(result.getError()).toEqual(new Error('Account data is incomplete. Please contact support.'));
+    expect(result.getError()).toEqual(
+      new Error('Account data is incomplete. Please contact support.')
+    );
     expect(logger.warn).toHaveBeenCalled();
   });
 });

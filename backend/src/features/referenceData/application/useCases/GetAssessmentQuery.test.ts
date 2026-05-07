@@ -9,25 +9,25 @@ import {
 } from '@/features/assessment/application/errors/GetAssessmentQuery.errors';
 
 const createAssessmentProps = () => ({
-    id: 'assessment-1',
-    customerId: 'customer-1',
-    bankConnectionId: 'bank-1',
-    monthlyIncome: 3000,
-    monthlyExpenses: 2200,
-    monthlyBill: 120,
-    arrears: 500,
-    incomeBreakdown: JSON.stringify({ salary: 2800, benefits: 200, total: 3000 }),
-    expenseBreakdown: JSON.stringify({ housing: 1000, food: 400, total: 2200 }),
-    expensesByCategory: JSON.stringify({ Housing: 1000, Food: 400 }),
-    incomeSources: JSON.stringify([{ type: 'Salary', amount: 2800 }]),
-    incomeHistory: JSON.stringify([{ month: 'Jan', amount: 3000 }]),
-    factors: JSON.stringify([{ title: 'High rent' }]),
-    paymentPlans: JSON.stringify([{ type: 'Balanced', monthlyAmount: 144 }]),
-    selectedPlan: null,
-    status: ASSESSMENT_STATUS.COMPLETED,
-    createdAt: new Date('2026-04-10T00:00:00.000Z'),
-    updatedAt: new Date('2026-04-10T00:00:00.000Z'),
-  });
+  id: 'assessment-1',
+  customerId: 'customer-1',
+  bankConnectionId: 'bank-1',
+  monthlyIncome: 3000,
+  monthlyExpenses: 2200,
+  monthlyBill: 120,
+  arrears: 500,
+  incomeBreakdown: JSON.stringify({ salary: 2800, benefits: 200, total: 3000 }),
+  expenseBreakdown: JSON.stringify({ housing: 1000, food: 400, total: 2200 }),
+  expensesByCategory: JSON.stringify({ Housing: 1000, Food: 400 }),
+  incomeSources: JSON.stringify([{ type: 'Salary', amount: 2800 }]),
+  incomeHistory: JSON.stringify([{ month: 'Jan', amount: 3000 }]),
+  factors: JSON.stringify([{ title: 'High rent' }]),
+  paymentPlans: JSON.stringify([{ type: 'Balanced', monthlyAmount: 144 }]),
+  selectedPlan: null,
+  status: ASSESSMENT_STATUS.COMPLETED,
+  createdAt: new Date('2026-04-10T00:00:00.000Z'),
+  updatedAt: new Date('2026-04-10T00:00:00.000Z'),
+});
 
 const createAssessment = () => Assessment.reconstruct(createAssessmentProps());
 

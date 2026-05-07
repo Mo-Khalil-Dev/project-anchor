@@ -9,7 +9,7 @@ describe('ReferenceDataController', () => {
   const controller = new ReferenceDataController(
     getReferenceDataUseCase,
     completeAssessmentUseCase,
-    failAssessmentUseCase,
+    failAssessmentUseCase
   );
 
   const buildRes = () =>

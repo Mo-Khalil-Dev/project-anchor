@@ -24,7 +24,7 @@ describe('GetBankConnectionQuery', () => {
       Result.ok({
         status: 'DATA_RETRIEVED',
         connectedAt: new Date('2026-05-01T00:00:00.000Z'),
-      }),
+      })
     );
     const query = new GetBankConnectionQuery(bankConnectionRepository as any, logger);
 
@@ -44,7 +44,7 @@ describe('GetBankConnectionQuery', () => {
       Result.ok({
         status: 'PENDING',
         connectedAt: null,
-      }),
+      })
     );
     const query = new GetBankConnectionQuery(bankConnectionRepository as any, logger);
 

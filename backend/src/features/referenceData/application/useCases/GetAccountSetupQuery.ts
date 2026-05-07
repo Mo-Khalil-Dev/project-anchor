@@ -6,7 +6,7 @@ import type { AccountSetupData } from './GetReferenceDataUseCase.dto';
 export class GetAccountSetupQuery {
   constructor(
     private customerRepository: ICustomerRepository,
-    private logger: ILogger,
+    private logger: ILogger
   ) {}
 
   async execute(input: { customerId: string }): Promise<Result<AccountSetupData | null, Error>> {

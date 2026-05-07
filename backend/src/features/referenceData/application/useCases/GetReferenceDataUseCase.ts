@@ -6,8 +6,8 @@ import { GetAccountSetupQuery } from './GetAccountSetupQuery';
 import { GetBankConnectionQuery } from './GetBankConnectionQuery';
 import { GetAssessmentQuery } from './GetAssessmentQuery';
 import type { ICustomerRepository } from '../../../customer/types/customer.types';
-import type { IBankConnectionRepository } from '../../../bankConnection/types/bankConnection.types';
 import type { IAssessmentRepository } from '@/features/assessment/domain/entities';
+import { IBankConnectionRepository } from '@/features/bankConnection/application/respositories/IBankConnectionRepository';
 
 export class GetReferenceDataUseCase {
   private getAccountSetupQuery: GetAccountSetupQuery;
@@ -91,7 +91,12 @@ export class GetReferenceDataUseCase {
         if (mandateRecord) {
           mandate = {
             id: mandateRecord.id,
-            status: mandateRecord.status as 'PENDING' | 'CREATED' | 'ACTIVE' | 'FAILED' | 'CANCELLED',
+            status: mandateRecord.status as
+              | 'PENDING'
+              | 'CREATED'
+              | 'ACTIVE'
+              | 'FAILED'
+              | 'CANCELLED',
             gocardlessId: mandateRecord.gocardlessId,
             createdAt: mandateRecord.createdAt.toISOString(),
           };
@@ -121,7 +126,12 @@ export class GetReferenceDataUseCase {
     }
   }
 
-  private determineNextStep(accountSetup: any, bankConnection: any, assessment: any, mandate: any): NextStep {
+  private determineNextStep(
+    accountSetup: any,
+    bankConnection: any,
+    assessment: any,
+    mandate: any
+  ): NextStep {
     // Step 1: Check account setup
     if (!accountSetup) {
       return 'ACCOUNT_SETUP';
