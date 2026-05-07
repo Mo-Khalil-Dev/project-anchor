@@ -4,11 +4,7 @@ export abstract class DomainEvent {
   readonly occurredAt: Date;
   readonly aggregateVersion: number;
 
-  constructor(
-    aggregateId: string,
-    aggregateType: string,
-    aggregateVersion: number
-  ) {
+  constructor(aggregateId: string, aggregateType: string, aggregateVersion: number) {
     this.aggregateId = aggregateId;
     this.aggregateType = aggregateType;
     this.occurredAt = new Date();

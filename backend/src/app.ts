@@ -2,15 +2,16 @@ import express, { Express, Request, Response, NextFunction } from 'express';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import { PrismaClient } from '@prisma/client';
-import { createBankConnectionRouter } from './features/bankConnection/router';
+import { createBankConnectionRouter } from './features/bankConnection/main/router';
 import { createAuthRouter } from './features/auth/router';
 import { createCustomerRouter } from './features/customer/router';
-import { createPaymentRouter } from './features/payment/router';
+import { createPaymentRouter } from './features/payment/main/router';
 import { createReferenceDataRouter } from '@/features/referenceData/main/router';
 import { initAuthProvider } from './features/shared/config/providers/auth-provider.factory';
 import type { AppConfig } from './features/shared/config';
 import type { ILogger } from './features/shared/logging';
 import { globalErrorHandler } from '@/features/shared/middleware';
+import { createAssessmentRouter } from '@/features/assessment/main/router';
 
 export function createApp(config: AppConfig, logger: ILogger, prisma: PrismaClient): Express {
   const app: Express = express();
@@ -80,10 +81,14 @@ export function createApp(config: AppConfig, logger: ILogger, prisma: PrismaClie
 
   // ============ FEATURE ROUTES ============
   app.use('/api', authSetup.router);
-  app.use('/api/bank-connections', createBankConnectionRouter(config, logger, authMiddleware, prisma));
+  app.use(
+    '/api/bank-connections',
+    createBankConnectionRouter(config, logger, authMiddleware, prisma)
+  );
   app.use('/api/customer', createCustomerRouter(prisma, logger, authMiddleware));
-  app.use('/api/payments', createPaymentRouter(config, logger, authMiddleware));
-  app.use('/api/reference-data', createReferenceDataRouter( logger, authMiddleware));
+  app.use('/api/payments', createPaymentRouter(config, logger, authMiddleware, prisma));
+  app.use('/api/assessments', createAssessmentRouter(logger, authMiddleware));
+  app.use('/api/reference-data', createReferenceDataRouter(logger, authMiddleware));
 
   // ============ ERROR HANDLING ============
 

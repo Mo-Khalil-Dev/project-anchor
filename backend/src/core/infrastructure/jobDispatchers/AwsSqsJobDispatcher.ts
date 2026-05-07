@@ -8,7 +8,7 @@ export class AwsSqsJobDispatcher implements IJobDispatcher {
   constructor(
     private readonly queueUrl: string,
     private readonly logger: ILogger,
-    sqs?: AWS.SQS,
+    sqs?: AWS.SQS
   ) {
     this.sqs = sqs ?? new AWS.SQS();
   }

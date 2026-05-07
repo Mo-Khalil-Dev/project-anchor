@@ -7,16 +7,8 @@ import { ApplicationError } from './applicationError';
  * Automatically sets HTTP status to 400 (Bad Request)
  */
 export class ValidationError extends ApplicationError {
-  constructor(
-    message: string,
-    details?: Record<string, string | string[]>
-  ) {
-    super(
-      'VALIDATION_ERROR',
-      message,
-      400,
-      details
-    );
+  constructor(message: string, details?: Record<string, string | string[]>) {
+    super('VALIDATION_ERROR', message, 400, details);
     this.name = 'ValidationError';
     Object.setPrototypeOf(this, ValidationError.prototype);
   }
@@ -37,9 +29,6 @@ export class ValidationError extends ApplicationError {
       }
     }
 
-    return new ValidationError(
-      'Request validation failed',
-      details
-    );
+    return new ValidationError('Request validation failed', details);
   }
 }

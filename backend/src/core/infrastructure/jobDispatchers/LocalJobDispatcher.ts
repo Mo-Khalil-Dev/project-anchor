@@ -6,7 +6,7 @@ export class LocalJobDispatcher implements IJobDispatcher {
   constructor(
     private jobService: IBackgroundJob<string>,
     private logger: ILogger,
-    private delayMs: number = 35_000,
+    private delayMs: number = 35_000
   ) {}
 
   async dispatch(jobId: string): Promise<void> {
@@ -19,7 +19,7 @@ export class LocalJobDispatcher implements IJobDispatcher {
       (async () => {
         try {
           if (this.delayMs > 0) {
-            await new Promise<void>(resolve => setTimeout(resolve, this.delayMs));
+            await new Promise<void>((resolve) => setTimeout(resolve, this.delayMs));
           }
 
           const result = await this.jobService.execute(jobId);

@@ -17,10 +17,7 @@ export const tinkHandlers = [
       );
     }
 
-    return res(
-      ctx.status(400),
-      ctx.json({ error: 'Invalid grant_type' })
-    );
+    return res(ctx.status(400), ctx.json({ error: 'Invalid grant_type' }));
   }),
 
   // OAuth token endpoint (without v1)
@@ -39,10 +36,7 @@ export const tinkHandlers = [
       );
     }
 
-    return res(
-      ctx.status(400),
-      ctx.json({ error: 'Invalid grant_type' })
-    );
+    return res(ctx.status(400), ctx.json({ error: 'Invalid grant_type' }));
   }),
 
   // Expense checks endpoint
