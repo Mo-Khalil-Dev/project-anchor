@@ -91,7 +91,7 @@ describe('PrismaAssessmentRepository', () => {
       expect.objectContaining({
         where: { id: 'assessment-1' },
         data: expect.objectContaining({ selectedPlan: 'BALANCED' }),
-      }),
+      })
     );
   });
 });

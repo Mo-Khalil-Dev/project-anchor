@@ -1,5 +1,10 @@
 import type { ILogger } from '../../../shared/logging';
-import type { IncomeRecord, IncomeSource, AssessmentFactor, PaymentPlan } from '../../../referenceData/application/useCases/GetAssessmentQuery.dto';
+import type {
+  IncomeRecord,
+  IncomeSource,
+  AssessmentFactor,
+  PaymentPlan,
+} from '../../../referenceData/application/useCases/GetAssessmentQuery.dto';
 
 export class AssessmentBreakdownParser {
   constructor(private logger: ILogger) {}

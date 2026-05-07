@@ -151,7 +151,7 @@ export class Assessment extends AggregateRoot<string> {
     return this.paymentPlans;
   }
 
-  getSelectedPlan(): PlanType| null {
+  getSelectedPlan(): PlanType | null {
     return this.selectedPlan;
   }
 
@@ -276,7 +276,7 @@ export class Assessment extends AggregateRoot<string> {
       throw new InvalidBillingInfoError({
         monthlyBill: monthlyBill,
         arrears: arrears,
-        customerId : this.customerId
+        customerId: this.customerId,
       });
     }
     this.monthlyBill = monthlyBill;

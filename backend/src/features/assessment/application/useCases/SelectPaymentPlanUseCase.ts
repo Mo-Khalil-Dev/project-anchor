@@ -2,7 +2,10 @@ import { Result } from '../../../shared/result';
 import type { ILogger } from '../../../shared/logging';
 import type { IAssessmentRepository } from '@/features/assessment/domain/entities';
 import type { ApplicationError } from '../../../../core/domain/errors';
-import type { SelectPaymentPlanInput, SelectPaymentPlanOutput } from './SelectPaymentPlanUseCase.dto';
+import type {
+  SelectPaymentPlanInput,
+  SelectPaymentPlanOutput,
+} from './SelectPaymentPlanUseCase.dto';
 import {
   AssessmentNotFoundError as SelectPaymentPlanNotFoundError,
   SelectPaymentPlanExecutionError,
@@ -15,10 +18,12 @@ const VALID_PLAN_TYPES = ['Conservative', 'Balanced', 'Aggressive'] as const;
 export class SelectPaymentPlanUseCase {
   constructor(
     private assessmentRepository: IAssessmentRepository,
-    private logger: ILogger,
+    private logger: ILogger
   ) {}
 
-  async execute(input: SelectPaymentPlanInput): Promise<Result<SelectPaymentPlanOutput, ApplicationError>> {
+  async execute(
+    input: SelectPaymentPlanInput
+  ): Promise<Result<SelectPaymentPlanOutput, ApplicationError>> {
     try {
       const { assessmentId, planType } = input;
 
@@ -72,10 +77,9 @@ export class SelectPaymentPlanUseCase {
           assessmentId,
           error: persistError,
         });
-        return Result.fail(new SelectPaymentPlanExecutionError('Failed to persist assessment', persistError)) as Result<
-          SelectPaymentPlanOutput,
-          ApplicationError
-        >;
+        return Result.fail(
+          new SelectPaymentPlanExecutionError('Failed to persist assessment', persistError)
+        ) as Result<SelectPaymentPlanOutput, ApplicationError>;
       }
 
       // Return output DTO
@@ -88,7 +92,9 @@ export class SelectPaymentPlanUseCase {
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       this.logger.error('SelectPaymentPlan use case failed', { error: message });
-      return Result.fail(new SelectPaymentPlanExecutionError('Unexpected error during plan selection', error));
+      return Result.fail(
+        new SelectPaymentPlanExecutionError('Unexpected error during plan selection', error)
+      );
     }
   }
 }

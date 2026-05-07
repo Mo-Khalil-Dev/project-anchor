@@ -12,10 +12,12 @@ import { AssessmentFailedEvent } from '@/features/assessment/domain/events';
 export class FailAssessmentUseCase {
   constructor(
     private assessmentRepository: IAssessmentRepository,
-    private logger: ILogger,
+    private logger: ILogger
   ) {}
 
-  async execute(input: FailAssessmentInput): Promise<Result<FailAssessmentOutput, ApplicationError>> {
+  async execute(
+    input: FailAssessmentInput
+  ): Promise<Result<FailAssessmentOutput, ApplicationError>> {
     try {
       const { assessmentId, reason, errorCode } = input;
 
@@ -63,10 +65,9 @@ export class FailAssessmentUseCase {
           assessmentId,
           error: persistError,
         });
-        return Result.fail(new FailAssessmentExecutionError('Failed to persist assessment', persistError)) as Result<
-          FailAssessmentOutput,
-          ApplicationError
-        >;
+        return Result.fail(
+          new FailAssessmentExecutionError('Failed to persist assessment', persistError)
+        ) as Result<FailAssessmentOutput, ApplicationError>;
       }
 
       // Return output DTO
@@ -80,7 +81,9 @@ export class FailAssessmentUseCase {
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       this.logger.error('FailAssessment use case failed', { error: message });
-      return Result.fail(new FailAssessmentExecutionError('Unexpected error during failure marking', error));
+      return Result.fail(
+        new FailAssessmentExecutionError('Unexpected error during failure marking', error)
+      );
     }
   }
 }

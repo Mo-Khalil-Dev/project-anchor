@@ -10,7 +10,7 @@ export class AssessmentReadySnsEventHandler implements IEventHandler<AssessmentR
   constructor(
     private logger: ILogger,
     awsRegion: string = 'us-east-1',
-    topicArn?: string,
+    topicArn?: string
   ) {
     this.snsClient = new SNSClient({ region: awsRegion });
     this.topicArn = topicArn || process.env.AWS_ASSESSMENT_TOPIC_ARN || '';

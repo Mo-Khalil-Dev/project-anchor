@@ -41,9 +41,9 @@ export class PaymentPlanCalculationService {
 
     // Formula 5: percentage allocations — adjusted for bill severity
     // If bill is SEVERE, use stricter percentages to account for higher risk
-    const conservativePercent = isSevereBill ? 0.10 : 0.14; // 10% or 14%
+    const conservativePercent = isSevereBill ? 0.1 : 0.14; // 10% or 14%
     const balancedPercent = isSevereBill ? 0.12 : 0.18; // 12% or 18%
-    const aggressivePercent = isSevereBill ? 0.14 : 0.20; // 14% or 20%
+    const aggressivePercent = isSevereBill ? 0.14 : 0.2; // 14% or 20%
 
     const conservativeAmount = Math.round(disposableIncome * conservativePercent);
     const balancedAmount = Math.round(disposableIncome * balancedPercent);

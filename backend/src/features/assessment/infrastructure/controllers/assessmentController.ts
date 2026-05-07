@@ -4,7 +4,7 @@ import type { Response } from 'express';
 
 export class AssessmentController {
   constructor(private readonly selectPaymentPlanUseCase: SelectPaymentPlanUseCase) {}
-  
+
   async selectPaymentPlan(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
       const assessmentId = req.params?.assessmentId || req.body?.assessmentId;

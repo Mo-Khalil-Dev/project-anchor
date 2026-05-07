@@ -7,8 +7,8 @@ export class AssessmentReadyLocalDatabaseHandler implements IEventHandler<Assess
   constructor(
     private backgroundJob: IBackgroundJob<string>,
     private logger: ILogger,
-    private delayMs: number = 0,
-  ) { }
+    private delayMs: number = 0
+  ) {}
 
   async handle(event: AssessmentReadyForProcessingEvent): Promise<void> {
     const assessmentId = event.assessmentId;

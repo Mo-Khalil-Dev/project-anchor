@@ -1,15 +1,16 @@
 import { ILogger } from '@/features/shared/logging';
 import { RequestHandler, Router as ExpressRouter, Router } from 'express';
 import { SelectPaymentPlanUseCase } from '@/features/assessment/application/useCases/SelectPaymentPlanUseCase';
-import {
-  PrismaAssessmentRepository
-} from '@/features/assessment/infrastructure/repositories/prisma/PrismaAssessmentRepository';
+import { PrismaAssessmentRepository } from '@/features/assessment/infrastructure/repositories/prisma/PrismaAssessmentRepository';
 import prisma from '@/features/shared/utils/db';
 import { AuthenticatedRequest } from '@/features/shared/types/auth';
 import { AssessmentController } from '@/features/assessment/infrastructure/controllers/assessmentController';
 import { asyncHandler } from '@/features/shared/middleware';
 
-export const createAssessmentRouter = (logger: ILogger, authenticateRequest: RequestHandler): Router => {
+export const createAssessmentRouter = (
+  logger: ILogger,
+  authenticateRequest: RequestHandler
+): Router => {
   const router = ExpressRouter();
 
   // ============ DEPENDENCY INJECTION ============

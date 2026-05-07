@@ -2,7 +2,10 @@ import { Result } from '../../../shared/result';
 import type { ILogger } from '../../../shared/logging';
 import type { IAssessmentRepository } from '@/features/assessment/domain/entities';
 import type { ApplicationError } from '../../../../core/domain/errors';
-import type { CompleteAssessmentInput, CompleteAssessmentOutput } from './CompleteAssessmentUseCase.dto';
+import type {
+  CompleteAssessmentInput,
+  CompleteAssessmentOutput,
+} from './CompleteAssessmentUseCase.dto';
 import {
   AssessmentNotFoundError,
   CompleteAssessmentExecutionError,
@@ -12,10 +15,12 @@ import { AssessmentCompletedEvent } from '@/features/assessment/domain/events';
 export class CompleteAssessmentUseCase {
   constructor(
     private assessmentRepository: IAssessmentRepository,
-    private logger: ILogger,
+    private logger: ILogger
   ) {}
 
-  async execute(input: CompleteAssessmentInput): Promise<Result<CompleteAssessmentOutput, ApplicationError>> {
+  async execute(
+    input: CompleteAssessmentInput
+  ): Promise<Result<CompleteAssessmentOutput, ApplicationError>> {
     try {
       const { assessmentId } = input;
 
@@ -63,10 +68,9 @@ export class CompleteAssessmentUseCase {
           assessmentId,
           error: persistError,
         });
-        return Result.fail(new CompleteAssessmentExecutionError('Failed to persist assessment', persistError)) as Result<
-          CompleteAssessmentOutput,
-          ApplicationError
-        >;
+        return Result.fail(
+          new CompleteAssessmentExecutionError('Failed to persist assessment', persistError)
+        ) as Result<CompleteAssessmentOutput, ApplicationError>;
       }
 
       // Return output DTO
@@ -80,7 +84,9 @@ export class CompleteAssessmentUseCase {
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       this.logger.error('CompleteAssessment use case failed', { error: message });
-      return Result.fail(new CompleteAssessmentExecutionError('Unexpected error during completion', error));
+      return Result.fail(
+        new CompleteAssessmentExecutionError('Unexpected error during completion', error)
+      );
     }
   }
 }

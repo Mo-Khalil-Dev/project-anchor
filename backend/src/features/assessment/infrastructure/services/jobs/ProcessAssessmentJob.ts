@@ -17,7 +17,7 @@ export class ProcessAssessmentJob implements IBackgroundJob<string> {
     private assessmentRepository: IAssessmentRepository,
     private logger: ILogger,
     private completeAssessmentUseCase: CompleteAssessmentUseCase,
-    private failAssessmentUseCase: FailAssessmentUseCase,
+    private failAssessmentUseCase: FailAssessmentUseCase
   ) {}
 
   async execute(assessmentId: string): Promise<Result<void, Error>> {
@@ -84,7 +84,11 @@ export class ProcessAssessmentJob implements IBackgroundJob<string> {
       const arrears = assessment.getArrears() ?? 0;
 
       // Calculate payment plans with bill consideration
-      const paymentPlans = this.paymentPlanService.calculatePlans(disposableIncome, arrears, assessment.getMonthlyBill());
+      const paymentPlans = this.paymentPlanService.calculatePlans(
+        disposableIncome,
+        arrears,
+        assessment.getMonthlyBill()
+      );
 
       // Build breakdown JSON fields for the Reference Data endpoint
       const expensesByCategory: Record<string, number> = {

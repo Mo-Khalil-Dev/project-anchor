@@ -87,10 +87,7 @@ export class AssessmentMapper {
         assessment.getIncomeHistory(),
         customerId
       ),
-      factors: this.breakdownParser.parseAssessmentFactors(
-        assessment.getFactors(),
-        customerId
-      ),
+      factors: this.breakdownParser.parseAssessmentFactors(assessment.getFactors(), customerId),
       paymentPlans: this.breakdownParser.parsePaymentPlans(
         assessment.getPaymentPlans(),
         customerId

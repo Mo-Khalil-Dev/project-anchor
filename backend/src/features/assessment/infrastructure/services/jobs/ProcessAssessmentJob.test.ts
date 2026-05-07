@@ -70,7 +70,7 @@ describe('ProcessAssessmentJob', () => {
       assessmentRepository,
       logger,
       completeAssessmentUseCase,
-      failAssessmentUseCase,
+      failAssessmentUseCase
     );
 
     const result = await job.execute('job-404');
@@ -91,12 +91,14 @@ describe('ProcessAssessmentJob', () => {
       expensesJson: '{"ok":true}',
     });
     assessmentRepository.update.mockResolvedValue(Result.ok(buildAssessment()));
-    completeAssessmentUseCase.execute.mockResolvedValue(Result.ok({
-      assessmentId: 'assessment-1',
-      status: 'COMPLETED',
-      hardshipLevel: 'MODERATE',
-      disposableIncome: 700,
-    }));
+    completeAssessmentUseCase.execute.mockResolvedValue(
+      Result.ok({
+        assessmentId: 'assessment-1',
+        status: 'COMPLETED',
+        hardshipLevel: 'MODERATE',
+        disposableIncome: 700,
+      })
+    );
     jest.spyOn(TinkResponseParser, 'extractIncome').mockReturnValue(
       Result.ok({
         salary: 2500,
@@ -104,7 +106,7 @@ describe('ProcessAssessmentJob', () => {
         pension: 0,
         other: 0,
         total: 2600,
-      }) as any,
+      }) as any
     );
     jest.spyOn(TinkResponseParser, 'extractExpenses').mockReturnValue(
       Result.ok({
@@ -114,14 +116,14 @@ describe('ProcessAssessmentJob', () => {
         utilities: 180,
         other: 120,
         total: 1900,
-      }) as any,
+      }) as any
     );
     const job = new ProcessAssessmentJob(
       prisma,
       assessmentRepository,
       logger,
       completeAssessmentUseCase,
-      failAssessmentUseCase,
+      failAssessmentUseCase
     );
 
     const result = await job.execute('job-1');
@@ -135,7 +137,7 @@ describe('ProcessAssessmentJob', () => {
       expect.objectContaining({
         where: { id: 'job-1' },
         data: expect.objectContaining({ status: 'SUCCESS' }),
-      }),
+      })
     );
   });
 });
