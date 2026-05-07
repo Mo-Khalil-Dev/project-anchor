@@ -15,7 +15,7 @@ import {
 import { AuthController } from '@/features/auth/infrastructure/controllers/AuthController';
 
 // Import shared utilities
-import { asyncHandler } from '../shared/middleware/globalErrorHandler';
+import { asyncHandler } from '@/features/shared/middleware';
 import { createAuthenticateMiddleware } from '../shared/middleware/authenticateRequest';
 import { IAuthProvider } from '@/features/auth/application/services/IAuthProvider';
 

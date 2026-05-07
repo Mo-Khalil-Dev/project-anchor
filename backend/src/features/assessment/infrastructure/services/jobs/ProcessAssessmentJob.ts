@@ -1,11 +1,11 @@
 import { PrismaClient } from '@prisma/client';
-import { Result } from '../../../../shared/result';
+import { Result } from '@/features/shared/result';
 import { TinkResponseParser } from '@/features/bankConnection/infrastructure/services/Tink/TinkResponseParser';
 import type { IAssessmentRepository } from '@/features/assessment/domain/entities';
 import { Assessment } from '@/features/assessment/domain/entities';
-import type { ILogger } from '../../../../shared/logging';
+import type { ILogger } from '@/features/shared/logging';
 import { PaymentPlanCalculationService } from '@/features/assessment/application/services/paymentPlanCalculations/PaymentPlanCalculationService';
-import type { IBackgroundJob } from '../../../../../core/application/services/IBackgroundJob';
+import type { IBackgroundJob } from '@/core/application/services/IBackgroundJob';
 import { CompleteAssessmentUseCase } from '@/features/assessment/application/useCases/CompleteAssessmentUseCase';
 import { FailAssessmentUseCase } from '@/features/assessment/application/useCases/FailAssessmentUseCase';
 

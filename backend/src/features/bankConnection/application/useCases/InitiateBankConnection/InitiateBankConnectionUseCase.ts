@@ -1,8 +1,8 @@
 import { randomBytes } from 'crypto';
-import { Result } from '../../../../shared/result';
-import type { ILogger } from '../../../../shared/logging';
+import { Result } from '@/features/shared/result';
+import type { ILogger } from '@/features/shared/logging';
 import type { TinkApiClient } from '@/features/bankConnection/infrastructure/services/Tink/TinkApiClient';
-import type { ICustomerRepository } from '../../../../customer/types/customer.types';
+import type { ICustomerRepository } from '@/features/customer/types/customer.types';
 import { IBankConnectionRepository } from '@/features/bankConnection/application/respositories/IBankConnectionRepository';
 import { BankConnection } from '@/features/bankConnection/domain/entites/bankConnection';
 import type {

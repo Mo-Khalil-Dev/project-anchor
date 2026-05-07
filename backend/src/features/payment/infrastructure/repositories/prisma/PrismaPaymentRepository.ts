@@ -1,5 +1,5 @@
-import { Result } from '../../../../shared/result';
-import { prisma } from '../../../../shared/utils/db';
+import { Result } from '@/features/shared/result';
+import { prisma } from '@/features/shared/utils/db';
 import type {
   IPaymentRepository,
   SaveMandateInput,

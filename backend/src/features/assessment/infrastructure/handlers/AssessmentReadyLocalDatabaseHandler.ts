@@ -1,7 +1,7 @@
-import type { IEventHandler } from '../../../../core/application/services/IEventHandler';
+import type { IEventHandler } from '@/core/application/services/IEventHandler';
 import type { AssessmentReadyForProcessingEvent } from '@/features/assessment/domain/events/AssessmentReadyForProcessingEvent';
 import type { ILogger } from '../../../shared/logging';
-import type { IBackgroundJob } from '../../../../core/application/services/IBackgroundJob';
+import type { IBackgroundJob } from '@/core/application/services/IBackgroundJob';
 
 export class AssessmentReadyLocalDatabaseHandler implements IEventHandler<AssessmentReadyForProcessingEvent> {
   constructor(

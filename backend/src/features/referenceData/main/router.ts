@@ -8,7 +8,7 @@ import { GetReferenceDataUseCase } from '../application/useCases/GetReferenceDat
 import { CompleteAssessmentUseCase } from '@/features/assessment/application/useCases/CompleteAssessmentUseCase';
 import { FailAssessmentUseCase } from '@/features/assessment/application/useCases/FailAssessmentUseCase';
 
-import { asyncHandler } from '../../shared/middleware/globalErrorHandler';
+import { asyncHandler } from '@/features/shared/middleware';
 import { ReferenceDataController } from '@/features/referenceData/infrastructure/controllers/ReferenceDataController';
 import prisma from '@/features/shared/utils/db';
 

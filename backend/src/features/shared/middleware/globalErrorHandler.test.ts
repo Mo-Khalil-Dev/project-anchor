@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { globalErrorHandler, asyncHandler } from './globalErrorHandler';
-import { DomainError } from '../../../core/domain/errors/domainError';
+import { DomainError } from '@/core/domain/errors';
 import type { ILogger } from '../logging';
 
 const mockLogger: ILogger = {

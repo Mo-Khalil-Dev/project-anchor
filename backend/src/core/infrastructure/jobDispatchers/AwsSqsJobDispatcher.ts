@@ -1,6 +1,6 @@
 import * as AWS from 'aws-sdk';
 import type { IJobDispatcher } from '../../application/services/IJobDispatcher';
-import type { ILogger } from '../../../features/shared/logging';
+import type { ILogger } from '@/features/shared/logging';
 
 export class AwsSqsJobDispatcher implements IJobDispatcher {
   private readonly sqs: AWS.SQS;

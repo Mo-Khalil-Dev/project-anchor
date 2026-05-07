@@ -1,7 +1,7 @@
-import { Result } from '../../../../shared/result';
-import type { ILogger } from '../../../../shared/logging';
+import { Result } from '@/features/shared/result';
+import type { ILogger } from '@/features/shared/logging';
 import type { IBankConnectionRepository } from '../../respositories/IBankConnectionRepository';
-import type { ICustomerRepository } from '../../../../customer/types/customer.types';
+import type { ICustomerRepository } from '@/features/customer/types/customer.types';
 import type { TinkApiClient } from '@/features/bankConnection/infrastructure/services/Tink/TinkApiClient';
 import { InitiateBankConnectionUseCase } from './InitiateBankConnectionUseCase';
 

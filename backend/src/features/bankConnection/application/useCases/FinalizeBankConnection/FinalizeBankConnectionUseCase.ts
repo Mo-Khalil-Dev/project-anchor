@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
-import { Result } from '../../../../shared/result';
-import type { ILogger } from '../../../../shared/logging';
+import { Result } from '@/features/shared/result';
+import type { ILogger } from '@/features/shared/logging';
 import type { IBankDataProvider } from '../../services/IBankDataProvider';
 import type { IEventHandler } from '@/core/application/services/IEventHandler';
 import type { AssessmentReadyForProcessingEvent } from '@/features/assessment/domain/events/AssessmentReadyForProcessingEvent';

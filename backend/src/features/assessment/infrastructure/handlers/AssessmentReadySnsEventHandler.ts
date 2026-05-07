@@ -1,5 +1,5 @@
 import { SNSClient, PublishCommand } from '@aws-sdk/client-sns';
-import type { IEventHandler } from '../../../../core/application/services/IEventHandler';
+import type { IEventHandler } from '@/core/application/services/IEventHandler';
 import type { AssessmentReadyForProcessingEvent } from '@/features/assessment/domain/events/AssessmentReadyForProcessingEvent';
 import type { ILogger } from '../../../shared/logging';
 

@@ -1,7 +1,7 @@
-import type { ILogger } from '../../../../shared/logging';
+import type { ILogger } from '@/features/shared/logging';
 import { Assessment } from '@/features/assessment/domain/entities';
 import { ASSESSMENT_STATUS } from '@/features/assessment/domain/entities/assessment-status';
-import { prisma } from '../../../../shared/utils/db';
+import { prisma } from '@/features/shared/utils/db';
 import { PrismaAssessmentRepository } from './PrismaAssessmentRepository';
 
 jest.mock('../../../../shared/utils/db', () => ({

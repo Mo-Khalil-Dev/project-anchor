@@ -1,7 +1,7 @@
 import { Result } from '../../../shared/result';
 import type { ILogger } from '../../../shared/logging';
 import type { IAssessmentRepository } from '@/features/assessment/domain/entities';
-import type { ApplicationError } from '../../../../core/domain/errors';
+import type { ApplicationError } from '@/core/domain/errors';
 import type { FailAssessmentInput, FailAssessmentOutput } from './FailAssessmentUseCase.dto';
 import {
   AssessmentNotFoundError as FailAssessmentNotFoundError,

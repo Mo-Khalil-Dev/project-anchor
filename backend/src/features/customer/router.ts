@@ -12,7 +12,7 @@ import { PrismaCustomerRepository } from './repositories/PrismaCustomerRepositor
 import { CustomerController } from './controllers/CustomerController';
 
 // Import shared utilities
-import { asyncHandler } from '../shared/middleware/globalErrorHandler';
+import { asyncHandler } from '@/features/shared/middleware';
 
 export function createCustomerRouter(
   _prisma: PrismaClient,

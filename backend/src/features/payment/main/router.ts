@@ -2,7 +2,7 @@ import { Router, type RequestHandler, raw } from 'express';
 import { PrismaClient } from '@prisma/client';
 import type { ILogger } from '../../shared/logging';
 import type { AppConfig } from '../../shared/config';
-import { asyncHandler } from '../../shared/middleware/globalErrorHandler';
+import { asyncHandler } from '@/features/shared/middleware';
 import { initGoCardlessClient } from '../../shared/utils/gocardlessClient';
 import { PaymentController } from '@/features/payment/infrastructure/controllers/PaymentController';
 import { SelectPlanUseCase } from '@/features/payment/application/usecases/SelectPlanUseCase';

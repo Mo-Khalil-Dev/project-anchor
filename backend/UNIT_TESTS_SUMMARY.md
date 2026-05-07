@@ -31,7 +31,7 @@ Comprehensive unit tests have been created for the core backend components of th
 ---
 
 ### 2. Bank Data Extraction Service Tests
-**File:** `src/infrastructure/services/BankDataExtractionService.test.ts`
+**File:** `src/infrastructure/services/TinkResponseParser.test.ts`
 **Coverage:** Tink API response parsing and financial data extraction
 
 **Test Cases:**
@@ -115,7 +115,7 @@ npm run test:watch
 ### Run Specific Test File
 ```bash
 npm test -- Assessment.entity.test.ts
-npm test -- BankDataExtractionService.test.ts
+npm test -- TinkResponseParser.test.ts
 ```
 
 ### Run Tests Matching Pattern
@@ -305,7 +305,7 @@ src/
 ├── infrastructure/
 │   └── services/
 │       ├── BankDataExtractionService.ts
-│       └── BankDataExtractionService.test.ts
+│       └── TinkResponseParser.test.ts
 ├── presentation/
 │   └── controllers/
 │       ├── AssessmentController.ts

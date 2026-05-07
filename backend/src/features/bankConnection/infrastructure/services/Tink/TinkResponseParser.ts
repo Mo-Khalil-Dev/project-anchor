@@ -1,4 +1,4 @@
-import { Result } from '../../../../shared/result';
+import { Result } from '@/features/shared/result';
 
 export interface IncomeBreakdown {
   salary: number;

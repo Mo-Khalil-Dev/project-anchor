@@ -1,5 +1,5 @@
-import { Result } from '../../../../shared/result';
-import type { ILogger } from '../../../../shared/logging';
+import { Result } from '@/features/shared/result';
+import type { ILogger } from '@/features/shared/logging';
 import { TinkResponseParser } from '@/features/bankConnection/infrastructure/services/Tink/TinkResponseParser';
 import { Assessment } from '@/features/assessment/domain/entities';
 import { ASSESSMENT_STATUS } from '@/features/assessment/domain/entities/assessment-status';

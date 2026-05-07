@@ -24,7 +24,7 @@ npm run test:cov           # With coverage
 
 **No additional configuration needed** — just write your tests normally and Tink API calls will be intercepted automatically.
 
-Example test: `tests/tink-oauth.integration.test.ts`
+Example test: `tests/tinkApiClient.test.ts`
 
 ### For Local Development
 

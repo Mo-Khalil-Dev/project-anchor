@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
 import { validateRequest } from './validateRequest';
-import { ValidationError } from '../../../core/domain/errors/validationError';
+import { ValidationError } from '@/core/domain/errors';
 
 describe('validateRequest Middleware', () => {
   it('validates body successfully', () => {

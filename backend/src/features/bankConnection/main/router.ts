@@ -2,7 +2,7 @@ import { Router, type RequestHandler } from 'express';
 import { PrismaClient } from '@prisma/client';
 import type { ILogger } from '../../shared/logging';
 import type { AppConfig } from '../../shared/config';
-import { asyncHandler } from '../../shared/middleware/globalErrorHandler';
+import { asyncHandler } from '@/features/shared/middleware';
 import { BankConnectionController } from '@/features/bankConnection/infrastructure/controllers/BankConnectionController';
 import { InitiateBankConnectionUseCase } from '../application/useCases/InitiateBankConnection/InitiateBankConnectionUseCase';
 import { FinalizeBankConnectionUseCase } from '../application/useCases/FinalizeBankConnection/FinalizeBankConnectionUseCase';

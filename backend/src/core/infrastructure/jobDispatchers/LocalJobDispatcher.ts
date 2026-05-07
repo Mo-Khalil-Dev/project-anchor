@@ -1,6 +1,6 @@
 import type { IJobDispatcher } from '../../application/services/IJobDispatcher';
 import type { IBackgroundJob } from '../../application/services/IBackgroundJob';
-import type { ILogger } from '../../../features/shared/logging';
+import type { ILogger } from '@/features/shared/logging';
 
 export class LocalJobDispatcher implements IJobDispatcher {
   constructor(

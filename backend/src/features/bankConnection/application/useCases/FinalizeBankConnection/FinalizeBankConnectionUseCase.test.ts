@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
-import { Result } from '../../../../shared/result';
-import type { ILogger } from '../../../../shared/logging';
+import { Result } from '@/features/shared/result';
+import type { ILogger } from '@/features/shared/logging';
 import type { IBankConnectionRepository } from '../../respositories/IBankConnectionRepository';
 import type { IBankDataProvider } from '../../services/IBankDataProvider';
 import type { IAssessmentRepository } from '@/features/assessment/domain/entities';

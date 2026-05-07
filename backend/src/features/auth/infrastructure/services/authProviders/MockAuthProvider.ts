@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-import type { AppConfig } from '../../../../shared/config/config.types';
+import type { AppConfig } from '@/features/shared/config';
 import type { AuthTokens, AuthUser } from '../../../types/auth.types';
 import {
   InvalidTokenError,

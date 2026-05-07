@@ -269,7 +269,7 @@ import { Assessment } from '../../domain/entities/Assessment.entity';
 import { PaymentPlan } from '../../domain/entities/PaymentPlan.entity';
 import { IPaymentPlanRepository } from '../../domain/repositories/IPaymentPlanRepository';
 import { IAssessmentRepository } from '../../domain/repositories/IAssessmentRepository';
-import { AssessmentDomainService } from '../../domain/services/AssessmentDomainService';
+import { AssessmentDomainService } from '../../domain/usecases/AssessmentDomainService';
 
 export class GeneratePaymentPlansUseCase {
   constructor(
@@ -674,7 +674,7 @@ function createAssessmentRoutes(): Router {
   // 1. Create infrastructure
   const repository = new PrismaAssessmentRepository(prisma);
 
-  // 2. Create domain services
+  // 2. Create domain usecases
   const domainService = new AssessmentDomainService(repository);
 
   // 3. Create use cases

@@ -2,7 +2,7 @@ import { Result } from '../../../shared/result';
 import type { ILogger } from '../../../shared/logging';
 import type { IAssessmentRepository } from '@/features/assessment/domain/entities';
 import type { AssessmentData } from './GetAssessmentQuery.dto';
-import type { ApplicationError } from '../../../../core/domain/errors';
+import type { ApplicationError } from '@/core/domain/errors';
 import { AssessmentMapper } from '../../../assessment/infrastructure/mappers';
 import {
   AssessmentRepositoryQueryError,

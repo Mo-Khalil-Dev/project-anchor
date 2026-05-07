@@ -1,4 +1,4 @@
-import { ApplicationError } from '../../../../core/domain/errors';
+import { ApplicationError } from '@/core/domain/errors';
 
 export class AssessmentRepositoryQueryError extends ApplicationError {
   constructor(customerId: string, cause?: unknown) {

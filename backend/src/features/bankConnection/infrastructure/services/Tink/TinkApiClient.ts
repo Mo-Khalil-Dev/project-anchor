@@ -1,6 +1,6 @@
-import type { ILogger } from '../../../../shared/logging';
-import type { AppConfig } from '../../../../shared/config';
-import { Result } from '../../../../shared/result';
+import type { ILogger } from '@/features/shared/logging';
+import type { AppConfig } from '@/features/shared/config';
+import { Result } from '@/features/shared/result';
 import { MOCK_TINK_INCOME_REPORT } from '@/features/bankConnection/infrastructure/services/Tink/data/income_report';
 
 interface TinkTokenResponse {
