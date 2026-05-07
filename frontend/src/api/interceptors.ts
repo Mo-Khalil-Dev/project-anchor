@@ -1,7 +1,7 @@
 import type { AxiosInstance } from 'axios';
-import { store } from '../store';
-import { setAccessToken, clearAuth } from '../store/slices/authSlice';
-import { authService } from '../services/authService';
+import { store } from '@/store';
+import { setAccessToken, clearAuth } from '@/store/slices/authSlice';
+import { authService } from '@/services/authService';
 
 let isRefreshing = false;
 let failedQueue: Array<{

@@ -11,8 +11,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useReferenceDataContext } from '@/context/ReferenceDataContext';
-import type { AssessmentDetailedDTO } from '../types';
-import { MOCK_ASSESSMENT_DETAILED } from '../mocks/assessmentMockData';
+import type { AssessmentDetailedDTO } from '@/types';
+import { MOCK_ASSESSMENT_DETAILED } from '@/mocks/assessmentMockData';
 
 export type AssessmentTab = 'overview' | 'expenses' | 'income' | 'factors';
 

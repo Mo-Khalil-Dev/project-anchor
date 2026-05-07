@@ -1,5 +1,5 @@
-import type { AssessmentDetailedDTO } from '../../types';
-import { FACTOR_SEVERITY } from '../../mocks/assessmentMockData';
+import type { AssessmentDetailedDTO } from '@/types';
+import { FACTOR_SEVERITY } from '@/mocks/assessmentMockData';
 
 export const COLOR_CLASSES: Record<string, { bar: string; bg: string; text: string; ring: string }> = {
   red: { bar: '#dc2626', bg: 'bg-red-bg', text: 'text-red', ring: 'oklch(52% 0.18 25)' },

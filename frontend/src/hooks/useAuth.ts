@@ -1,8 +1,8 @@
 import {useDispatch, useSelector} from 'react-redux';
 import {useCallback} from 'react';
-import type {RootState, AuthUser} from '../types';
-import {setUser, setAccessToken, clearAuth, setLoading, setError} from '../store/slices/authSlice';
-import {authService} from '../services/authService';
+import type {RootState, AuthUser} from '@/types';
+import {setUser, setAccessToken, clearAuth, setLoading, setError} from '@/store/slices/authSlice';
+import {authService} from '@/services/authService';
 
 export interface UseAuthReturn {
     user: AuthUser | null;

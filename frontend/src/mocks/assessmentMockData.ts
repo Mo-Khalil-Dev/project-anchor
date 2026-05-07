@@ -6,7 +6,7 @@
  * docs/wireframes/design_handoff_bridge/screens/Screen 2.2.1 - Payment Plans.html
  */
 
-import type { AssessmentDetailedDTO } from '../types';
+import type { AssessmentDetailedDTO } from '@/types';
 
 export const MOCK_ASSESSMENT_DETAILED: AssessmentDetailedDTO = {
   id: 'assess_mock_001',

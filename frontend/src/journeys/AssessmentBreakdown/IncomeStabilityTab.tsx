@@ -1,4 +1,4 @@
-import type { AssessmentDetailedDTO } from '../../types';
+import type { AssessmentDetailedDTO } from '@/types';
 import { Card } from '@/components/core';
 import { useIncomeStabilityTab } from './useIncomeStabilityTab';
 import { formatCurrency } from '@/utils/format';

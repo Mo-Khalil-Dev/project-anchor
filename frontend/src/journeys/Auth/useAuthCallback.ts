@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
-import { redirectService } from '../../services/redirectService';
+import { useAuth } from '@/hooks/useAuth';
+import { redirectService } from '@/services/redirectService';
 
 export function useAuthCallback() {
   const navigate = useNavigate();

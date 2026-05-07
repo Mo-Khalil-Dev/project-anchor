@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '@/hooks/useAuth';
 
 // Seeded customer emails for quick testing (keep in sync with backend/prisma/seed.ts)
 const SEEDED_CUSTOMERS = [

@@ -1,4 +1,4 @@
-import type { AssessmentDetailedDTO } from '../../types';
+import type { AssessmentDetailedDTO } from '@/types';
 import { Card } from '@/components/core';
 import { useWhyThisHappenedTab } from './useWhyThisHappenedTab';
 

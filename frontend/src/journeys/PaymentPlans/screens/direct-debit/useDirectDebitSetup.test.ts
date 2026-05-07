@@ -168,7 +168,7 @@ describe('useDirectDebitSetup', () => {
 
   describe('handleConfirm', () => {
     it('does not call API when form is incomplete', async () => {
-      const { paymentService } = await import('@/services/paymentService');
+      const { paymentService } = await import('@/usecases/paymentService');
       const spy = vi.spyOn(paymentService, 'initiateDirectDebit');
       const { result } = renderHook(() => useDirectDebitSetup());
 
@@ -181,7 +181,7 @@ describe('useDirectDebitSetup', () => {
     });
 
     it('redirects to GoCardless when API succeeds', async () => {
-      const { paymentService } = await import('@/services/paymentService');
+      const { paymentService } = await import('@/usecases/paymentService');
       const spy = vi.spyOn(paymentService, 'initiateDirectDebit').mockResolvedValue({
         authorizationUrl: 'https://pay-sandbox.gocardless.com/flow/abc',
         billingRequestId: 'BRQ123',

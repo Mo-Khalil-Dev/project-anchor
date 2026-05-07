@@ -1,5 +1,5 @@
 import { useLocation } from 'react-router-dom';
-import { useAssessmentBreakdown } from '../../hooks/useAssessmentBreakdown';
+import { useAssessmentBreakdown } from '@/hooks/useAssessmentBreakdown';
 import { useJourneyGuard } from '@/hooks/useJourneyGuard';
 import { CustomerLayout } from '@/components/layouts/CustomerLayout';
 import { PaymentPlanOptions } from '@/journeys/PaymentPlans/screens/options/PaymentPlanOptions';

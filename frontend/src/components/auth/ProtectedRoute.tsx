@@ -1,9 +1,9 @@
 import { ReactNode, useEffect, useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '@/hooks/useAuth';
 import { useDispatch } from 'react-redux';
-import { setAccessToken, setLoading } from '../../store/slices/authSlice';
-import { authService } from '../../services/authService';
+import { setAccessToken, setLoading } from '@/store/slices/authSlice';
+import { authService } from '@/services/authService';
 
 export interface ProtectedRouteProps {
   children?: ReactNode;

@@ -1,6 +1,6 @@
-import { httpService } from '../api/httpService';
-import { unwrap } from '../api/unwrap';
-import type { AuthUser, ApiResponse } from '../types';
+import { httpService } from '@/api/httpService';
+import { unwrap } from '@/api/unwrap';
+import type { AuthUser, ApiResponse } from '@/types';
 
 export interface InitiateLoginResponse {
   loginUrl: string;

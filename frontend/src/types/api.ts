@@ -9,7 +9,7 @@ import {
   Case,
   ApiResponse,
   PaginatedResponse,
-} from './index';
+} from '.';
 
 // ── Bank Connection ────────────────────────────────────────────
 export interface TinkAuthResponse {

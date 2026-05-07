@@ -1,4 +1,4 @@
-import type { AssessmentDetailedDTO } from '../../types';
+import type { AssessmentDetailedDTO } from '@/types';
 import { Card, HardshipBadge } from '@/components/core';
 import { useOverviewTab } from './useOverviewTab';
 import { formatCurrency } from '@/utils/format';

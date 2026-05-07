@@ -1,7 +1,7 @@
 import React, { ReactNode, useMemo } from 'react';
-import { useAuth } from '../hooks/useAuth';
-import { useReferenceData } from '../hooks/useReferenceData';
-import type { ReferenceData } from '../types/referenceData.types';
+import { useAuth } from '@/hooks/useAuth';
+import { useReferenceData } from '@/hooks/useReferenceData';
+import type { ReferenceData } from '@/types/referenceData.types';
 
 interface ReferenceDataContextValue {
   data: ReferenceData | null;

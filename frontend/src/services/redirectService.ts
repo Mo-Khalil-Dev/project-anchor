@@ -1,6 +1,6 @@
-import { httpService } from '../api/httpService';
-import { unwrap } from '../api/unwrap';
-import type { ApiResponse } from '../types';
+import { httpService } from '@/api/httpService';
+import { unwrap } from '@/api/unwrap';
+import type { ApiResponse } from '@/types';
 
 export interface GetRedirectToJourneyResponse {
   nextPage: string;

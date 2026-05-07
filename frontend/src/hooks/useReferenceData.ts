@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
-import { referenceDataService } from '../services/referenceDataService';
-import type { ReferenceData } from '../types/referenceData.types';
+import { referenceDataService } from '@/services/referenceDataService';
+import type { ReferenceData } from '@/types/referenceData.types';
 
 interface UseReferenceDataState {
   data: ReferenceData | null;

@@ -4,10 +4,10 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { createElement } from 'react';
 import { store } from '@/store';
 import { makeAssessment } from '@/test/fixtures';
-import { assessmentService } from '@/services/assessmentService';
+import { assessmentService } from '@/usecases/assessmentService';
 import { useOverview } from './useOverview';
 
-vi.mock('@/services/assessmentService', () => ({
+vi.mock('@/usecases/assessmentService', () => ({
   assessmentService: { get: vi.fn() },
 }));
 
