@@ -1,5 +1,5 @@
 import type { IEventHandler } from './IEventHandler';
-import { DomainEvent } from '@/features/shared/domain/DomainEvent';
+import { DomainEvent } from '@/core/domain/common/DomainEvent';
 
 /**
  * Simple, minimal event bus.
