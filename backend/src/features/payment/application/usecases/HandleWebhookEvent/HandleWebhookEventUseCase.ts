@@ -1,5 +1,5 @@
-import { Result } from '../../../../shared/result';
-import type { ILogger } from '../../../../shared/logging';
+import { Result } from '@/features/shared/result';
+import type { ILogger } from '@/features/shared/logging';
 import type { WebhookEvent } from './HandleWebhookEvent.dto';
 
 /**

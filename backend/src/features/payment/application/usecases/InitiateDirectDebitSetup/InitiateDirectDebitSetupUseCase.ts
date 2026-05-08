@@ -1,5 +1,5 @@
-import { Result } from '../../../../shared/result';
-import type { ILogger } from '../../../../shared/logging';
+import { Result } from '@/features/shared/result';
+import type { ILogger } from '@/features/shared/logging';
 import type { IAssessmentRepository } from '@/features/assessment/domain/entities';
 import type { CreateBillingRequestUseCase } from '../CreateBillingRequest/CreateBillingRequestUseCase';
 import type { CollectCustomerDetailsUseCase } from '../CollectCustomerDetails/CollectCustomerDetailsUseCase';

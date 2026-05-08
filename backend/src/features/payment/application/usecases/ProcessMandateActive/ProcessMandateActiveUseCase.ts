@@ -1,6 +1,6 @@
 import type { GoCardlessClient } from 'gocardless-nodejs';
-import { Result } from '../../../../shared/result';
-import type { ILogger } from '../../../../shared/logging';
+import { Result } from '@/features/shared/result';
+import type { ILogger } from '@/features/shared/logging';
 import type { IAssessmentRepository } from '@/features/assessment/domain/entities';
 import type { IPaymentRepository } from '../../respositories/IPaymentRepository';
 import type { CreateInstalmentScheduleUseCase } from '../CreateInstalmentSchedule/CreateInstalmentScheduleUseCase';
