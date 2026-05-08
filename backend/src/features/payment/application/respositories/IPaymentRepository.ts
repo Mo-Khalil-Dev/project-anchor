@@ -1,6 +1,6 @@
 import type { Result } from '@/features/shared/result';
+import type { MandateStatus } from '@/features/shared/types/mandate-status';
 
-export type MandateStatus = 'PENDING' | 'ACTIVE' | 'FAILED' | 'CANCELLED' | 'EXPIRED';
 export type ScheduleStatus = 'ACTIVE' | 'COMPLETED' | 'CANCELLED' | 'FAILED';
 
 export interface SaveMandateInput {

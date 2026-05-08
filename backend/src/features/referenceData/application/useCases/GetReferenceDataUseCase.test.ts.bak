@@ -1,10 +1,19 @@
 import { Result } from '../../../shared/result';
 import type { ILogger } from '../../../shared/logging';
+import { prisma } from '../../../shared/utils/db';
 import { GetAccountSetupQuery } from './GetAccountSetupQuery';
 import { GetBankConnectionQuery } from './GetBankConnectionQuery';
 import { GetAssessmentQuery } from './GetAssessmentQuery';
 import { GetReferenceDataUseCase } from './GetReferenceDataUseCase';
 import type { IMandateRepository } from '@/features/payment/application/repositories/IMandateRepository';
+
+jest.mock('../../../shared/utils/db', () => ({
+  prisma: {
+    user: {
+      findUnique: jest.fn(),
+    },
+  },
+}));
 
 describe('GetReferenceDataUseCase', () => {
   const logger: ILogger = {
@@ -15,7 +24,6 @@ describe('GetReferenceDataUseCase', () => {
     child: jest.fn().mockReturnThis(),
   };
 
-  let userRepository: any;
   let customerRepository: any;
   let bankConnectionRepository: any;
   let assessmentRepository: any;
@@ -23,21 +31,18 @@ describe('GetReferenceDataUseCase', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.restoreAllMocks();
-    userRepository = { findCustomerIdByUserId: jest.fn() };
-    customerRepository = { findById: jest.fn().mockResolvedValue(Result.ok(null)) };
-    bankConnectionRepository = { findByCustomerId: jest.fn().mockResolvedValue(Result.ok(null)) };
-    assessmentRepository = { findLatestByCustomerId: jest.fn().mockResolvedValue(Result.ok(null)) };
+    customerRepository = { findById: jest.fn() };
+    bankConnectionRepository = { findByCustomerId: jest.fn() };
+    assessmentRepository = { findLatestByCustomerId: jest.fn() };
     mandateRepository = {
-      findLatestByCustomerId: jest.fn().mockResolvedValue(Result.ok(null)),
+      findLatestByCustomerId: jest.fn(),
     };
   });
 
   // Journey: User not linked to customer
   it('returns ACCOUNT_SETUP when user is not linked to customer', async () => {
-    (userRepository.findCustomerIdByUserId as jest.Mock).mockResolvedValue(Result.ok(null));
+    (prisma.user.findUnique as jest.Mock).mockResolvedValue({ customerId: null });
     const useCase = new GetReferenceDataUseCase(
-      userRepository,
       customerRepository,
       bankConnectionRepository,
       assessmentRepository,
@@ -60,9 +65,8 @@ describe('GetReferenceDataUseCase', () => {
 
   // Error: User not found
   it('fails when user not found', async () => {
-    (userRepository.findCustomerIdByUserId as jest.Mock).mockResolvedValue(Result.fail(new Error('User not found')));
+    (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
     const useCase = new GetReferenceDataUseCase(
-      userRepository,
       customerRepository,
       bankConnectionRepository,
       assessmentRepository,
@@ -79,17 +83,16 @@ describe('GetReferenceDataUseCase', () => {
 
   // Journey: Account setup completed, awaiting bank connection
   it('returns BANK_CONNECTION after account setup completed', async () => {
-    (userRepository.findCustomerIdByUserId as jest.Mock).mockResolvedValue(Result.ok('customer-1'));
+    (prisma.user.findUnique as jest.Mock).mockResolvedValue({ customerId: 'customer-1' });
     jest
       .spyOn(GetAccountSetupQuery.prototype, 'execute')
-      .mockResolvedValue(Result.ok({ status: 'COMPLETED' }) as any);
+      .mockResolvedValue(Result.ok({ assessment: { status: 'COMPLETED' }, mandate: null }) as any);
     jest
       .spyOn(GetBankConnectionQuery.prototype, 'execute')
       .mockResolvedValue(Result.ok(null) as any);
     jest.spyOn(GetAssessmentQuery.prototype, 'execute').mockResolvedValue(Result.ok(null) as any);
 
     const useCase = new GetReferenceDataUseCase(
-      userRepository,
       customerRepository,
       bankConnectionRepository,
       assessmentRepository,
@@ -107,17 +110,16 @@ describe('GetReferenceDataUseCase', () => {
 
   // Journey: Account setup in progress
   it('returns ACCOUNT_SETUP_LOADING when account setup in progress', async () => {
-    (userRepository.findCustomerIdByUserId as jest.Mock).mockResolvedValue(Result.ok('customer-1'));
+    (prisma.user.findUnique as jest.Mock).mockResolvedValue({ customerId: 'customer-1' });
     jest
       .spyOn(GetAccountSetupQuery.prototype, 'execute')
-      .mockResolvedValue(Result.ok({ status: 'IN_PROGRESS' }) as any);
+      .mockResolvedValue(Result.ok({ assessment: { status: 'IN_PROGRESS' }, mandate: null }) as any);
     jest
       .spyOn(GetBankConnectionQuery.prototype, 'execute')
       .mockResolvedValue(Result.ok(null) as any);
     jest.spyOn(GetAssessmentQuery.prototype, 'execute').mockResolvedValue(Result.ok(null) as any);
 
     const useCase = new GetReferenceDataUseCase(
-      userRepository,
       customerRepository,
       bankConnectionRepository,
       assessmentRepository,
@@ -133,17 +135,16 @@ describe('GetReferenceDataUseCase', () => {
 
   // Journey: Bank connection in progress
   it('returns BANK_CONNECTION when bank connection in progress', async () => {
-    (userRepository.findCustomerIdByUserId as jest.Mock).mockResolvedValue(Result.ok('customer-1'));
+    (prisma.user.findUnique as jest.Mock).mockResolvedValue({ customerId: 'customer-1' });
     jest
       .spyOn(GetAccountSetupQuery.prototype, 'execute')
-      .mockResolvedValue(Result.ok({ status: 'COMPLETED' }) as any);
+      .mockResolvedValue(Result.ok({ assessment: { status: 'COMPLETED' }, mandate: null }) as any);
     jest
       .spyOn(GetBankConnectionQuery.prototype, 'execute')
-      .mockResolvedValue(Result.ok({ status: 'IN_PROGRESS' }) as any);
+      .mockResolvedValue(Result.ok({ assessment: { status: 'IN_PROGRESS' }, mandate: null }) as any);
     jest.spyOn(GetAssessmentQuery.prototype, 'execute').mockResolvedValue(Result.ok(null) as any);
 
     const useCase = new GetReferenceDataUseCase(
-      userRepository,
       customerRepository,
       bankConnectionRepository,
       assessmentRepository,
@@ -159,17 +160,16 @@ describe('GetReferenceDataUseCase', () => {
 
   // Journey: Bank connected, awaiting assessment
   it('returns ASSESSMENT after bank connection completed', async () => {
-    (userRepository.findCustomerIdByUserId as jest.Mock).mockResolvedValue(Result.ok('customer-1'));
+    (prisma.user.findUnique as jest.Mock).mockResolvedValue({ customerId: 'customer-1' });
     jest
       .spyOn(GetAccountSetupQuery.prototype, 'execute')
-      .mockResolvedValue(Result.ok({ status: 'COMPLETED' }) as any);
+      .mockResolvedValue(Result.ok({ assessment: { status: 'COMPLETED' }, mandate: null }) as any);
     jest
       .spyOn(GetBankConnectionQuery.prototype, 'execute')
       .mockResolvedValue(Result.ok({ status: 'CONNECTED' }) as any);
     jest.spyOn(GetAssessmentQuery.prototype, 'execute').mockResolvedValue(Result.ok(null) as any);
 
     const useCase = new GetReferenceDataUseCase(
-      userRepository,
       customerRepository,
       bankConnectionRepository,
       assessmentRepository,
@@ -186,20 +186,21 @@ describe('GetReferenceDataUseCase', () => {
 
   // Journey: Assessment calculating
   it('returns ASSESSMENT_CALCULATING when assessment is pending', async () => {
-    (userRepository.findCustomerIdByUserId as jest.Mock).mockResolvedValue(Result.ok('customer-1'));
-    (mandateRepository.findLatestByCustomerId as jest.Mock).mockResolvedValue(Result.ok(null));
+    (prisma.user.findUnique as jest.Mock).mockResolvedValue({ customerId: 'customer-1' });
+    (mandateRepository.findLatestByCustomerId as jest.Mock).mockResolvedValue(
+      Result.ok(null)
+    );
     jest
       .spyOn(GetAccountSetupQuery.prototype, 'execute')
-      .mockResolvedValue(Result.ok({ status: 'COMPLETED' }) as any);
+      .mockResolvedValue(Result.ok({ assessment: { status: 'COMPLETED' }, mandate: null }) as any);
     jest
       .spyOn(GetBankConnectionQuery.prototype, 'execute')
       .mockResolvedValue(Result.ok({ status: 'CONNECTED' }) as any);
     jest
       .spyOn(GetAssessmentQuery.prototype, 'execute')
-      .mockResolvedValue(Result.ok({ status: 'PENDING' }) as any);
+      .mockResolvedValue(Result.ok({ assessment: { status: 'PENDING' }, mandate: null }) as any);
 
     const useCase = new GetReferenceDataUseCase(
-      userRepository,
       customerRepository,
       bankConnectionRepository,
       assessmentRepository,
@@ -215,20 +216,21 @@ describe('GetReferenceDataUseCase', () => {
 
   // Journey: Assessment in progress
   it('returns ASSESSMENT_CALCULATING when assessment is in progress', async () => {
-    (userRepository.findCustomerIdByUserId as jest.Mock).mockResolvedValue(Result.ok('customer-1'));
-    (mandateRepository.findLatestByCustomerId as jest.Mock).mockResolvedValue(Result.ok(null));
+    (prisma.user.findUnique as jest.Mock).mockResolvedValue({ customerId: 'customer-1' });
+    (mandateRepository.findLatestByCustomerId as jest.Mock).mockResolvedValue(
+      Result.ok(null)
+    );
     jest
       .spyOn(GetAccountSetupQuery.prototype, 'execute')
-      .mockResolvedValue(Result.ok({ status: 'COMPLETED' }) as any);
+      .mockResolvedValue(Result.ok({ assessment: { status: 'COMPLETED' }, mandate: null }) as any);
     jest
       .spyOn(GetBankConnectionQuery.prototype, 'execute')
       .mockResolvedValue(Result.ok({ status: 'CONNECTED' }) as any);
     jest
       .spyOn(GetAssessmentQuery.prototype, 'execute')
-      .mockResolvedValue(Result.ok({ status: 'IN_PROGRESS' }) as any);
+      .mockResolvedValue(Result.ok({ assessment: { status: 'IN_PROGRESS' }, mandate: null }) as any);
 
     const useCase = new GetReferenceDataUseCase(
-      userRepository,
       customerRepository,
       bankConnectionRepository,
       assessmentRepository,
@@ -244,35 +246,24 @@ describe('GetReferenceDataUseCase', () => {
 
   // Journey: Assessment completed, no mandate yet
   it('returns DIRECT_DEBIT_SETUP when assessment completed without mandate', async () => {
-    (userRepository.findCustomerIdByUserId as jest.Mock).mockResolvedValue(Result.ok('customer-1'));
-    (mandateRepository.findLatestByCustomerId as jest.Mock).mockResolvedValue(Result.ok(null));
+    (prisma.user.findUnique as jest.Mock).mockResolvedValue({ customerId: 'customer-1' });
+    (mandateRepository.findLatestByCustomerId as jest.Mock).mockResolvedValue(
+      Result.ok(null)
+    );
     jest
       .spyOn(GetAccountSetupQuery.prototype, 'execute')
-      .mockResolvedValue(Result.ok({ status: 'COMPLETED' }) as any);
+      .mockResolvedValue(Result.ok({ assessment: { status: 'COMPLETED' }, mandate: null }) as any);
     jest
       .spyOn(GetBankConnectionQuery.prototype, 'execute')
       .mockResolvedValue(Result.ok({ status: 'CONNECTED' }) as any);
     jest.spyOn(GetAssessmentQuery.prototype, 'execute').mockResolvedValue(
       Result.ok({
-        id: 'assessment-1',
-        status: 'COMPLETED',
-        hardshipLevel: 'MODERATE',
-        disposableIncome: 500,
-        monthlyBill: 60,
-        billRatio: 0.12,
-        monthlyIncome: 3000,
-        monthlyExpenses: 2400,
-        expensesByCategory: {},
-        incomeSources: [],
-        incomeHistory: [],
-        factors: [],
-        paymentPlans: [],
-        createdAt: new Date().toISOString(),
+        assessment: { status: 'COMPLETED', paymentPlans: [] },
+        mandate: null,
       }) as any
     );
 
     const useCase = new GetReferenceDataUseCase(
-      userRepository,
       customerRepository,
       bankConnectionRepository,
       assessmentRepository,
@@ -289,7 +280,7 @@ describe('GetReferenceDataUseCase', () => {
 
   // Journey: Assessment completed, mandate pending
   it('returns DIRECT_DEBIT_PENDING when mandate is pending', async () => {
-    (userRepository.findCustomerIdByUserId as jest.Mock).mockResolvedValue(Result.ok('customer-1'));
+    (prisma.user.findUnique as jest.Mock).mockResolvedValue({ customerId: 'customer-1' });
     (mandateRepository.findLatestByCustomerId as jest.Mock).mockResolvedValue(
       Result.ok({
         id: 'mandate-1',
@@ -300,31 +291,18 @@ describe('GetReferenceDataUseCase', () => {
     );
     jest
       .spyOn(GetAccountSetupQuery.prototype, 'execute')
-      .mockResolvedValue(Result.ok({ status: 'COMPLETED' }) as any);
+      .mockResolvedValue(Result.ok({ assessment: { status: 'COMPLETED' }, mandate: null }) as any);
     jest
       .spyOn(GetBankConnectionQuery.prototype, 'execute')
       .mockResolvedValue(Result.ok({ status: 'CONNECTED' }) as any);
     jest.spyOn(GetAssessmentQuery.prototype, 'execute').mockResolvedValue(
       Result.ok({
-        id: 'assessment-1',
-        status: 'COMPLETED',
-        hardshipLevel: 'MODERATE',
-        disposableIncome: 500,
-        monthlyBill: 60,
-        billRatio: 0.12,
-        monthlyIncome: 3000,
-        monthlyExpenses: 2400,
-        expensesByCategory: {},
-        incomeSources: [],
-        incomeHistory: [],
-        factors: [],
-        paymentPlans: [],
-        createdAt: new Date().toISOString(),
+        assessment: { status: 'COMPLETED' },
+        mandate: null,
       }) as any
     );
 
     const useCase = new GetReferenceDataUseCase(
-      userRepository,
       customerRepository,
       bankConnectionRepository,
       assessmentRepository,
@@ -341,7 +319,7 @@ describe('GetReferenceDataUseCase', () => {
 
   // Journey: Assessment + mandate active
   it('returns PAYMENT_PLANS when mandate is active', async () => {
-    (userRepository.findCustomerIdByUserId as jest.Mock).mockResolvedValue(Result.ok('customer-1'));
+    (prisma.user.findUnique as jest.Mock).mockResolvedValue({ customerId: 'customer-1' });
     (mandateRepository.findLatestByCustomerId as jest.Mock).mockResolvedValue(
       Result.ok({
         id: 'mandate-1',
@@ -352,31 +330,26 @@ describe('GetReferenceDataUseCase', () => {
     );
     jest
       .spyOn(GetAccountSetupQuery.prototype, 'execute')
-      .mockResolvedValue(Result.ok({ status: 'COMPLETED' }) as any);
+      .mockResolvedValue(Result.ok({ assessment: { status: 'COMPLETED' }, mandate: null }) as any);
     jest
       .spyOn(GetBankConnectionQuery.prototype, 'execute')
       .mockResolvedValue(Result.ok({ status: 'CONNECTED' }) as any);
     jest.spyOn(GetAssessmentQuery.prototype, 'execute').mockResolvedValue(
       Result.ok({
-        id: 'assessment-1',
-        status: 'COMPLETED',
-        hardshipLevel: 'MODERATE',
-        disposableIncome: 500,
-        monthlyBill: 60,
-        billRatio: 0.12,
-        monthlyIncome: 3000,
-        monthlyExpenses: 2400,
-        expensesByCategory: {},
-        incomeSources: [],
-        incomeHistory: [],
-        factors: [],
-        paymentPlans: [{ type: 'Balanced', monthlyAmount: 120, duration: 12, totalRepayment: 1440, sustainability: 'MEDIUM' }],
-        createdAt: new Date().toISOString(),
+        assessment: {
+          status: 'COMPLETED',
+          paymentPlans: [{ type: 'Balanced', monthlyAmount: 120 }],
+        },
+        mandate: {
+          id: 'mandate-1',
+          status: 'ACTIVE',
+          gocardlessId: 'gc-123',
+          createdAt: new Date('2026-05-01').toISOString(),
+        },
       }) as any
     );
 
     const useCase = new GetReferenceDataUseCase(
-      userRepository,
       customerRepository,
       bankConnectionRepository,
       assessmentRepository,
@@ -388,14 +361,12 @@ describe('GetReferenceDataUseCase', () => {
 
     expect(result.isOk).toBe(true);
     expect(result.getOrThrow().nextStep).toBe('PAYMENT_PLANS');
-    expect(result.getOrThrow().paymentPlans).toEqual([
-      { type: 'Balanced', monthlyAmount: 120, duration: 12, totalRepayment: 1440, sustainability: 'MEDIUM' },
-    ]);
+    expect(result.getOrThrow().paymentPlans).toEqual([{ type: 'Balanced', monthlyAmount: 120 }]);
   });
 
   // Journey: Assessment + mandate created
   it('returns PAYMENT_PLANS when mandate is created', async () => {
-    (userRepository.findCustomerIdByUserId as jest.Mock).mockResolvedValue(Result.ok('customer-1'));
+    (prisma.user.findUnique as jest.Mock).mockResolvedValue({ customerId: 'customer-1' });
     (mandateRepository.findLatestByCustomerId as jest.Mock).mockResolvedValue(
       Result.ok({
         id: 'mandate-1',
@@ -406,31 +377,18 @@ describe('GetReferenceDataUseCase', () => {
     );
     jest
       .spyOn(GetAccountSetupQuery.prototype, 'execute')
-      .mockResolvedValue(Result.ok({ status: 'COMPLETED' }) as any);
+      .mockResolvedValue(Result.ok({ assessment: { status: 'COMPLETED' }, mandate: null }) as any);
     jest
       .spyOn(GetBankConnectionQuery.prototype, 'execute')
       .mockResolvedValue(Result.ok({ status: 'CONNECTED' }) as any);
     jest.spyOn(GetAssessmentQuery.prototype, 'execute').mockResolvedValue(
       Result.ok({
-        id: 'assessment-1',
-        status: 'COMPLETED',
-        hardshipLevel: 'MODERATE',
-        disposableIncome: 500,
-        monthlyBill: 60,
-        billRatio: 0.12,
-        monthlyIncome: 3000,
-        monthlyExpenses: 2400,
-        expensesByCategory: {},
-        incomeSources: [],
-        incomeHistory: [],
-        factors: [],
-        paymentPlans: [],
-        createdAt: new Date().toISOString(),
+        assessment: { status: 'COMPLETED' },
+        mandate: null,
       }) as any
     );
 
     const useCase = new GetReferenceDataUseCase(
-      userRepository,
       customerRepository,
       bankConnectionRepository,
       assessmentRepository,
@@ -446,7 +404,7 @@ describe('GetReferenceDataUseCase', () => {
 
   // Edge case: Query failures handled gracefully
   it('treats query failures as null values (graceful degradation)', async () => {
-    (userRepository.findCustomerIdByUserId as jest.Mock).mockResolvedValue(Result.ok('customer-1'));
+    (prisma.user.findUnique as jest.Mock).mockResolvedValue({ customerId: 'customer-1' });
     jest
       .spyOn(GetAccountSetupQuery.prototype, 'execute')
       .mockResolvedValue(Result.fail(new Error('DB error')) as any);
@@ -458,7 +416,6 @@ describe('GetReferenceDataUseCase', () => {
       .mockResolvedValue(Result.fail(new Error('DB error')) as any);
 
     const useCase = new GetReferenceDataUseCase(
-      userRepository,
       customerRepository,
       bankConnectionRepository,
       assessmentRepository,
@@ -476,19 +433,18 @@ describe('GetReferenceDataUseCase', () => {
     expect(data.nextStep).toBe('ACCOUNT_SETUP');
   });
 
-  // Edge case: Mandate fetched eagerly (in parallel) but ignored when assessment does not exist
-  it('ignores mandate when assessment does not exist', async () => {
-    (userRepository.findCustomerIdByUserId as jest.Mock).mockResolvedValue(Result.ok('customer-1'));
+  // Edge case: Mandate fetched only when assessment exists
+  it('does not fetch mandate when assessment does not exist', async () => {
+    (prisma.user.findUnique as jest.Mock).mockResolvedValue({ customerId: 'customer-1' });
     jest
       .spyOn(GetAccountSetupQuery.prototype, 'execute')
-      .mockResolvedValue(Result.ok({ status: 'COMPLETED' }) as any);
+      .mockResolvedValue(Result.ok({ assessment: { status: 'COMPLETED' }, mandate: null }) as any);
     jest
       .spyOn(GetBankConnectionQuery.prototype, 'execute')
       .mockResolvedValue(Result.ok({ status: 'CONNECTED' }) as any);
     jest.spyOn(GetAssessmentQuery.prototype, 'execute').mockResolvedValue(Result.ok(null) as any);
 
     const useCase = new GetReferenceDataUseCase(
-      userRepository,
       customerRepository,
       bankConnectionRepository,
       assessmentRepository,
@@ -496,18 +452,16 @@ describe('GetReferenceDataUseCase', () => {
       logger
     );
 
-    const result = await useCase.execute({ userId: 'user-1' });
+    await useCase.execute({ userId: 'user-1' });
 
-    expect(mandateRepository.findLatestByCustomerId).toHaveBeenCalled();
-    expect(result.getOrThrow().mandate).toBeNull();
+    expect(mandateRepository.findLatestByCustomerId).not.toHaveBeenCalled();
   });
 
   // Error: Unexpected exception
   it('handles unexpected exceptions', async () => {
-    (userRepository.findCustomerIdByUserId as jest.Mock).mockRejectedValue(new Error('Database connection lost'));
+    (prisma.user.findUnique as jest.Mock).mockRejectedValue(new Error('Database connection lost'));
 
     const useCase = new GetReferenceDataUseCase(
-      userRepository,
       customerRepository,
       bankConnectionRepository,
       assessmentRepository,
@@ -518,23 +472,22 @@ describe('GetReferenceDataUseCase', () => {
     const result = await useCase.execute({ userId: 'user-1' });
 
     expect(result.isFail).toBe(true);
-    expect(result.getError()?.message).toContain('Failed to get user customer ID');
+    expect(result.getError()?.message).toContain('Failed to get reference data');
     expect(logger.error).toHaveBeenCalled();
   });
 
   // Logging verification
   it('logs appropriate messages throughout journey', async () => {
-    (userRepository.findCustomerIdByUserId as jest.Mock).mockResolvedValue(Result.ok('customer-1'));
+    (prisma.user.findUnique as jest.Mock).mockResolvedValue({ customerId: 'customer-1' });
     jest
       .spyOn(GetAccountSetupQuery.prototype, 'execute')
-      .mockResolvedValue(Result.ok({ status: 'COMPLETED' }) as any);
+      .mockResolvedValue(Result.ok({ assessment: { status: 'COMPLETED' }, mandate: null }) as any);
     jest
       .spyOn(GetBankConnectionQuery.prototype, 'execute')
       .mockResolvedValue(Result.ok(null) as any);
     jest.spyOn(GetAssessmentQuery.prototype, 'execute').mockResolvedValue(Result.ok(null) as any);
 
     const useCase = new GetReferenceDataUseCase(
-      userRepository,
       customerRepository,
       bankConnectionRepository,
       assessmentRepository,
@@ -548,7 +501,7 @@ describe('GetReferenceDataUseCase', () => {
       'Starting reference data fetch',
       expect.objectContaining({ userId: 'user-1' })
     );
-    expect(logger.info).toHaveBeenCalledWith('Resolved user to customer', expect.any(Object));
+    expect(logger.info).toHaveBeenCalledWith('Resolved userId to customerId', expect.any(Object));
     expect(logger.info).toHaveBeenCalledWith('Determined next step', expect.any(Object));
   });
 });

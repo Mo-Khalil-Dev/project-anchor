@@ -1,8 +1,10 @@
-import type { Router, RequestHandler } from 'express';
+import type { RequestHandler, Router } from 'express';
 import { Router as ExpressRouter } from 'express';
 import type { ILogger } from '../../shared/logging';
 import { PrismaBankConnectionRepository } from '@/features/bankConnection/infrastructure/repositories/PrismaBankConnectionRepository';
 import { PrismaAssessmentRepository } from '@/features/assessment/infrastructure/repositories/prisma/PrismaAssessmentRepository';
+import { PrismaMandateRepository } from '@/features/payment/infrastructure/repositories/prisma/PrismaMandateRepository';
+import { PrismaUserRepository } from '@/features/customer/infrastructure/repositories/PrismaUserRepository';
 import { GetReferenceDataUseCase } from '../application/useCases/GetReferenceDataUseCase';
 import { asyncHandler } from '@/features/shared/middleware';
 import { ReferenceDataController } from '@/features/referenceData/infrastructure/controllers/ReferenceDataController';
@@ -17,15 +19,19 @@ export function createReferenceDataRouter(
 
   // ============ DEPENDENCY INJECTION ============
   // Create repositories
+  const userRepository = new PrismaUserRepository();
   const customerRepository = new PrismaCustomerRepository();
   const bankConnectionRepository = new PrismaBankConnectionRepository();
   const assessmentRepository = new PrismaAssessmentRepository(prisma, logger);
+  const mandateRepository = new PrismaMandateRepository();
 
   // Create use cases
   const getReferenceDataUseCase = new GetReferenceDataUseCase(
+    userRepository,
     customerRepository,
     bankConnectionRepository,
     assessmentRepository,
+    mandateRepository,
     logger
   );
 

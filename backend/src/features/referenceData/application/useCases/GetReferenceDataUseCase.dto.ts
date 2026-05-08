@@ -1,4 +1,5 @@
 import type { AssessmentData } from './GetAssessmentQuery.dto';
+import type { MandateData } from '@/features/payment/application/repositories/IMandateRepository';
 
 export type NextStep =
   | 'ACCOUNT_SETUP'
@@ -26,18 +27,11 @@ export interface BankConnectionData {
   connectedAt: string | null;
 }
 
-export interface MandateData {
-  id: string;
-  status: 'PENDING' | 'CREATED' | 'ACTIVE' | 'FAILED' | 'CANCELLED';
-  gocardlessId: string | null;
-  createdAt: string;
-}
-
 export interface ReferenceData {
   accountSetup: AccountSetupData | null;
   bankConnection: BankConnectionData | null;
   assessment: AssessmentData | null;
   mandate: MandateData | null;
-  paymentPlans: any[];
+  paymentPlans: AssessmentData['paymentPlans'];
   nextStep: NextStep;
 }

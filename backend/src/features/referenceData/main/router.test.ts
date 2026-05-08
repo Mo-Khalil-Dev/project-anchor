@@ -1,8 +1,18 @@
 import { createReferenceDataRouter } from './router';
 
-jest.mock('../../customer/repositories/PrismaCustomerRepository', () => ({
-  PrismaCustomerRepository: jest.fn().mockImplementation(() => ({})),
-}));
+jest.mock(
+  '@/features/customer/infrastructure/repositories/PrismaUserRepository',
+  () => ({
+    PrismaUserRepository: jest.fn().mockImplementation(() => ({})),
+  })
+);
+
+jest.mock(
+  '@/features/customer/infrastructure/repositories/PrismaCustomerRepository',
+  () => ({
+    PrismaCustomerRepository: jest.fn().mockImplementation(() => ({})),
+  })
+);
 
 jest.mock(
   '@/features/bankConnection/infrastructure/repositories/PrismaBankConnectionRepository',
@@ -15,6 +25,13 @@ jest.mock(
   '@/features/assessment/infrastructure/repositories/prisma/PrismaAssessmentRepository',
   () => ({
     PrismaAssessmentRepository: jest.fn().mockImplementation(() => ({})),
+  })
+);
+
+jest.mock(
+  '@/features/payment/infrastructure/repositories/prisma/PrismaMandateRepository',
+  () => ({
+    PrismaMandateRepository: jest.fn().mockImplementation(() => ({})),
   })
 );
 
