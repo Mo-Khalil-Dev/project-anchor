@@ -1,11 +1,16 @@
 import { PrismaClient } from '@prisma/client';
 import { Result } from '@/features/shared/result';
-import type { IBankReportRepository, BankReportData } from '../../../bankConnection/application/repositories/IBankReportRepository';
+import type {
+  IBankReportRepository,
+  BankReportData,
+} from '../../../bankConnection/application/repositories/IBankReportRepository';
 
 export class PrismaBankReportRepository implements IBankReportRepository {
   constructor(private prisma: PrismaClient) {}
 
-  async findByBankConnectionId(bankConnectionId: string): Promise<Result<BankReportData | null, Error>> {
+  async findByBankConnectionId(
+    bankConnectionId: string
+  ): Promise<Result<BankReportData | null, Error>> {
     try {
       const bankReport = await this.prisma.bankReports.findUnique({
         where: { bankConnectionId },
@@ -30,7 +35,10 @@ export class PrismaBankReportRepository implements IBankReportRepository {
     }
   }
 
-  async save(bankConnectionId: string, data: Omit<BankReportData, 'id' | 'createdAt'>): Promise<Result<BankReportData, Error>> {
+  async save(
+    bankConnectionId: string,
+    data: Omit<BankReportData, 'id' | 'createdAt'>
+  ): Promise<Result<BankReportData, Error>> {
     try {
       const bankReport = await this.prisma.bankReports.upsert({
         where: { bankConnectionId },

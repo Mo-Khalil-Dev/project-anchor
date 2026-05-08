@@ -3,9 +3,7 @@ import type { GetReferenceDataUseCase } from '../../application/useCases/GetRefe
 import { AuthenticatedRequest } from '@/features/shared/types/auth';
 
 export class ReferenceDataController {
-  constructor(
-    private getReferenceDataUseCase: GetReferenceDataUseCase
-  ) {}
+  constructor(private getReferenceDataUseCase: GetReferenceDataUseCase) {}
 
   async getReferenceData(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {

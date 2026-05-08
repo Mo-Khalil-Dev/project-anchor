@@ -6,7 +6,10 @@ import type { CollectCustomerDetailsUseCase } from '../CollectCustomerDetails/Co
 import type { CollectBankAccountUseCase } from '../CollectBankAccount/CollectBankAccountUseCase';
 import type { CreateBillingRequestFlowUseCase } from '../CreateBillingRequestFlow/CreateBillingRequestFlowUseCase';
 import { ICustomerRepository } from '@/features/customer/application/repository/ICustomerRepository';
-import type { InitiateDirectDebitSetupInput, InitiateDirectDebitSetupOutput } from './InitiateDirectDebitSetup.dto';
+import type {
+  InitiateDirectDebitSetupInput,
+  InitiateDirectDebitSetupOutput,
+} from './InitiateDirectDebitSetup.dto';
 
 /**
  * InitiateDirectDebitSetupUseCase

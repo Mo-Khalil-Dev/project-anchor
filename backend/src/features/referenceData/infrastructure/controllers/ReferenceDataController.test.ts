@@ -4,9 +4,7 @@ import { ReferenceDataController } from './ReferenceDataController';
 describe('ReferenceDataController', () => {
   const execute = jest.fn();
   const getReferenceDataUseCase = { execute } as any;
-  const controller = new ReferenceDataController(
-    getReferenceDataUseCase
-  );
+  const controller = new ReferenceDataController(getReferenceDataUseCase);
 
   const buildRes = () =>
     ({

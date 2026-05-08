@@ -1,7 +1,10 @@
 import type { GoCardlessClient } from 'gocardless-nodejs';
 import { Result } from '../../../../shared/result';
 import type { ILogger } from '../../../../shared/logging';
-import type { CreateInstalmentScheduleInput, CreateInstalmentScheduleOutput } from './CreateInstalmentSchedule.dto';
+import type {
+  CreateInstalmentScheduleInput,
+  CreateInstalmentScheduleOutput,
+} from './CreateInstalmentSchedule.dto';
 
 /**
  * CreateInstalmentScheduleUseCase

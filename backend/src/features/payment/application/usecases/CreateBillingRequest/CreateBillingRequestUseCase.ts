@@ -1,7 +1,10 @@
 import type { GoCardlessClient } from 'gocardless-nodejs';
 import { Result } from '../../../../shared/result';
 import type { ILogger } from '../../../../shared/logging';
-import type { CreateBillingRequestInput, CreateBillingRequestOutput } from './CreateBillingRequest.dto';
+import type {
+  CreateBillingRequestInput,
+  CreateBillingRequestOutput,
+} from './CreateBillingRequest.dto';
 
 /**
  * CreateBillingRequestUseCase

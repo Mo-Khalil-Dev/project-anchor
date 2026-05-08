@@ -19,9 +19,11 @@ export class AssessmentMapper {
     }
     try {
       const parsed = JSON.parse(jsonString);
-      return Array.isArray(parsed) ? parsed.map(p => PlanSpecification.reconstruct(p)) : null;
+      return Array.isArray(parsed) ? parsed.map((p) => PlanSpecification.reconstruct(p)) : null;
     } catch (e) {
-      this.logger.warn('Failed to parse payment plans', { error: e instanceof Error ? e.message : String(e) });
+      this.logger.warn('Failed to parse payment plans', {
+        error: e instanceof Error ? e.message : String(e),
+      });
       return null;
     }
   }
@@ -67,7 +69,7 @@ export class AssessmentMapper {
       incomeHistory: assessment.getIncomeHistory(),
       incomeSources: assessment.getIncomeSources(),
       factors: assessment.getFactors(),
-      paymentPlans: paymentPlans ? JSON.stringify(paymentPlans.map(p => p.toJSON())) : null,
+      paymentPlans: paymentPlans ? JSON.stringify(paymentPlans.map((p) => p.toJSON())) : null,
       selectedPlan: assessment.getSelectedPlan(),
       status: assessment.getStatus(),
       createdAt: assessment.getCreatedAt(),
@@ -104,7 +106,7 @@ export class AssessmentMapper {
         customerId
       ),
       factors: this.breakdownParser.parseAssessmentFactors(assessment.getFactors(), customerId),
-      paymentPlans: paymentPlans ? paymentPlans.map(p => p.toJSON()) : [],
+      paymentPlans: paymentPlans ? paymentPlans.map((p) => p.toJSON()) : [],
       createdAt: assessment.getCreatedAt().toISOString(),
     };
   }

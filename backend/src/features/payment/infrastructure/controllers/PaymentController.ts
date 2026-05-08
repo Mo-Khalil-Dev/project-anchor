@@ -3,7 +3,10 @@ import { parse as parseGCWebhook, InvalidSignatureError } from 'gocardless-nodej
 import type { ILogger } from '../../../shared/logging';
 import type { AuthenticatedRequest } from '@/features/shared/types/auth';
 import type { InitiateDirectDebitSetupUseCase } from '@/features/payment/application/usecases/InitiateDirectDebitSetup';
-import type { HandleWebhookEventUseCase, WebhookEvent } from '@/features/payment/application/usecases/HandleWebhookEvent';
+import type {
+  HandleWebhookEventUseCase,
+  WebhookEvent,
+} from '@/features/payment/application/usecases/HandleWebhookEvent';
 
 export class PaymentController {
   constructor(

@@ -241,7 +241,9 @@ export class Assessment extends AggregateRoot<string> {
         hardshipLevel: this.getHardshipLevel(),
         disposableIncome: this.calculateDisposableIncome(),
         billRatio: this.calculateBillRatio(),
-        paymentPlans: this.paymentPlans ? JSON.stringify(this.paymentPlans.map(p => p.toJSON())) : null,
+        paymentPlans: this.paymentPlans
+          ? JSON.stringify(this.paymentPlans.map((p) => p.toJSON()))
+          : null,
       })
     );
   }

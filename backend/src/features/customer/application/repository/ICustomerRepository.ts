@@ -1,6 +1,6 @@
 import type { Result } from '@/features/shared/result';
 
-import { Customer } from "@/features/customer/domain/entities/customer";
+import { Customer } from '@/features/customer/domain/entities/customer';
 
 export interface ICustomerRepository {
   create(email: string): Promise<Result<Customer, Error>>;

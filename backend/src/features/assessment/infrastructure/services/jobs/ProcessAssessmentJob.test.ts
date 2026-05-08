@@ -74,7 +74,8 @@ describe('ProcessAssessmentJob', () => {
     assessmentRepository.findByIdOrThrow.mockResolvedValue(assessment);
     bankReportRepository.findByBankConnectionIdOrThrow.mockResolvedValue({
       incomeJson: '{"salary":2500,"benefits":100,"pension":0,"other":0,"total":2600}',
-      expensesJson: '{"housing":1000,"food":400,"transport":200,"utilities":180,"other":120,"total":1900}',
+      expensesJson:
+        '{"housing":1000,"food":400,"transport":200,"utilities":180,"other":120,"total":1900}',
     });
     assessmentRepository.update.mockResolvedValue(Result.ok(assessment));
     jest.spyOn(TinkResponseParser, 'extractIncome').mockReturnValue(

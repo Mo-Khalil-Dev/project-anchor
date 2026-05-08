@@ -30,9 +30,7 @@ export function createReferenceDataRouter(
   );
 
   // Create controller
-  const controller = new ReferenceDataController(
-    getReferenceDataUseCase
-  );
+  const controller = new ReferenceDataController(getReferenceDataUseCase);
 
   // ============ ROUTES ============
   /**

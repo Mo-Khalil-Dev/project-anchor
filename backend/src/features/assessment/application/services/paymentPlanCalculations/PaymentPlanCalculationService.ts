@@ -22,7 +22,11 @@ export class PaymentPlanCalculationService {
    * @param monthlyBill - Current monthly bill amount
    * @returns Array of 3 PlanSpecification value objects
    */
-  calculatePlans(disposableIncome: number, arrears: number, monthlyBill?: number): PlanSpecification[] {
+  calculatePlans(
+    disposableIncome: number,
+    arrears: number,
+    monthlyBill?: number
+  ): PlanSpecification[] {
     if (disposableIncome <= 0 || arrears <= 0) {
       return [];
     }

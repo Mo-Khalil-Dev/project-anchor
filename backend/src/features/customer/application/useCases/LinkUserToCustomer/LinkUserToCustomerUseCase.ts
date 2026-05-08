@@ -22,7 +22,7 @@ export class LinkUserToCustomerUseCase {
   constructor(
     private customerRepository: ICustomerRepository,
     private logger: ILogger
-  ) { }
+  ) {}
 
   async execute(
     userId: string,
