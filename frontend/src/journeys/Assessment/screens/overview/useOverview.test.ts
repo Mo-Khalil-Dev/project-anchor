@@ -1,134 +1,154 @@
-import { renderHook, waitFor } from '@testing-library/react';
-import { Provider } from 'react-redux';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { createElement } from 'react';
-import { store } from '@/store';
-import { makeAssessment } from '@/test/fixtures';
-import { assessmentService } from '@/usecases/assessmentService';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { renderHook } from '@testing-library/react';
 import { useOverview } from './useOverview';
 
-vi.mock('@/usecases/assessmentService', () => ({
-  assessmentService: { get: vi.fn() },
-}));
-
-const mockGet = vi.mocked(assessmentService.get);
 const mockNavigate = vi.fn();
+const mockDispatch = vi.fn();
+const mockRefetch = vi.fn();
+
+let mockContextValue: any = {
+  data: null,
+  isLoading: false,
+  error: null,
+  refetch: mockRefetch,
+};
 
 vi.mock('react-router-dom', async (importOriginal) => {
   const actual = await importOriginal<typeof import('react-router-dom')>();
   return { ...actual, useNavigate: () => mockNavigate };
 });
 
-function wrapper({ children }: { children: React.ReactNode }) {
-  return createElement(
-    Provider,
-    { store },
-    createElement(
-      MemoryRouter,
-      { initialEntries: ['/assessment/assessment-1'] },
-      createElement(
-        Routes,
-        null,
-        createElement(Route, { path: '/assessment/:assessmentId', element: children })
-      )
-    )
-  );
-}
+vi.mock('@/store', () => ({
+  useAppDispatch: () => mockDispatch,
+}));
+
+vi.mock('@/store/slices/customerSlice', () => ({
+  setCurrentStep: (step: string) => ({ type: 'setCurrentStep', payload: step }),
+}));
+
+vi.mock('@/context/ReferenceDataContext', () => ({
+  useReferenceDataContext: () => mockContextValue,
+}));
 
 describe('useOverview', () => {
   beforeEach(() => {
-    vi.useFakeTimers({ shouldAdvanceTime: true });
-    mockGet.mockReset();
-    mockNavigate.mockReset();
+    vi.clearAllMocks();
+    mockContextValue = {
+      data: null,
+      isLoading: false,
+      error: null,
+      refetch: mockRefetch,
+    };
   });
 
-  afterEach(() => {
-    vi.useRealTimers();
-  });
-
-  it('starts in loading state', () => {
-    mockGet.mockResolvedValue(makeAssessment({ status: 'PENDING' }));
-    const { result } = renderHook(() => useOverview(), { wrapper });
-    expect(result.current.loading).toBe(true);
+  it('returns null assessment when no reference data', () => {
+    const { result } = renderHook(() => useOverview());
     expect(result.current.assessment).toBeNull();
   });
 
-  it('sets assessment after successful fetch', async () => {
-    mockGet.mockResolvedValue(makeAssessment({ status: 'COMPLETED' }));
-    const { result } = renderHook(() => useOverview(), { wrapper });
-    await waitFor(() => expect(result.current.assessment).not.toBeNull());
+  it('returns loading from context', () => {
+    mockContextValue.isLoading = true;
+    const { result } = renderHook(() => useOverview());
+    expect(result.current.loading).toBe(true);
+  });
+
+  it('returns error from context', () => {
+    mockContextValue.error = 'Network error';
+    const { result } = renderHook(() => useOverview());
+    expect(result.current.error).toBe('Network error');
+  });
+
+  it('maps assessment from reference data', () => {
+    mockContextValue.data = {
+      assessment: {
+        id: 'assessment-1',
+        status: 'COMPLETED',
+        monthlyIncome: 3000,
+        monthlyExpenses: 1800,
+        disposableIncome: 1200,
+        monthlyBill: 450,
+        billRatio: 37.5,
+        hardshipLevel: 'SEVERE',
+        createdAt: '2026-01-15T10:30:00Z',
+      },
+    };
+    const { result } = renderHook(() => useOverview());
     expect(result.current.assessment?.id).toBe('assessment-1');
+    expect(result.current.isCompleted).toBe(true);
   });
 
-  it('sets loading to false when status is COMPLETED', async () => {
-    mockGet.mockResolvedValue(makeAssessment({ status: 'COMPLETED' }));
-    const { result } = renderHook(() => useOverview(), { wrapper });
-    await waitFor(() => expect(result.current.loading).toBe(false));
-  });
-
-  it('sets loading to false when status is FAILED', async () => {
-    mockGet.mockResolvedValue(makeAssessment({ status: 'FAILED' }));
-    const { result } = renderHook(() => useOverview(), { wrapper });
-    await waitFor(() => expect(result.current.loading).toBe(false));
-  });
-
-  it('stops polling when COMPLETED status is received', async () => {
-    mockGet.mockResolvedValue(makeAssessment({ status: 'COMPLETED' }));
-    renderHook(() => useOverview(), { wrapper });
-    await waitFor(() => expect(mockGet).toHaveBeenCalledTimes(1));
-    vi.advanceTimersByTime(9000);
-    expect(mockGet).toHaveBeenCalledTimes(1);
-  });
-
-  it('continues polling while status is PENDING', async () => {
-    mockGet.mockResolvedValue(makeAssessment({ status: 'PENDING' }));
-    renderHook(() => useOverview(), { wrapper });
-    await waitFor(() => expect(mockGet).toHaveBeenCalledTimes(1));
-    await vi.advanceTimersByTimeAsync(6000);
-    expect(mockGet.mock.calls.length).toBeGreaterThan(1);
-  });
-
-  it('sets error and stops polling on API failure', async () => {
-    mockGet.mockRejectedValue(new Error('Network error'));
-    const { result } = renderHook(() => useOverview(), { wrapper });
-    await waitFor(() => expect(result.current.error).toBe('Network error'));
-    expect(result.current.loading).toBe(false);
-    const callCount = mockGet.mock.calls.length;
-    vi.advanceTimersByTime(9000);
-    expect(mockGet.mock.calls.length).toBe(callCount);
-  });
-
-  it('exposes correct derived flags for PENDING status', async () => {
-    mockGet.mockResolvedValue(makeAssessment({ status: 'PENDING' }));
-    const { result } = renderHook(() => useOverview(), { wrapper });
-    await waitFor(() => expect(result.current.assessment).not.toBeNull());
+  it('maps PENDING status correctly', () => {
+    mockContextValue.data = {
+      assessment: {
+        id: 'assessment-1',
+        status: 'PENDING',
+        monthlyIncome: 0,
+        monthlyExpenses: 0,
+        disposableIncome: 0,
+        monthlyBill: 0,
+        billRatio: 0,
+        hardshipLevel: 'NONE',
+        createdAt: '2026-01-15T10:30:00Z',
+      },
+    };
+    const { result } = renderHook(() => useOverview());
     expect(result.current.isPending).toBe(true);
-    expect(result.current.isFailed).toBe(false);
     expect(result.current.isCompleted).toBe(false);
   });
 
-  it('exposes correct derived flags for COMPLETED status', async () => {
-    mockGet.mockResolvedValue(makeAssessment({ status: 'COMPLETED' }));
-    const { result } = renderHook(() => useOverview(), { wrapper });
-    await waitFor(() => expect(result.current.assessment).not.toBeNull());
-    expect(result.current.isCompleted).toBe(true);
-    expect(result.current.isPending).toBe(false);
-    expect(result.current.isFailed).toBe(false);
+  it('maps FAILED status correctly', () => {
+    mockContextValue.data = {
+      assessment: {
+        id: 'assessment-1',
+        status: 'FAILED',
+        monthlyIncome: 0,
+        monthlyExpenses: 0,
+        disposableIncome: 0,
+        monthlyBill: 0,
+        billRatio: 0,
+        hardshipLevel: 'NONE',
+        createdAt: '2026-01-15T10:30:00Z',
+      },
+    };
+    const { result } = renderHook(() => useOverview());
+    expect(result.current.isFailed).toBe(true);
   });
 
-  it('formats assessmentDate from calculatedAt', async () => {
-    mockGet.mockResolvedValue(makeAssessment({ status: 'COMPLETED', calculatedAt: '2026-01-15T10:30:00Z' }));
-    const { result } = renderHook(() => useOverview(), { wrapper });
-    await waitFor(() => expect(result.current.assessmentDate).not.toBe(''));
+  it('formats assessmentDate', () => {
+    mockContextValue.data = {
+      assessment: {
+        id: 'assessment-1',
+        status: 'COMPLETED',
+        monthlyIncome: 3000,
+        monthlyExpenses: 1800,
+        disposableIncome: 1200,
+        monthlyBill: 450,
+        billRatio: 37.5,
+        hardshipLevel: 'SEVERE',
+        createdAt: '2026-01-15T10:30:00Z',
+      },
+    };
+    const { result } = renderHook(() => useOverview());
     expect(result.current.assessmentDate).toMatch(/15/);
     expect(result.current.assessmentDate).toMatch(/2026/);
   });
 
-  it('handleGoBack calls navigate(-1)', async () => {
-    mockGet.mockResolvedValue(makeAssessment({ status: 'COMPLETED' }));
-    const { result } = renderHook(() => useOverview(), { wrapper });
-    await waitFor(() => expect(result.current.assessment).not.toBeNull());
+  it('handleGoBack calls navigate(-1)', () => {
+    const { result } = renderHook(() => useOverview());
     result.current.handleGoBack();
     expect(mockNavigate).toHaveBeenCalledWith(-1);
+  });
+
+  it('handleViewBreakdown navigates to breakdown', () => {
+    const { result } = renderHook(() => useOverview());
+    result.current.handleViewBreakdown();
+    expect(mockNavigate).toHaveBeenCalledWith('/assessment/breakdown');
+  });
+
+  it('handleExplorePaymentPlans dispatches and navigates', () => {
+    const { result } = renderHook(() => useOverview());
+    result.current.handleExplorePaymentPlans();
+    expect(mockDispatch).toHaveBeenCalled();
+    expect(mockNavigate).toHaveBeenCalledWith('/payment-plans');
   });
 });

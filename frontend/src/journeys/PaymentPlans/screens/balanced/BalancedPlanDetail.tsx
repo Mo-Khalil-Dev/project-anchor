@@ -1,9 +1,7 @@
 import type { AssessmentDetailedDTO } from '@/types';
 import { CustomerLayout } from '@/components/layouts/CustomerLayout';
 import { useBalancedPlanDetail } from './useBalancedPlanDetail';
-import { PlanDetailHeader } from '../components/PlanDetailHeader';
-import { PlanDetailsContent } from '../components/PlanDetailsContent';
-import { PlanActionButtons } from '../components/PlanActionButtons';
+import { PlanDetailHeader, PlanDetailsContent, PlanActionButtons } from '../components';
 
 export function BalancedPlanDetail({ assessment }: { assessment: AssessmentDetailedDTO }) {
   const plan = assessment.paymentPlans.find(p => p.type === 'Balanced')!;

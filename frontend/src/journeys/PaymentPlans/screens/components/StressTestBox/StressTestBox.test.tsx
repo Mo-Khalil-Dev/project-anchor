@@ -6,28 +6,22 @@ describe('StressTestBox', () => {
   it('renders stress test text', () => {
     const testText = 'If you lost 10% income, this plan still works';
 
-    render(
-      <StressTestBox text={testText} color="conservative" />
-    );
+    render(<StressTestBox color="conservative">{testText}</StressTestBox>);
 
     expect(screen.getByText(testText)).toBeInTheDocument();
   });
 
   it('applies correct color class', () => {
-    const { container } = render(
-      <StressTestBox text="Test scenario" color="balanced" />
-    );
+    const { container } = render(<StressTestBox color="balanced">Test scenario</StressTestBox>);
 
-    const box = container.querySelector('[class*="balanced"]');
+    const box = container.querySelector('[class*="stressAmber"]');
     expect(box).toBeInTheDocument();
   });
 
   it('renders in aggressive color', () => {
-    const { container } = render(
-      <StressTestBox text="High risk scenario" color="aggressive" />
-    );
+    const { container } = render(<StressTestBox color="aggressive">High risk scenario</StressTestBox>);
 
-    const box = container.querySelector('[class*="aggressive"]');
+    const box = container.querySelector('[class*="stressRed"]');
     expect(box).toBeInTheDocument();
   });
 });

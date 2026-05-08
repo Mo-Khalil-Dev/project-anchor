@@ -44,7 +44,7 @@ describe('ConfirmationGate', () => {
       />
     );
 
-    expect(screen.getByText(/understood/i)).toBeInTheDocument();
+    expect(screen.getByText(/understand the risk/i)).toBeInTheDocument();
   });
 
   it('disables further changes when confirmed', () => {

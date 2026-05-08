@@ -3,16 +3,19 @@ import { makeAssessment } from '@/test/fixtures';
 import { AssessmentOverview } from '.';
 
 vi.mock('./useOverview');
+vi.mock('@/hooks/useJourneyGuard', () => ({
+  useJourneyGuard: () => ({ status: 'allowed' }),
+}));
 vi.mock('@/components/layouts/CustomerLayout', () => ({
   CustomerLayout: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
-vi.mock('./components/overviewLoadingState/OverviewLoadingState', () => ({
+vi.mock('./components/overviewLoadingState', () => ({
   OverviewLoadingState: () => <div>loading-state</div>,
 }));
-vi.mock('./components/overviewErrorState/OverviewErrorState', () => ({
+vi.mock('./components/overviewErrorState', () => ({
   OverviewErrorState: ({ error }: { error: string }) => <div>error: {error}</div>,
 }));
-vi.mock('./components/assessmentContent/AssessmentContent', () => ({
+vi.mock('./components/assessmentContent', () => ({
   AssessmentContent: () => <div>assessment-content</div>,
 }));
 
@@ -28,6 +31,7 @@ const baseHookReturn = {
   isCompleted: false,
   assessmentDate: '',
   handleExplorePaymentPlans: vi.fn(),
+  handleViewBreakdown: vi.fn(),
   handleGoBack: vi.fn(),
 };
 

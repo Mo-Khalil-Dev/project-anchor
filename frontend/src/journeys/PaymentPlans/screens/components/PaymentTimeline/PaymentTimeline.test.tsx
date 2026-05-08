@@ -3,14 +3,8 @@ import { render, screen } from '@testing-library/react';
 import { PaymentTimeline } from '.';
 
 describe('PaymentTimeline', () => {
-  const mockPayments = [
-    { month: 1, amount: 150, date: 'Jun 2026' },
-    { month: 2, amount: 150, date: 'Jul 2026' },
-    { month: 3, amount: 150, date: 'Aug 2026' },
-  ];
-
   it('renders payment months', () => {
-    render(<PaymentTimeline payments={mockPayments} />);
+    render(<PaymentTimeline monthlyAmount={150} duration={3} firstDate="Jun 2026" finalDate="Aug 2026" />);
 
     expect(screen.getByText('1')).toBeInTheDocument();
     expect(screen.getByText('2')).toBeInTheDocument();
@@ -18,16 +12,16 @@ describe('PaymentTimeline', () => {
   });
 
   it('displays payment amounts', () => {
-    render(<PaymentTimeline payments={mockPayments} />);
+    render(<PaymentTimeline monthlyAmount={150} duration={3} firstDate="Jun 2026" finalDate="Aug 2026" />);
 
-    expect(screen.getByText('£150')).toBeInTheDocument();
+    const amounts = screen.getAllByText('£150');
+    expect(amounts.length).toBeGreaterThan(0);
   });
 
-  it('shows all payment dates', () => {
-    render(<PaymentTimeline payments={mockPayments} />);
+  it('shows first and final payment dates', () => {
+    render(<PaymentTimeline monthlyAmount={150} duration={3} firstDate="Jun 2026" finalDate="Aug 2026" />);
 
-    expect(screen.getByText('Jun 2026')).toBeInTheDocument();
-    expect(screen.getByText('Jul 2026')).toBeInTheDocument();
-    expect(screen.getByText('Aug 2026')).toBeInTheDocument();
+    expect(screen.getByText(/Jun 2026/)).toBeInTheDocument();
+    expect(screen.getByText(/Aug 2026/)).toBeInTheDocument();
   });
 });

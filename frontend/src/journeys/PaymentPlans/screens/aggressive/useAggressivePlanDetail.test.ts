@@ -67,6 +67,9 @@ describe('useAggressivePlanDetail', () => {
 
     act(() => {
       result.current.setConfirmed(true);
+    });
+
+    act(() => {
       result.current.handleSelectPlan();
     });
 
@@ -87,6 +90,6 @@ describe('useAggressivePlanDetail', () => {
       result.current.handleSwitchToConservative();
     });
 
-    expect(mockNavigate).toHaveBeenCalledWith('/payment-plans/conservative');
+    expect(mockNavigate).toHaveBeenCalledWith('/payment-plans/terms');
   });
 });

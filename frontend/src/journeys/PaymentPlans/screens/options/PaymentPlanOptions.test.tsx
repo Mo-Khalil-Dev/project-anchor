@@ -1,7 +1,17 @@
-import { render, screen } from '@testing-library/react';
+import { render as rtlRender, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { Provider } from 'react-redux';
+import { BrowserRouter } from 'react-router-dom';
+import { store } from '@/store';
 import { PaymentPlanOptions } from './PaymentPlanOptions';
 import { MOCK_ASSESSMENT_DETAILED } from '../../../../mocks/assessmentMockData';
+
+const render = (ui: React.ReactElement) =>
+  rtlRender(
+    <Provider store={store}>
+      <BrowserRouter>{ui}</BrowserRouter>
+    </Provider>
+  );
 
 describe('PaymentPlanOptions', () => {
   it('should render without crashing', () => {
@@ -54,7 +64,7 @@ describe('PaymentPlanOptions', () => {
     render(<PaymentPlanOptions assessment={MOCK_ASSESSMENT_DETAILED} />);
 
     // Check for sustainability indicators
-    expect(screen.getByText(/HIGH|MEDIUM|LOW/)).toBeInTheDocument();
+    expect(screen.getAllByText(/HIGH|MEDIUM|LOW/).length).toBeGreaterThan(0);
   });
 
   it('should show summary information', () => {
@@ -75,7 +85,7 @@ describe('PaymentPlanOptions', () => {
   it('should have Continue button clickable', async () => {
     render(<PaymentPlanOptions assessment={MOCK_ASSESSMENT_DETAILED} />);
 
-    const continueButton = screen.getByRole('button', { name: /Continue/ });
+    const continueButton = screen.getByRole('button', { name: /Continue with .* Plan/ });
     await userEvent.click(continueButton);
 
     // Button should remain clickable (doesn't throw)

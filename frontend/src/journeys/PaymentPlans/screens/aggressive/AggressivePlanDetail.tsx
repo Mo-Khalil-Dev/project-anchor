@@ -2,10 +2,7 @@ import type { AssessmentDetailedDTO } from '@/types';
 import { CustomerLayout } from '@/components/layouts/CustomerLayout';
 import { Button } from '@/components/core';
 import { useAggressivePlanDetail } from './useAggressivePlanDetail';
-import { PlanDetailHeader } from '../components/PlanDetailHeader';
-import { PlanDetailsContent } from '../components/PlanDetailsContent';
-import { WarningBanner } from '../components/WarningBanner';
-import { ConfirmationGate } from '../components/ConfirmationGate';
+import { PlanDetailHeader, PlanDetailsContent, WarningBanner, ConfirmationGate } from '../components';
 import styles from './AggressivePlanDetail.module.css';
 
 export function AggressivePlanDetail({ assessment }: { assessment: AssessmentDetailedDTO }) {

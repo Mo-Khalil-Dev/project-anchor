@@ -1,1 +1,1 @@
-export { AssessmentOverview as Overview } from './Overview';
+export { AssessmentOverview, AssessmentOverview as Overview } from './Overview';

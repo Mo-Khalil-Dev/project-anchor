@@ -57,6 +57,6 @@ describe('useBalancedPlanDetail', () => {
       result.current.handleBack();
     });
 
-    expect(mockNavigate).toHaveBeenCalledWith('/payment-plan');
+    expect(mockNavigate).toHaveBeenCalledWith('/payment-plans');
   });
 });

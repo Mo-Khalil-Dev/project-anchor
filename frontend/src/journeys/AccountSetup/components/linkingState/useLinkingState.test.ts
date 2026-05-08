@@ -1,14 +1,32 @@
-import { act, renderHook } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { useLinkingState } from './useLinkingState';
 
+const mockLinkCustomer = vi.fn();
+const mockRefetch = vi.fn();
+
+vi.mock('@/hooks/useCustomerSetup', () => ({
+  useCustomerSetup: () => ({
+    loading: false,
+    linkCustomer: mockLinkCustomer,
+  }),
+}));
+
+vi.mock('@/context/ReferenceDataContext', () => ({
+  useReferenceDataContext: () => ({
+    refetch: mockRefetch,
+  }),
+}));
+
 describe('useLinkingState', () => {
-  beforeEach(() => vi.useFakeTimers());
-  afterEach(() => vi.useRealTimers());
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
   function setup() {
     const onSuccess = vi.fn();
     const onError = vi.fn();
-    const { result } = renderHook(() => useLinkingState({ onSuccess, onError, submitDelayMs: 100 }));
+    const { result } = renderHook(() => useLinkingState({ onSuccess, onError }));
     return { onSuccess, onError, result };
   }
 
@@ -27,30 +45,46 @@ describe('useLinkingState', () => {
     expect(result.current.utilityType).toBe('water');
   });
 
-  it('routes a non-ERR account ref to onSuccess', () => {
+  it('routes successful link to onSuccess', async () => {
+    mockLinkCustomer.mockResolvedValue({ data: { id: 'customer-1' }, error: null });
     const { result, onSuccess, onError } = setup();
+
     act(() => result.current.setUtilityType('gas'));
-    act(() => result.current.submitDetails({ postcode: 'SW1A 1AA', accountRef: '12345' }));
-    expect(result.current.loading).toBe(true);
-    act(() => { vi.advanceTimersByTime(100); });
-    expect(onSuccess).toHaveBeenCalledWith({ utilityType: 'gas', postcode: 'SW1A 1AA', accountRef: '12345' });
+    await act(async () => {
+      await result.current.submitDetails({ postcode: 'SW1A 1AA', accountRef: '12345' });
+    });
+
+    await waitFor(() => {
+      expect(onSuccess).toHaveBeenCalledWith({ utilityType: 'gas', postcode: 'SW1A 1AA', accountRef: '12345' });
+    });
     expect(onError).not.toHaveBeenCalled();
-    expect(result.current.loading).toBe(false);
   });
 
-  it('routes an ERR-prefixed account ref to onError', () => {
+  it('routes failed link to onError', async () => {
+    mockLinkCustomer.mockResolvedValue({ data: null, error: 'Not found' });
     const { result, onSuccess, onError } = setup();
+
     act(() => result.current.setUtilityType('electricity'));
-    act(() => result.current.submitDetails({ postcode: 'SW1A 1AA', accountRef: 'ERR123' }));
-    act(() => { vi.advanceTimersByTime(100); });
-    expect(onError).toHaveBeenCalledWith({ utilityType: 'electricity', postcode: 'SW1A 1AA', accountRef: 'ERR123' });
+    await act(async () => {
+      await result.current.submitDetails({ postcode: 'SW1A 1AA', accountRef: 'ERR123' });
+    });
+
+    expect(onError).toHaveBeenCalledWith(expect.objectContaining({
+      utilityType: 'electricity',
+      postcode: 'SW1A 1AA',
+      accountRef: 'ERR123',
+    }));
     expect(onSuccess).not.toHaveBeenCalled();
   });
 
-  it('refuses to submit if no utility type is selected', () => {
+  it('refuses to submit if no utility type is selected', async () => {
     const { result, onSuccess, onError } = setup();
-    act(() => result.current.submitDetails({ postcode: 'SW1A 1AA', accountRef: '12345' }));
-    act(() => { vi.advanceTimersByTime(100); });
+
+    await act(async () => {
+      await result.current.submitDetails({ postcode: 'SW1A 1AA', accountRef: '12345' });
+    });
+
+    expect(mockLinkCustomer).not.toHaveBeenCalled();
     expect(onSuccess).not.toHaveBeenCalled();
     expect(onError).not.toHaveBeenCalled();
   });
