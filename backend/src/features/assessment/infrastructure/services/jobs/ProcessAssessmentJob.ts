@@ -1,20 +1,20 @@
-import { PrismaClient } from '@prisma/client';
 import { Result } from '@/features/shared/result';
 import { TinkResponseParser } from '@/features/bankConnection/infrastructure/services/Tink/TinkResponseParser';
 import type { IAssessmentRepository } from '@/features/assessment/domain/entities';
-import { Assessment, PlanSpecification } from '@/features/assessment/domain/entities';
+import { Assessment } from '@/features/assessment/domain/entities';
 import type { ILogger } from '@/features/shared/logging';
 import { PaymentPlanCalculationService } from '@/features/assessment/application/services/paymentPlanCalculations/PaymentPlanCalculationService';
 import type { IBackgroundJob } from '@/core/application/services/IBackgroundJob';
 import { CompleteAssessmentUseCase } from '@/features/assessment/application/useCases/CompleteAssessmentUseCase';
 import { FailAssessmentUseCase } from '@/features/assessment/application/useCases/FailAssessmentUseCase';
+import type { IBankReportRepository } from '@/features/bankConnection/application/repositories/IBankReportRepository';
 
 export class ProcessAssessmentJob implements IBackgroundJob<string> {
   private paymentPlanService = new PaymentPlanCalculationService();
 
   constructor(
-    private prisma: PrismaClient,
     private assessmentRepository: IAssessmentRepository,
+    private bankReportRepository: IBankReportRepository,
     private logger: ILogger,
     private completeAssessmentUseCase: CompleteAssessmentUseCase,
     private failAssessmentUseCase: FailAssessmentUseCase
@@ -41,10 +41,17 @@ export class ProcessAssessmentJob implements IBackgroundJob<string> {
         return Result.fail(new Error(reason));
       }
 
-      const bankReport = await this.prisma.bankReports.findUnique({
-        where: { bankConnectionId: assessment.getBankConnectionId()! },
-      });
+      const bankReportResult = await this.bankReportRepository.findByBankConnectionId(
+        assessment.getBankConnectionId()!
+      );
 
+      if (bankReportResult.isFail) {
+        const reason = 'Failed to fetch bank report';
+        await this.markAssessmentFailed(assessmentId, reason);
+        return Result.fail(bankReportResult.getError() || new Error(reason));
+      }
+
+      const bankReport = bankReportResult.getOrThrow();
       if (!bankReport) {
         const reason = 'Bank report not found';
         await this.markAssessmentFailed(assessmentId, reason);
@@ -84,21 +91,10 @@ export class ProcessAssessmentJob implements IBackgroundJob<string> {
       const arrears = assessment.getArrears() ?? 0;
 
       // Calculate payment plans with bill consideration
-      const calculatedPlans = this.paymentPlanService.calculatePlans(
+      const paymentPlans = this.paymentPlanService.calculatePlans(
         disposableIncome,
         arrears,
         assessment.getMonthlyBill()
-      );
-
-      // Convert to value objects
-      const paymentPlans = calculatedPlans.map(p =>
-        PlanSpecification.reconstruct({
-          type: p.type,
-          monthlyAmount: p.monthlyAmount,
-          duration: p.duration,
-          totalRepayment: p.totalRepayment,
-          sustainability: p.sustainability,
-        })
       );
 
       // Build breakdown JSON fields for the Reference Data endpoint

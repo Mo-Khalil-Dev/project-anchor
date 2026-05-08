@@ -9,6 +9,7 @@ import { FinalizeBankConnectionUseCase } from '../application/useCases/FinalizeB
 import { TinkApiClient } from '@/features/bankConnection/infrastructure/services/Tink/TinkApiClient';
 import { TinkFinancialDataProvider } from '@/features/bankConnection/infrastructure/services/Tink/TinkFinancialDataProvider';
 import { PrismaBankConnectionRepository } from '@/features/bankConnection/infrastructure/repositories/PrismaBankConnectionRepository';
+import { PrismaBankReportRepository } from '@/features/bankConnection/infrastructure/repositories/PrismaBankReportRepository';
 import { PrismaAssessmentRepository } from '@/features/assessment/infrastructure/repositories/prisma/PrismaAssessmentRepository';
 import { AssessmentReadyLocalDatabaseHandler } from '@/features/assessment/infrastructure/handlers/AssessmentReadyLocalDatabaseHandler';
 import { AssessmentReadySnsEventHandler } from '@/features/assessment/infrastructure/handlers/AssessmentReadySnsEventHandler';
@@ -32,13 +33,14 @@ export function createBankConnectionRouter(
   const tinkService = new TinkApiClient(config, logger);
   const bankDataProvider = new TinkFinancialDataProvider(tinkService, logger);
   const bankConnectionRepository = new PrismaBankConnectionRepository();
+  const bankReportRepository = new PrismaBankReportRepository(prisma);
   const customerRepository = new PrismaCustomerRepository();
   const assessmentRepository = new PrismaAssessmentRepository(prisma, logger);
   const completeAssessmentUseCase = new CompleteAssessmentUseCase(assessmentRepository, logger);
   const failAssessmentUseCase = new FailAssessmentUseCase(assessmentRepository, logger);
   const processJobService = new ProcessAssessmentJob(
-    prisma,
     assessmentRepository,
+    bankReportRepository,
     logger,
     completeAssessmentUseCase,
     failAssessmentUseCase

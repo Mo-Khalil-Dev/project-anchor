@@ -1,8 +1,9 @@
+import { PlanSpecification } from '@/features/assessment/domain/entities';
 import {
   SUSTAINABILITY_SCORE,
   type SustainabilityScore,
 } from '@/features/assessment/domain/entities/sustainability-score';
-import { PLAN_TYPE, type PlanType } from '@/features/assessment/domain/entities/plan-type';
+import { PLAN_TYPE } from '@/features/assessment/domain/entities/plan-type';
 
 /**
  * PaymentPlanCalculationService
@@ -10,17 +11,8 @@ import { PLAN_TYPE, type PlanType } from '@/features/assessment/domain/entities/
  * Calculates 3 payment plan options based on disposable income.
  * Uses Formula 5: Conservative (14%), Balanced (18%), Aggressive (20%)
  *
- * Plans include: type, monthlyAmount, duration, totalRepayment, sustainability
+ * Returns domain value objects (PlanSpecification) ready to persist.
  */
-
-export interface PaymentPlan {
-  type: PlanType;
-  monthlyAmount: number;
-  duration: number; // months
-  totalRepayment: number;
-  sustainability: SustainabilityScore;
-}
-
 export class PaymentPlanCalculationService {
   /**
    * Calculate 3 payment plans based on disposable income, arrears, and monthly bill
@@ -28,9 +20,9 @@ export class PaymentPlanCalculationService {
    * @param disposableIncome - Monthly disposable income (income - expenses including bill)
    * @param arrears - Outstanding debt to be repaid
    * @param monthlyBill - Current monthly bill amount
-   * @returns Array of 3 payment plans
+   * @returns Array of 3 PlanSpecification value objects
    */
-  calculatePlans(disposableIncome: number, arrears: number, monthlyBill?: number): PaymentPlan[] {
+  calculatePlans(disposableIncome: number, arrears: number, monthlyBill?: number): PlanSpecification[] {
     if (disposableIncome <= 0 || arrears <= 0) {
       return [];
     }
@@ -72,27 +64,27 @@ export class PaymentPlanCalculationService {
     };
 
     return [
-      {
+      PlanSpecification.create({
         type: PLAN_TYPE.CONSERVATIVE,
         monthlyAmount: conservativeAmount,
         duration: conservativeDuration,
         totalRepayment: arrears,
         sustainability: getConservativeSustainability(),
-      },
-      {
+      }),
+      PlanSpecification.create({
         type: PLAN_TYPE.BALANCED,
         monthlyAmount: balancedAmount,
         duration: balancedDuration,
         totalRepayment: arrears,
         sustainability: getBalancedSustainability(),
-      },
-      {
+      }),
+      PlanSpecification.create({
         type: PLAN_TYPE.AGGRESSIVE,
         monthlyAmount: aggressiveAmount,
         duration: aggressiveDuration,
         totalRepayment: arrears,
         sustainability: getAggressiveSustainability(),
-      },
+      }),
     ];
   }
 }
