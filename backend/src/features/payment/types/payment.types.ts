@@ -1,16 +1,8 @@
 import type { PlanType } from '@/features/assessment/domain/entities';
-
 export type { PlanType };
 
-export interface SelectPlanInput {
-  userId: string;
-  planType: PlanType;
-}
-
-export interface SelectPlanOutput {
-  assessmentId: string;
-  selectedPlan: PlanType;
-}
+// Re-export from assessment for backward compatibility
+export type { SelectPlanInput, SelectPlanOutput } from '@/features/assessment/application/dtos/SelectPlanUseCase.dto';
 
 export interface InitiateDirectDebitInput {
   userId: string;
