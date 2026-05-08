@@ -1,6 +1,7 @@
 import type { Assessment as PrismaAssessment } from '@prisma/client';
 import { Assessment } from '@/features/assessment/domain/entities/assessment.entity';
 import type { AssessmentProps } from '@/features/assessment/domain/entities/assessment-props';
+import { PlanSpecification } from '@/features/assessment/domain/entities/plan-specification.value-object';
 import type { AssessmentData } from '../../../referenceData/application/useCases/GetAssessmentQuery.dto';
 import { AssessmentBreakdownParser } from '@/features/assessment/application/services/AssessmentBreakdownParser';
 import type { ILogger } from '../../../shared/logging';
@@ -8,8 +9,21 @@ import type { ILogger } from '../../../shared/logging';
 export class AssessmentMapper {
   private breakdownParser: AssessmentBreakdownParser;
 
-  constructor(logger: ILogger) {
+  constructor(private logger: ILogger) {
     this.breakdownParser = new AssessmentBreakdownParser(logger);
+  }
+
+  private parsePaymentPlans(jsonString: string | null): PlanSpecification[] | null {
+    if (!jsonString) {
+      return null;
+    }
+    try {
+      const parsed = JSON.parse(jsonString);
+      return Array.isArray(parsed) ? parsed.map(p => PlanSpecification.reconstruct(p)) : null;
+    } catch (e) {
+      this.logger.warn('Failed to parse payment plans', { error: e instanceof Error ? e.message : String(e) });
+      return null;
+    }
   }
 
   toDomain(record: PrismaAssessment): Assessment {
@@ -27,7 +41,7 @@ export class AssessmentMapper {
       incomeHistory: record.incomeHistory ?? undefined,
       incomeSources: record.incomeSources ?? undefined,
       factors: record.factors ?? undefined,
-      paymentPlans: record.paymentPlans ?? undefined,
+      paymentPlans: this.parsePaymentPlans(record.paymentPlans),
       selectedPlan: (record.selectedPlan as any) ?? null,
       status: record.status as any,
       createdAt: record.createdAt,
@@ -38,6 +52,7 @@ export class AssessmentMapper {
   }
 
   toPersistence(assessment: Assessment): Record<string, unknown> {
+    const paymentPlans = assessment.getPaymentPlans();
     return {
       id: assessment.getId(),
       customerId: assessment.getCustomerId(),
@@ -52,7 +67,7 @@ export class AssessmentMapper {
       incomeHistory: assessment.getIncomeHistory(),
       incomeSources: assessment.getIncomeSources(),
       factors: assessment.getFactors(),
-      paymentPlans: assessment.getPaymentPlans(),
+      paymentPlans: paymentPlans ? JSON.stringify(paymentPlans.map(p => p.toJSON())) : null,
       selectedPlan: assessment.getSelectedPlan(),
       status: assessment.getStatus(),
       createdAt: assessment.getCreatedAt(),
@@ -61,6 +76,7 @@ export class AssessmentMapper {
   }
 
   toDTO(assessment: Assessment, customerId: string): AssessmentData {
+    const paymentPlans = assessment.getPaymentPlans();
     return {
       id: assessment.getId(),
       status:
@@ -88,10 +104,7 @@ export class AssessmentMapper {
         customerId
       ),
       factors: this.breakdownParser.parseAssessmentFactors(assessment.getFactors(), customerId),
-      paymentPlans: this.breakdownParser.parsePaymentPlans(
-        assessment.getPaymentPlans(),
-        customerId
-      ),
+      paymentPlans: paymentPlans ? paymentPlans.map(p => p.toJSON()) : [],
       createdAt: assessment.getCreatedAt().toISOString(),
     };
   }

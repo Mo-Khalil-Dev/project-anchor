@@ -21,6 +21,7 @@ import {
 } from '../events';
 import { InvalidBillingInfoError } from '@/features/auth/domain/errors/InvalidBillingInfoError';
 import { PlanType } from '@/features/assessment/domain/entities/plan-type';
+import { PlanSpecification } from '@/features/assessment/domain/entities/plan-specification.value-object';
 
 export class Assessment extends AggregateRoot<string> {
   private readonly customerId: string;
@@ -35,7 +36,7 @@ export class Assessment extends AggregateRoot<string> {
   private incomeHistory: string | null;
   private incomeSources: string | null;
   private factors: string | null;
-  private paymentPlans: string | null;
+  private paymentPlans: PlanSpecification[] | null;
   private selectedPlan: PlanType | null;
   private updatedAt: Date;
   private status: AssessmentStatus;
@@ -147,7 +148,7 @@ export class Assessment extends AggregateRoot<string> {
     return this.factors;
   }
 
-  getPaymentPlans(): string | null {
+  getPaymentPlans(): PlanSpecification[] | null {
     return this.paymentPlans;
   }
 
@@ -240,7 +241,7 @@ export class Assessment extends AggregateRoot<string> {
         hardshipLevel: this.getHardshipLevel(),
         disposableIncome: this.calculateDisposableIncome(),
         billRatio: this.calculateBillRatio(),
-        paymentPlans: this.paymentPlans,
+        paymentPlans: this.paymentPlans ? JSON.stringify(this.paymentPlans.map(p => p.toJSON())) : null,
       })
     );
   }
@@ -293,7 +294,6 @@ export class Assessment extends AggregateRoot<string> {
       incomeHistory?: string | null;
       incomeSources?: string | null;
       factors?: string | null;
-      paymentPlans?: string | null;
     }
   ): void {
     this.monthlyIncome = income;
@@ -304,7 +304,11 @@ export class Assessment extends AggregateRoot<string> {
     this.incomeHistory = breakdown.incomeHistory ?? null;
     this.incomeSources = breakdown.incomeSources ?? null;
     this.factors = breakdown.factors ?? null;
-    this.paymentPlans = breakdown.paymentPlans ?? null;
+    this.updatedAt = new Date();
+  }
+
+  recordPaymentPlans(plans: PlanSpecification[] | null): void {
+    this.paymentPlans = plans;
     this.updatedAt = new Date();
   }
 

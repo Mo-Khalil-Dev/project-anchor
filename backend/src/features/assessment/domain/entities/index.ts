@@ -1,4 +1,5 @@
 export { Assessment } from './assessment.entity';
+export { PlanSpecification } from './plan-specification.value-object';
 export type { AssessmentProps } from './assessment-props';
 export type { AssessmentStatus } from './assessment-status';
 export type { HardshipLevel } from './hardship-level';

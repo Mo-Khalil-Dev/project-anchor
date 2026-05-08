@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { Result } from '@/features/shared/result';
 import { TinkResponseParser } from '@/features/bankConnection/infrastructure/services/Tink/TinkResponseParser';
 import type { IAssessmentRepository } from '@/features/assessment/domain/entities';
-import { Assessment } from '@/features/assessment/domain/entities';
+import { Assessment, PlanSpecification } from '@/features/assessment/domain/entities';
 import type { ILogger } from '@/features/shared/logging';
 import { PaymentPlanCalculationService } from '@/features/assessment/application/services/paymentPlanCalculations/PaymentPlanCalculationService';
 import type { IBackgroundJob } from '@/core/application/services/IBackgroundJob';
@@ -84,10 +84,21 @@ export class ProcessAssessmentJob implements IBackgroundJob<string> {
       const arrears = assessment.getArrears() ?? 0;
 
       // Calculate payment plans with bill consideration
-      const paymentPlans = this.paymentPlanService.calculatePlans(
+      const calculatedPlans = this.paymentPlanService.calculatePlans(
         disposableIncome,
         arrears,
         assessment.getMonthlyBill()
+      );
+
+      // Convert to value objects
+      const paymentPlans = calculatedPlans.map(p =>
+        PlanSpecification.reconstruct({
+          type: p.type,
+          monthlyAmount: p.monthlyAmount,
+          duration: p.duration,
+          totalRepayment: p.totalRepayment,
+          sustainability: p.sustainability,
+        })
       );
 
       // Build breakdown JSON fields for the Reference Data endpoint
@@ -121,7 +132,7 @@ export class ProcessAssessmentJob implements IBackgroundJob<string> {
         incomeHistory: assessment.getIncomeHistory(),
         incomeSources: JSON.stringify(incomeSources),
         factors: assessment.getFactors(),
-        paymentPlans: JSON.stringify(paymentPlans),
+        paymentPlans,
         selectedPlan: assessment.getSelectedPlan(),
         status: assessment.getStatus(),
         createdAt: assessment.getCreatedAt(),

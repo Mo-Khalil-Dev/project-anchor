@@ -1,5 +1,6 @@
 import { AssessmentStatus } from '@/features/assessment/domain/entities/assessment-status';
 import { PlanType } from '@/features/assessment/domain/entities/plan-type';
+import { PlanSpecification } from '@/features/assessment/domain/entities/plan-specification.value-object';
 
 export interface AssessmentProps {
   id: string;
@@ -15,7 +16,7 @@ export interface AssessmentProps {
   incomeHistory?: string | null;
   incomeSources?: string | null;
   factors?: string | null;
-  paymentPlans?: string | null;
+  paymentPlans?: PlanSpecification[] | null;
   selectedPlan: PlanType | null;
   status: AssessmentStatus;
   createdAt: Date;

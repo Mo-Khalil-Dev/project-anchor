@@ -105,19 +105,12 @@ export class ProcessMandateActiveUseCase {
       return Result.fail(new Error('Assessment has no selectedPlan — was T&C accepted?'));
     }
 
-    const paymentPlansJson = assessment.getPaymentPlans();
-    if (!paymentPlansJson) {
+    const paymentPlans = assessment.getPaymentPlans();
+    if (!paymentPlans || paymentPlans.length === 0) {
       return Result.fail(new Error('Assessment has no payment plans'));
     }
 
-    let plans: PaymentPlanRecord[];
-    try {
-      plans = JSON.parse(paymentPlansJson);
-    } catch {
-      return Result.fail(new Error('Invalid paymentPlans JSON on referenceData'));
-    }
-
-    const plan = plans.find((p) => p.type === selectedPlan);
+    const plan = paymentPlans.find((p) => p.type === selectedPlan);
     if (!plan) {
       return Result.fail(new Error(`Plan ${selectedPlan} not found in assessment.paymentPlans`));
     }

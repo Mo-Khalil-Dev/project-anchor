@@ -61,19 +61,12 @@ export class SelectPlanUseCase {
     }
 
     // Validate plan exists in the referenceData's calculated plans
-    const paymentPlansJson = assessment.getPaymentPlans();
-    if (!paymentPlansJson) {
+    const paymentPlans = assessment.getPaymentPlans();
+    if (!paymentPlans || paymentPlans.length === 0) {
       return Result.fail(new Error('Assessment has no payment plans'));
     }
 
-    let plans: Array<{ type: string }>;
-    try {
-      plans = JSON.parse(paymentPlansJson);
-    } catch {
-      return Result.fail(new Error('Invalid payment plans JSON'));
-    }
-
-    const planExists = plans.some((p) => p.type === planType);
+    const planExists = paymentPlans.some((p) => p.type === planType);
     if (!planExists) {
       return Result.fail(new Error(`Plan type ${planType} not available for this assessment`));
     }

@@ -75,7 +75,6 @@ export class FinalizeBankConnectionUseCase {
         incomeHistory: JSON.stringify(rawIncomeData),
         incomeSources: JSON.stringify(income),
         factors: null,
-        paymentPlans: null,
       });
       assessment.markReadyForProcessing();
 
