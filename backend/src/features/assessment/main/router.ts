@@ -1,7 +1,8 @@
 import { ILogger } from '@/features/shared/logging';
 import { RequestHandler, Router as ExpressRouter, Router } from 'express';
-import { SelectPaymentPlanUseCase } from '@/features/assessment/application/useCases/SelectPaymentPlanUseCase';
+import { SelectPlanUseCase } from '@/features/assessment/application/useCases/SelectPlanUseCase';
 import { PrismaAssessmentRepository } from '@/features/assessment/infrastructure/repositories/prisma/PrismaAssessmentRepository';
+import { PrismaCustomerRepository } from '@/features/customer/infrastructure/repositories/PrismaCustomerRepository';
 import prisma from '@/features/shared/utils/db';
 import { AuthenticatedRequest } from '@/features/shared/types/auth';
 import { AssessmentController } from '@/features/assessment/infrastructure/controllers/assessmentController';
@@ -16,23 +17,26 @@ export const createAssessmentRouter = (
   // ============ DEPENDENCY INJECTION ============
   // Create repositories
   const assessmentRepository = new PrismaAssessmentRepository(prisma, logger);
+  const customerRepository = new PrismaCustomerRepository();
+
   // Create use cases
-  const selectPaymentPlanUseCase = new SelectPaymentPlanUseCase(assessmentRepository, logger);
+  const selectPlanUseCase = new SelectPlanUseCase(assessmentRepository, customerRepository, logger);
 
   // Create controller
-  const controller = new AssessmentController(selectPaymentPlanUseCase);
+  const controller = new AssessmentController(selectPlanUseCase, logger);
 
   // ============ ROUTES ============
   /**
-   * POST /api/reference-data/assessments/:assessmentId/select-plan
+   * POST /api/assessments/select-plan
    * Protected: requires authentication
-   * Records selected payment plan
+   * Body: { planType: 'Conservative' | 'Balanced' | 'Aggressive' }
+   * Persists the customer's chosen payment plan on their latest assessment.
    */
   router.post(
-    '/:assessmentId/select-plan',
+    '/select-plan',
     authenticateRequest,
     asyncHandler(async (req, res) => {
-      await controller.selectPaymentPlan(req as AuthenticatedRequest, res);
+      await controller.selectPlan(req as AuthenticatedRequest, res);
     })
   );
 

@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { paymentService, type PlanType } from '@/services/paymentService';
+import { assessmentService, type PlanType } from '@/services/assessmentService';
 
 const PLAN_TYPE_MAP: Record<string, PlanType> = {
   conservative: 'Conservative',
@@ -29,7 +29,7 @@ export function useTermsAndConditions() {
     setError(null);
 
     try {
-      await paymentService.selectPlan({ planType });
+      await assessmentService.selectPlan({ planType });
       navigate('/payment-plans/payment-setup', { replace: true });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to save plan selection';

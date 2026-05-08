@@ -2,6 +2,7 @@ export const API = {
   assessments: {
     get: (assessmentId: string) => `/assessments/${assessmentId}`,
     current: '/me/assessment',
+    selectPlan: '/assessments/select-plan',
   },
   bankConnections: {
     initiate: '/bank-connections/initiate',
@@ -11,7 +12,6 @@ export const API = {
     setup: '/customer/setup',
   },
   payments: {
-    selectPlan: '/payments/select-plan',
     initiateDirectDebit: '/payments/initiate-direct-debit',
   },
   referenceData: {

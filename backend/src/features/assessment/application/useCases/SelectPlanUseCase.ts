@@ -1,10 +1,10 @@
 import { Result } from '@/features/shared/result';
 import type { ILogger } from '@/features/shared/logging';
 import type { IAssessmentRepository } from '@/features/assessment/domain/entities';
-import type { ICustomerRepository } from '@/features/customer/types/customer.types';
 import type { SelectPlanInput, SelectPlanOutput } from '../dtos/SelectPlanUseCase.dto';
 import { PLAN_TYPE } from '@/features/assessment/domain/entities/plan-type';
 import { PaymentPlanSelectedEvent } from '@/features/assessment/domain/events';
+import { ICustomerRepository } from '@/features/customer/application/repository/ICustomerRepository';
 
 const VALID_PLAN_TYPES = Object.values(PLAN_TYPE);
 

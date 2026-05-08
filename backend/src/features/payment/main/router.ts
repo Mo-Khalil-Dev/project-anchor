@@ -5,7 +5,6 @@ import type { AppConfig } from '../../shared/config';
 import { asyncHandler } from '@/features/shared/middleware';
 import { initGoCardlessClient } from '../../shared/utils/gocardlessClient';
 import { PaymentController } from '@/features/payment/infrastructure/controllers/PaymentController';
-import { SelectPlanUseCase } from '@/features/assessment/application/useCases/SelectPlanUseCase';
 import { CreateBillingRequestUseCase } from '@/features/payment/application/usecases/CreateBillingRequestUseCase';
 import { CollectCustomerDetailsUseCase } from '@/features/payment/application/usecases/CollectCustomerDetailsUseCase';
 import { CollectBankAccountUseCase } from '@/features/payment/application/usecases/CollectBankAccountUseCase';
@@ -31,8 +30,6 @@ export function createPaymentRouter(
   const customerRepository = new PrismaCustomerRepository();
   const paymentRepository = new PrismaPaymentRepository();
   const gocardless = initGoCardlessClient(config.gocardless.accessToken);
-
-  const selectPlanUseCase = new SelectPlanUseCase(assessmentRepository, customerRepository, logger);
 
   const createBillingRequestUseCase = new CreateBillingRequestUseCase(gocardless, logger);
   const collectCustomerDetailsUseCase = new CollectCustomerDetailsUseCase(gocardless, logger);
@@ -73,7 +70,6 @@ export function createPaymentRouter(
   const handleWebhookEventUseCase = new HandleWebhookEventUseCase(logger, onMandateActive);
 
   const controller = new PaymentController(
-    selectPlanUseCase,
     initiateDirectDebitSetupUseCase,
     handleWebhookEventUseCase,
     config.server.frontendUrl,
@@ -82,8 +78,6 @@ export function createPaymentRouter(
   );
 
   // ============ ROUTES ============
-
-  router.post('/select-plan', authMiddleware, asyncHandler(controller.selectPlan.bind(controller)));
 
   router.post(
     '/initiate-direct-debit',
