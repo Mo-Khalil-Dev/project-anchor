@@ -120,8 +120,8 @@ export class Assessment extends AggregateRoot<string> {
     return this.monthlyBill;
   }
 
-  getArrears(): number | null {
-    return this.arrears;
+  getArrears(): number {
+    return this.arrears ?? 0;
   }
 
   getIncomeBreakdown(): string | null {

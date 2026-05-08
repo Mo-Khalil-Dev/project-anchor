@@ -17,7 +17,6 @@ import type { IEventHandler } from '@/core/application/services/IEventHandler';
 import type { AssessmentReadyForProcessingEvent } from '@/features/assessment/domain/events/AssessmentReadyForProcessingEvent';
 import type { IBackgroundJob } from '@/core/application/services/IBackgroundJob';
 import { ProcessAssessmentJob } from '@/features/assessment/infrastructure/services/jobs/ProcessAssessmentJob';
-import { CompleteAssessmentUseCase } from '@/features/assessment/application/useCases/CompleteAssessmentUseCase';
 import { FailAssessmentUseCase } from '@/features/assessment/application/useCases/FailAssessmentUseCase';
 import { PrismaCustomerRepository } from '@/features/customer/infrastructure/repositories/PrismaCustomerRepository';
 
@@ -36,13 +35,11 @@ export function createBankConnectionRouter(
   const bankReportRepository = new PrismaBankReportRepository(prisma);
   const customerRepository = new PrismaCustomerRepository();
   const assessmentRepository = new PrismaAssessmentRepository(prisma, logger);
-  const completeAssessmentUseCase = new CompleteAssessmentUseCase(assessmentRepository, logger);
   const failAssessmentUseCase = new FailAssessmentUseCase(assessmentRepository, logger);
   const processJobService = new ProcessAssessmentJob(
     assessmentRepository,
     bankReportRepository,
     logger,
-    completeAssessmentUseCase,
     failAssessmentUseCase
   );
 

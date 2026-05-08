@@ -65,4 +65,25 @@ export class PrismaBankReportRepository implements IBankReportRepository {
       return Result.fail(error instanceof Error ? error : new Error('Failed to save bank report'));
     }
   }
+
+  async findByBankConnectionIdOrThrow(bankConnectionId: string): Promise<BankReportData> {
+    const bankReport = await this.prisma.bankReports.findUnique({
+      where: { bankConnectionId },
+    });
+
+    if (!bankReport) {
+      throw new Error('Bank report not found');
+    }
+
+    return {
+      id: bankReport.id,
+      bankConnectionId: bankReport.bankConnectionId,
+      incomeJson: bankReport.incomeJson,
+      expensesJson: bankReport.expensesJson,
+      totalMonthlyIncome: bankReport.totalMonthlyIncome,
+      totalMonthlyExpenses: bankReport.totalMonthlyExpenses,
+      createdAt: bankReport.createdAt,
+      expiresAt: bankReport.expiresAt,
+    };
+  }
 }

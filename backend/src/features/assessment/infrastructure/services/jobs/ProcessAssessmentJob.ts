@@ -5,9 +5,9 @@ import { Assessment } from '@/features/assessment/domain/entities';
 import type { ILogger } from '@/features/shared/logging';
 import { PaymentPlanCalculationService } from '@/features/assessment/application/services/paymentPlanCalculations/PaymentPlanCalculationService';
 import type { IBackgroundJob } from '@/core/application/services/IBackgroundJob';
-import { CompleteAssessmentUseCase } from '@/features/assessment/application/useCases/CompleteAssessmentUseCase';
 import { FailAssessmentUseCase } from '@/features/assessment/application/useCases/FailAssessmentUseCase';
 import type { IBankReportRepository } from '@/features/bankConnection/application/repositories/IBankReportRepository';
+import { AssessmentCompletedEvent } from '@/features/assessment/domain/events';
 
 export class ProcessAssessmentJob implements IBackgroundJob<string> {
   private paymentPlanService = new PaymentPlanCalculationService();
@@ -16,86 +16,18 @@ export class ProcessAssessmentJob implements IBackgroundJob<string> {
     private assessmentRepository: IAssessmentRepository,
     private bankReportRepository: IBankReportRepository,
     private logger: ILogger,
-    private completeAssessmentUseCase: CompleteAssessmentUseCase,
     private failAssessmentUseCase: FailAssessmentUseCase
   ) {}
 
   async execute(assessmentId: string): Promise<Result<void, Error>> {
     try {
-      const assessmentResult = await this.assessmentRepository.findById(assessmentId);
-      if (assessmentResult.isFail) {
-        const reason = assessmentResult.getError()?.message || 'Failed to fetch assessment';
-        await this.markAssessmentFailed(assessmentId, reason);
-        return Result.fail(assessmentResult.getError() || new Error(reason));
-      }
-
-      const assessment = assessmentResult.getOrThrow();
-      if (!assessment) {
-        const reason = `Assessment not found: ${assessmentId}`;
-        return Result.fail(new Error(reason));
-      }
-
-      if (!assessment.getBankConnectionId()) {
-        const reason = 'Assessment missing bank connection';
-        await this.markAssessmentFailed(assessmentId, reason);
-        return Result.fail(new Error(reason));
-      }
-
-      const bankReportResult = await this.bankReportRepository.findByBankConnectionId(
-        assessment.getBankConnectionId()!
-      );
-
-      if (bankReportResult.isFail) {
-        const reason = 'Failed to fetch bank report';
-        await this.markAssessmentFailed(assessmentId, reason);
-        return Result.fail(bankReportResult.getError() || new Error(reason));
-      }
-
-      const bankReport = bankReportResult.getOrThrow();
-      if (!bankReport) {
-        const reason = 'Bank report not found';
-        await this.markAssessmentFailed(assessmentId, reason);
-        return Result.fail(new Error(reason));
-      }
-
-      let incomeData: any;
-      let expenseData: any;
-
-      try {
-        incomeData = JSON.parse(bankReport.incomeJson);
-        expenseData = JSON.parse(bankReport.expensesJson);
-      } catch (parseError) {
-        const reason = 'Failed to parse bank report JSON';
-        await this.markAssessmentFailed(assessmentId, reason);
-        return Result.fail(new Error(reason));
-      }
-
-      const incomeResult = TinkResponseParser.extractIncome(incomeData);
-      if (incomeResult.isFail) {
-        const reason = incomeResult.getError()?.message || 'Failed to extract income';
-        await this.markAssessmentFailed(assessmentId, reason);
-        return Result.fail(incomeResult.getError() || new Error(reason));
-      }
-
-      const expenseResult = TinkResponseParser.extractExpenses(expenseData);
-      if (expenseResult.isFail) {
-        const reason = expenseResult.getError()?.message || 'Failed to extract expenses';
-        await this.markAssessmentFailed(assessmentId, reason);
-        return Result.fail(expenseResult.getError() || new Error(reason));
-      }
-
-      const income = incomeResult.getOrThrow();
-      const expenses = expenseResult.getOrThrow();
-
-      const disposableIncome = income.total - expenses.total;
-      const arrears = assessment.getArrears() ?? 0;
-
-      // Calculate payment plans with bill consideration
-      const paymentPlans = this.paymentPlanService.calculatePlans(
-        disposableIncome,
-        arrears,
-        assessment.getMonthlyBill()
-      );
+      const assessment = await this.assessmentRepository.findByIdOrThrow(assessmentId);
+      const bankConnectionId = this.validateBankConnectionExists(assessment);
+      const bankReport =
+        await this.bankReportRepository.findByBankConnectionIdOrThrow(bankConnectionId);
+      const { incomeData, expenseData } = this.parseBankReportData(bankReport);
+      const income = this.extractIncomeOrThrow(incomeData);
+      const expenses = this.extractExpensesOrThrow(expenseData);
 
       // Build breakdown JSON fields for the Reference Data endpoint
       const expensesByCategory: Record<string, number> = {
@@ -114,46 +46,46 @@ export class ProcessAssessmentJob implements IBackgroundJob<string> {
       ].filter(Boolean);
 
       // Update assessment with enriched bank data
-      const enrichedAssessment = Assessment.reconstruct({
-        id: assessment.getId(),
-        customerId: assessment.getCustomerId(),
-        bankConnectionId: assessment.getBankConnectionId(),
-        monthlyIncome: income.total,
-        monthlyExpenses: expenses.total,
-        monthlyBill: assessment.getMonthlyBill(),
-        arrears: assessment.getArrears(),
+      assessment.recordFinancialProfile(income.total, expenses.total, {
         incomeBreakdown: JSON.stringify(income),
         expenseBreakdown: JSON.stringify(expenses),
         expensesByCategory: JSON.stringify(expensesByCategory),
         incomeHistory: assessment.getIncomeHistory(),
         incomeSources: JSON.stringify(incomeSources),
         factors: assessment.getFactors(),
-        paymentPlans,
-        selectedPlan: assessment.getSelectedPlan(),
-        status: assessment.getStatus(),
-        createdAt: assessment.getCreatedAt(),
-        updatedAt: new Date(),
       });
 
-      const enrichmentResult = await this.assessmentRepository.update(enrichedAssessment);
+      // Calculate payment plans with bill consideration
+      const paymentPlans = this.paymentPlanService.calculatePlans(
+        assessment.calculateDisposableIncome(),
+        assessment.getArrears(),
+        assessment.getMonthlyBill()
+      );
+      assessment.recordPaymentPlans(paymentPlans);
+      assessment.markAsCompleted();
+
+      const enrichmentResult = await this.assessmentRepository.update(assessment);
       if (enrichmentResult.isFail) {
         return Result.fail(enrichmentResult.getError() || new Error('Failed to enrich assessment'));
       }
-
-      // Use command use case to mark assessment as completed
-      const completeResult = await this.completeAssessmentUseCase.execute({
-        assessmentId: assessment.getId(),
-      });
-
-      if (completeResult.isFail) {
-        return Result.fail(completeResult.getError() || new Error('Failed to complete assessment'));
+      // Handle domain events
+      const domainEvents = assessment.getDomainEvents();
+      for (const event of domainEvents) {
+        if (event instanceof AssessmentCompletedEvent) {
+          this.logger.info('Assessment completed', {
+            assessmentId,
+            hardshipLevel: event.payload.hardshipLevel,
+            disposableIncome: event.payload.disposableIncome,
+          });
+        }
       }
+      assessment.clearDomainEvents();
 
       this.logger.info('Assessment processed successfully', {
         assessmentId,
         monthlyIncome: income.total,
         monthlyExpenses: expenses.total,
-        disposableIncome,
+        disposableIncome: assessment.calculateDisposableIncome(),
         paymentPlanCount: paymentPlans.length,
       });
 
@@ -164,6 +96,41 @@ export class ProcessAssessmentJob implements IBackgroundJob<string> {
       await this.markAssessmentFailed(assessmentId, message);
       return Result.fail(new Error(`Assessment processing failed: ${message}`));
     }
+  }
+
+  private validateBankConnectionExists(assessment: Assessment): string {
+    const bankConnectionId = assessment.getBankConnectionId();
+    if (!bankConnectionId) {
+      throw new Error('Assessment missing bank connection');
+    }
+    return bankConnectionId;
+  }
+
+  private parseBankReportData(bankReport: any): { incomeData: any; expenseData: any } {
+    try {
+      return {
+        incomeData: JSON.parse(bankReport.incomeJson),
+        expenseData: JSON.parse(bankReport.expensesJson),
+      };
+    } catch (error) {
+      throw new Error('Failed to parse bank report JSON');
+    }
+  }
+
+  private extractIncomeOrThrow(incomeData: any) {
+    const result = TinkResponseParser.extractIncome(incomeData);
+    if (result.isFail) {
+      throw result.getError() || new Error('Failed to extract income');
+    }
+    return result.getOrThrow();
+  }
+
+  private extractExpensesOrThrow(expenseData: any) {
+    const result = TinkResponseParser.extractExpenses(expenseData);
+    if (result.isFail) {
+      throw result.getError() || new Error('Failed to extract expenses');
+    }
+    return result.getOrThrow();
   }
 
   private async markAssessmentFailed(assessmentId: string, reason: string): Promise<void> {

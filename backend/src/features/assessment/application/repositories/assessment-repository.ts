@@ -9,4 +9,5 @@ export interface IAssessmentRepository {
   findLatestByCustomerId(customerId: string): Promise<Result<Assessment | null, Error>>;
   update(assessment: Assessment): Promise<Result<Assessment, Error>>;
   updateSelectedPlan(assessmentId: string, planType: PlanType): Promise<Result<void, Error>>;
+  findByIdOrThrow(id: string): Promise<Assessment>;
 }

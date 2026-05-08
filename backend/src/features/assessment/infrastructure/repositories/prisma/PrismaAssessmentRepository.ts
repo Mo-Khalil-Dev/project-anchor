@@ -124,4 +124,16 @@ export class PrismaAssessmentRepository implements IAssessmentRepository {
       return Result.fail(new Error(`Selected plan update failed: ${message}`));
     }
   }
+
+  async findByIdOrThrow(id: string): Promise<Assessment> {
+    const record = await this.prisma.assessment.findUnique({
+      where: { id },
+    });
+
+    if (!record) {
+      throw new Error(`Assessment not found: ${id}`);
+    }
+
+    return this.mapper.toDomain(record);
+  }
 }

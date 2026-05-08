@@ -4,9 +4,6 @@ import type { ILogger } from '../../shared/logging';
 import { PrismaBankConnectionRepository } from '@/features/bankConnection/infrastructure/repositories/PrismaBankConnectionRepository';
 import { PrismaAssessmentRepository } from '@/features/assessment/infrastructure/repositories/prisma/PrismaAssessmentRepository';
 import { GetReferenceDataUseCase } from '../application/useCases/GetReferenceDataUseCase';
-import { CompleteAssessmentUseCase } from '@/features/assessment/application/useCases/CompleteAssessmentUseCase';
-import { FailAssessmentUseCase } from '@/features/assessment/application/useCases/FailAssessmentUseCase';
-
 import { asyncHandler } from '@/features/shared/middleware';
 import { ReferenceDataController } from '@/features/referenceData/infrastructure/controllers/ReferenceDataController';
 import prisma from '@/features/shared/utils/db';
@@ -31,14 +28,10 @@ export function createReferenceDataRouter(
     assessmentRepository,
     logger
   );
-  const completeAssessmentUseCase = new CompleteAssessmentUseCase(assessmentRepository, logger);
-  const failAssessmentUseCase = new FailAssessmentUseCase(assessmentRepository, logger);
 
   // Create controller
   const controller = new ReferenceDataController(
-    getReferenceDataUseCase,
-    completeAssessmentUseCase,
-    failAssessmentUseCase
+    getReferenceDataUseCase
   );
 
   // ============ ROUTES ============
