@@ -151,7 +151,7 @@ export class Assessment {
   }
 }
 
-// File: src/domain/services/AssessmentDomainService.ts
+// File: src/domain/usecases/AssessmentDomainService.ts
 
 export class AssessmentDomainService {
   calculateHardship(income: number, expenses: number): HardshipLevel {
@@ -265,7 +265,7 @@ export class CreateAssessmentUseCase {
   async execute(input: CreateAssessmentInput): Promise<AssessmentDTO> {
     // Orchestrate the workflow
     // 1. Validate input
-    // 2. Call domain services
+    // 2. Call domain usecases
     // 3. Call repositories
     // 4. Return result
   }

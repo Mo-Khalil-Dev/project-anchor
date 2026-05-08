@@ -244,7 +244,7 @@ export type CreatePaymentPlanInput = z.infer<typeof createPaymentPlanSchema.shap
 **Use the type in your service:**
 
 ```typescript
-// File: src/application/services/PaymentPlanService.ts
+// File: src/application/usecases/PaymentPlanService.ts
 
 import type { CreatePaymentPlanInput } from '@validators/schemas';
 
@@ -555,7 +555,7 @@ import { asyncHandler, validateRequest } from '@middleware';
 import { ValidatedRequest } from '@middleware';
 import { createAssessmentSchema } from '@validators/schemas';
 import type { CreateAssessmentInput } from '@validators/schemas';
-import { assessmentService } from '@services';
+import { assessmentService } from '@usecases';
 
 const router = express.Router();
 

@@ -36,35 +36,74 @@ This guide walks through deploying both frontend and backend to Railway with Pos
 
 ### 3.1 Set Environment Variables
 
-Click on the **backend** service → **Variables** tab, add:
+Click on the **backend** service → **Variables** tab. Railway will auto-detect `DATABASE_URL` from PostgreSQL, but you must manually add these **required** variables:
 
+#### Required (must set):
 ```
+# Random string for JWT token signing
+JWT_SECRET=your-random-secret-key-min-32-chars-here
+
+# Tink bank connection API (get from https://console.tink.com)
+TINK_CLIENT_ID=test_client_id_here
+TINK_CLIENT_SECRET=test_client_secret_here
+
+# Stripe payment keys (get test keys from https://dashboard.stripe.com/apikeys)
+STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
+STRIPE_WEBHOOK_SECRET=whsec_test_your_webhook_secret
+```
+
+#### Optional but recommended:
+```
+# Server config
 NODE_ENV=production
 RUNTIME=ecs
 PORT=3000
 LOG_LEVEL=info
 DATABASE_PROVIDER=postgresql
-# DATABASE_URL will be auto-detected from PostgreSQL service
-
-# Authentication (Cognito)
-COGNITO_USER_POOL_ID=your_pool_id
-COGNITO_CLIENT_ID=your_client_id
-COGNITO_REGION=us-east-1
-JWT_SECRET=your_production_secret
-
-# GoCardless (from sandbox)
-GOCARDLESS_ACCESS_TOKEN=sandbox_...
-GOCARDLESS_WEBHOOK_KEY=...
 
 # Frontend URL (for CORS)
-FRONTEND_URL=https://your-frontend-url.vercel.app
+FRONTEND_URL=https://your-frontend-url.railway.app
 
-# Other integrations (fill in as needed)
+# AWS region (for SES email)
 AWS_REGION=us-east-1
-TINK_CLIENT_ID=...
-TINK_CLIENT_SECRET=...
 SES_FROM_ADDRESS=noreply@safe.local
+
+# GoCardless (for Direct Debit feature, can leave empty for now)
+GOCARDLESS_ACCESS_TOKEN=
+GOCARDLESS_WEBHOOK_KEY=
+
+# Cognito (can use mock auth if not set up)
+COGNITO_USER_POOL_ID=
+COGNITO_CLIENT_ID=
+COGNITO_REGION=us-east-1
+
+# Feature flags
+ENABLE_EMAIL=false
+ENABLE_PAYMENT_PROCESSING=false
+ENABLE_BANK_OAUTH=true
 ```
+
+#### Test Values for Development
+If you don't have real API keys yet, use these test values to get the app running:
+```
+JWT_SECRET=super-secret-jwt-key-for-testing-min-32-characters-long
+TINK_CLIENT_ID=test_mock_client_id
+TINK_CLIENT_SECRET=test_mock_secret
+STRIPE_SECRET_KEY=sk_test_mock_stripe_secret
+STRIPE_WEBHOOK_SECRET=whsec_test_mock_webhook
+```
+
+#### How to Add Environment Variables in Railway
+
+1. Open your Railway project: https://railway.app
+2. Click the **backend** service
+3. Go to **Variables** tab
+4. Click **+ Add Variable** (or paste multiple at once in the text editor)
+5. Add each required variable from the list above
+6. Click **Save**
+7. Railway will automatically redeploy with the new variables
+
+**Note:** `DATABASE_URL` is auto-set by the PostgreSQL service — you don't need to add it manually.
 
 ### 3.2 Configure Build & Start Commands
 
@@ -181,7 +220,21 @@ curl https://backend-xxx.railway.app/api/me \
 
 ## Troubleshooting
 
+### Backend won't start: "Configuration validation failed: JWT_SECRET: Required"
+- **Cause:** Missing required environment variables in Railway's Variables tab
+- **Fix:** Go to **backend** service → **Variables** tab → Add the 5 required variables from section 3.1 above
+- **Verify:** After saving, Railway auto-redeploys. Check **Deployments** tab for new build
+
+### Backend won't start: "TINK_CLIENT_ID is required"
+- **Cause:** Missing Tink credentials
+- **Fix:** Add `TINK_CLIENT_ID` and `TINK_CLIENT_SECRET` to Variables tab. Use test values if you don't have real ones yet.
+
+### Backend won't start: "STRIPE_SECRET_KEY is required"
+- **Cause:** Missing Stripe credentials
+- **Fix:** Add `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` to Variables tab. Get test keys from https://dashboard.stripe.com/apikeys or use dummy values.
+
 ### Backend won't start: "DATABASE_URL not found"
+- **Cause:** PostgreSQL service not linked or database not created
 - **Fix:** Ensure PostgreSQL service is created and linked. Check Variables tab has DATABASE_URL.
 
 ### Frontend shows blank/error

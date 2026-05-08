@@ -144,7 +144,7 @@ export type CreatePaymentPlanInput = z.infer<typeof createPaymentPlanSchema.shap
 
 import { validateRequest, asyncHandler } from '@middleware';
 import { createPaymentPlanSchema } from '@validators/schemas';
-import { paymentPlanService } from '@services';
+import { paymentPlanService } from '@usecases';
 
 const router = express.Router();
 
@@ -164,7 +164,7 @@ export default router;
 ### 3. Service
 
 ```typescript
-// File: src/application/services/PaymentPlanService.ts
+// File: src/application/usecases/PaymentPlanService.ts
 
 import type { CreatePaymentPlanInput } from '@validators/schemas';
 

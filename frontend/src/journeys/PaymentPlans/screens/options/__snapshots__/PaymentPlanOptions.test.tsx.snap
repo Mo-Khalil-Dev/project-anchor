@@ -1,0 +1,627 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`PaymentPlanOptions > matches snapshot 1`] = `
+<div>
+  <div
+    class="min-h-screen bg-bg flex flex-col"
+  >
+    <header
+      class="sticky top-0 z-50 bg-white border-b border-border h-15 flex items-center px-8"
+    >
+      <div
+        class="flex items-center gap-3"
+      >
+        <svg
+          fill="none"
+          height="20"
+          viewBox="0 0 60 37"
+          width="32"
+        >
+          <path
+            d="M2 31h56"
+            stroke="white"
+            stroke-linecap="round"
+            stroke-width="3.5"
+          />
+          <path
+            d="M10 31V19"
+            stroke="white"
+            stroke-linecap="round"
+            stroke-width="3.5"
+          />
+          <path
+            d="M50 31V19"
+            stroke="white"
+            stroke-linecap="round"
+            stroke-width="3.5"
+          />
+          <path
+            d="M10 19C10 19 18 7 30 7C42 7 50 19 50 19"
+            fill="none"
+            stroke="white"
+            stroke-linecap="round"
+            stroke-width="3.5"
+          />
+          <line
+            stroke="rgba(255,255,255,0.6)"
+            stroke-linecap="round"
+            stroke-width="2.5"
+            x1="20"
+            x2="20"
+            y1="31"
+            y2="21"
+          />
+          <line
+            stroke="rgba(255,255,255,0.6)"
+            stroke-linecap="round"
+            stroke-width="2.5"
+            x1="30"
+            x2="30"
+            y1="31"
+            y2="15"
+          />
+          <line
+            stroke="rgba(255,255,255,0.6)"
+            stroke-linecap="round"
+            stroke-width="2.5"
+            x1="40"
+            x2="40"
+            y1="31"
+            y2="21"
+          />
+        </svg>
+        <span
+          class="text-xl font-bold text-text"
+        >
+          SAFE
+        </span>
+      </div>
+      <div
+        class="ml-auto h-10 w-10 rounded-full bg-accent-bg flex items-center justify-center"
+      >
+        <span
+          class="text-sm font-bold text-accent"
+        >
+          U
+        </span>
+      </div>
+    </header>
+    <main
+      class="flex-1"
+    >
+      <div
+        class="max-w-screen-lg mx-auto px-8 py-10"
+      >
+        <div
+          class="page"
+        >
+          <div
+            class="heading"
+          >
+            <h1
+              class="headingTitle"
+            >
+              Choose a Payment Plan
+            </h1>
+            <p
+              class="headingSubtitle"
+            >
+              All plans clear your full £
+              420
+               balance. We recommend Conservative — it leaves you a safety buffer each month.
+            </p>
+          </div>
+          <div
+            class="card p-6 summaryCard"
+          >
+            <div
+              class="summaryItem"
+            >
+              <div
+                class="summaryLabel"
+              >
+                Balance to clear
+              </div>
+              <div
+                class="summaryValue"
+              >
+                £420
+              </div>
+            </div>
+            <div
+              class="summaryItem"
+            >
+              <div
+                class="summaryLabel"
+              >
+                Your disposable income
+              </div>
+              <div
+                class="summaryValue"
+              >
+                £130/month
+              </div>
+            </div>
+            <div
+              class="summaryItem"
+            >
+              <div
+                class="summaryLabel"
+              >
+                Hardship level
+              </div>
+              <div
+                class="summaryValue"
+              >
+                SEVERE
+              </div>
+            </div>
+          </div>
+          <div
+            class="plansGrid"
+          >
+            <div
+              class="planCard selected"
+              style="--ring-color: oklch(51% 0.17 145);"
+            >
+              <div
+                class="recommendedBadge"
+              >
+                ★ Recommended
+              </div>
+              <div
+                class="header"
+              >
+                <div
+                  class="planType"
+                >
+                  Conservative
+                </div>
+                <div
+                  class="price"
+                >
+                  <span
+                    class="amount text-green"
+                  >
+                    £
+                    35
+                  </span>
+                  <span
+                    class="period"
+                  >
+                    /month
+                  </span>
+                </div>
+              </div>
+              <div
+                class="details"
+              >
+                <div
+                  class="detailRow"
+                >
+                  <span
+                    class="label"
+                  >
+                    Duration
+                  </span>
+                  <span
+                    class="value"
+                  >
+                    12 months
+                  </span>
+                </div>
+                <div
+                  class="detailRow"
+                >
+                  <span
+                    class="label"
+                  >
+                    Total paid
+                  </span>
+                  <span
+                    class="value"
+                  >
+                    £420
+                  </span>
+                </div>
+                <div
+                  class="detailRow"
+                >
+                  <span
+                    class="label"
+                  >
+                    Monthly buffer
+                  </span>
+                  <span
+                    class="value"
+                  >
+                    £95
+                  </span>
+                </div>
+              </div>
+              <div
+                class="inline-flex items-center gap-2 rounded-full px-4 py-2 bg-green-bg"
+              >
+                <span
+                  class="h-2 w-2 rounded-full bg-green"
+                />
+                <span
+                  class="text-sm font-semibold text-green"
+                >
+                  HIGH
+                   sustainability
+                </span>
+              </div>
+              <div
+                class="pros"
+              >
+                <div
+                  class="proItem"
+                >
+                  <span
+                    class="bullet text-green"
+                  >
+                    ·
+                  </span>
+                  <span
+                    class="proText"
+                  >
+                    Leaves the most monthly buffer for emergencies
+                  </span>
+                </div>
+                <div
+                  class="proItem"
+                >
+                  <span
+                    class="bullet text-green"
+                  >
+                    ·
+                  </span>
+                  <span
+                    class="proText"
+                  >
+                    Lowest monthly commitment
+                  </span>
+                </div>
+                <div
+                  class="proItem"
+                >
+                  <span
+                    class="bullet text-green"
+                  >
+                    ·
+                  </span>
+                  <span
+                    class="proText"
+                  >
+                    Highest chance of completing the plan
+                  </span>
+                </div>
+              </div>
+              <div
+                class="buttonContainer"
+              >
+                <button
+                  class="inline-flex items-center justify-center font-semibold transition-all active:scale-97 disabled:cursor-not-allowed bg-accent text-white hover:bg-accent-dark shadow-button-primary disabled:opacity-50 h-10 px-3 py-2 text-sm rounded-button-sm w-full"
+                >
+                  ✓ Selected — Continue
+                </button>
+              </div>
+            </div>
+            <div
+              class="planCard unselected"
+              style="--ring-color: oklch(62% 0.16 76);"
+            >
+              <div
+                class="header"
+              >
+                <div
+                  class="planType"
+                >
+                  Balanced
+                </div>
+                <div
+                  class="price"
+                >
+                  <span
+                    class="amount text-amber"
+                  >
+                    £
+                    70
+                  </span>
+                  <span
+                    class="period"
+                  >
+                    /month
+                  </span>
+                </div>
+              </div>
+              <div
+                class="details"
+              >
+                <div
+                  class="detailRow"
+                >
+                  <span
+                    class="label"
+                  >
+                    Duration
+                  </span>
+                  <span
+                    class="value"
+                  >
+                    6 months
+                  </span>
+                </div>
+                <div
+                  class="detailRow"
+                >
+                  <span
+                    class="label"
+                  >
+                    Total paid
+                  </span>
+                  <span
+                    class="value"
+                  >
+                    £420
+                  </span>
+                </div>
+                <div
+                  class="detailRow"
+                >
+                  <span
+                    class="label"
+                  >
+                    Monthly buffer
+                  </span>
+                  <span
+                    class="value"
+                  >
+                    £60
+                  </span>
+                </div>
+              </div>
+              <div
+                class="inline-flex items-center gap-2 rounded-full px-4 py-2 bg-amber-bg"
+              >
+                <span
+                  class="h-2 w-2 rounded-full bg-amber"
+                />
+                <span
+                  class="text-sm font-semibold text-amber"
+                >
+                  MEDIUM
+                   sustainability
+                </span>
+              </div>
+              <div
+                class="pros"
+              >
+                <div
+                  class="proItem"
+                >
+                  <span
+                    class="bullet text-amber"
+                  >
+                    ·
+                  </span>
+                  <span
+                    class="proText"
+                  >
+                    Clears debt sooner
+                  </span>
+                </div>
+                <div
+                  class="proItem"
+                >
+                  <span
+                    class="bullet text-amber"
+                  >
+                    ·
+                  </span>
+                  <span
+                    class="proText"
+                  >
+                    Moderate risk if unexpected expense
+                  </span>
+                </div>
+                <div
+                  class="proItem"
+                >
+                  <span
+                    class="bullet text-amber"
+                  >
+                    ·
+                  </span>
+                  <span
+                    class="proText"
+                  >
+                    Reasonable monthly buffer remains
+                  </span>
+                </div>
+              </div>
+              <div
+                class="warning"
+              >
+                ⚠ 
+                If an unexpected expense arises, you may struggle to make a payment.
+              </div>
+              <div
+                class="buttonContainer"
+              >
+                <button
+                  class="inline-flex items-center justify-center font-semibold transition-all active:scale-97 disabled:cursor-not-allowed bg-transparent text-accent hover:bg-accent-bg disabled:opacity-50 h-10 px-3 py-2 text-sm rounded-button-sm w-full"
+                >
+                  Select This Plan
+                </button>
+              </div>
+            </div>
+            <div
+              class="planCard unselected"
+              style="--ring-color: oklch(52% 0.18 25);"
+            >
+              <div
+                class="header"
+              >
+                <div
+                  class="planType"
+                >
+                  Aggressive
+                </div>
+                <div
+                  class="price"
+                >
+                  <span
+                    class="amount text-red"
+                  >
+                    £
+                    140
+                  </span>
+                  <span
+                    class="period"
+                  >
+                    /month
+                  </span>
+                </div>
+              </div>
+              <div
+                class="details"
+              >
+                <div
+                  class="detailRow"
+                >
+                  <span
+                    class="label"
+                  >
+                    Duration
+                  </span>
+                  <span
+                    class="value"
+                  >
+                    3 months
+                  </span>
+                </div>
+                <div
+                  class="detailRow"
+                >
+                  <span
+                    class="label"
+                  >
+                    Total paid
+                  </span>
+                  <span
+                    class="value"
+                  >
+                    £420
+                  </span>
+                </div>
+                <div
+                  class="detailRow"
+                >
+                  <span
+                    class="label"
+                  >
+                    Monthly buffer
+                  </span>
+                  <span
+                    class="negative"
+                  >
+                    Over budget
+                  </span>
+                </div>
+              </div>
+              <div
+                class="inline-flex items-center gap-2 rounded-full px-4 py-2 bg-red-bg"
+              >
+                <span
+                  class="h-2 w-2 rounded-full bg-red"
+                />
+                <span
+                  class="text-sm font-semibold text-red"
+                >
+                  LOW
+                   sustainability
+                </span>
+              </div>
+              <div
+                class="pros"
+              >
+                <div
+                  class="proItem"
+                >
+                  <span
+                    class="bullet text-red"
+                  >
+                    ·
+                  </span>
+                  <span
+                    class="proText"
+                  >
+                    Clears debt fastest
+                  </span>
+                </div>
+                <div
+                  class="proItem"
+                >
+                  <span
+                    class="bullet text-red"
+                  >
+                    ·
+                  </span>
+                  <span
+                    class="proText"
+                  >
+                    Saves on any interest accumulation
+                  </span>
+                </div>
+              </div>
+              <div
+                class="warning"
+              >
+                ⚠ 
+                Monthly payment exceeds your disposable income. High risk of missing payments.
+              </div>
+              <div
+                class="buttonContainer"
+              >
+                <button
+                  class="inline-flex items-center justify-center font-semibold transition-all active:scale-97 disabled:cursor-not-allowed bg-transparent text-accent hover:bg-accent-bg disabled:opacity-50 h-10 px-3 py-2 text-sm rounded-button-sm w-full"
+                >
+                  Select This Plan
+                </button>
+              </div>
+            </div>
+          </div>
+          <div
+            class="actions"
+          >
+            <button
+              class="inline-flex items-center justify-center font-semibold transition-all active:scale-97 disabled:cursor-not-allowed bg-accent text-white hover:bg-accent-dark shadow-button-primary disabled:opacity-50 h-12 px-6 py-3 text-base rounded-button"
+            >
+              Continue with 
+              Conservative
+               Plan
+            </button>
+            <button
+              class="inline-flex items-center justify-center font-semibold transition-all active:scale-97 disabled:cursor-not-allowed bg-transparent border border-border text-text hover:bg-accent-bg disabled:opacity-50 h-12 px-6 py-3 text-base rounded-button"
+            >
+              Compare in detail
+            </button>
+          </div>
+          <p
+            class="footer"
+          >
+            You can adjust or pause your plan at any time. 
+            <span
+              class="footerLink"
+            >
+              Need advice? Talk to us.
+            </span>
+          </p>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+`;

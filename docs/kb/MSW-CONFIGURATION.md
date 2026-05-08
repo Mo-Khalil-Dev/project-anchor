@@ -63,8 +63,8 @@ npm run test:cov          # With coverage
 
 ### Example Backend Test
 ```typescript
-// tests/tink-oauth.integration.test.ts
-import { TinkOAuthService } from '../src/infrastructure/services/TinkOAuthService';
+// tests/tinkApiClient.test.ts
+import { TinkOAuthService } from '../src/infrastructure/usecases/TinkOAuthService';
 
 describe('TinkOAuthService', () => {
   it('should fetch access token from mocked Tink API', async () => {
@@ -203,7 +203,7 @@ afterAll(() => {
 ### 4. Using MSW in Frontend Tests
 
 ```typescript
-// src/services/assessmentService.test.ts
+// src/usecases/assessmentService.test.ts
 import { renderHook, waitFor } from '@testing-library/react';
 import { useAssessment } from '@/hooks/useAssessment';
 import { server } from '@/__mocks__/server';
