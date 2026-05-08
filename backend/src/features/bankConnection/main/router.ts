@@ -17,7 +17,7 @@ import type { IEventHandler } from '@/core/application/services/IEventHandler';
 import type { AssessmentReadyForProcessingEvent } from '@/features/assessment/domain/events/AssessmentReadyForProcessingEvent';
 import type { IBackgroundJob } from '@/core/application/services/IBackgroundJob';
 import { ProcessAssessmentJob } from '@/features/assessment/infrastructure/services/jobs/ProcessAssessmentJob';
-import { FailAssessmentUseCase } from '@/features/assessment/application/useCases/FailAssessmentUseCase';
+import { FailAssessmentUseCase } from '@/features/assessment/application/useCases/FailAssessment';
 import { PrismaCustomerRepository } from '@/features/customer/infrastructure/repositories/PrismaCustomerRepository';
 
 export function createBankConnectionRouter(

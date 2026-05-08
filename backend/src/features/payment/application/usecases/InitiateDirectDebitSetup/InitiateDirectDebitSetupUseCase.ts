@@ -1,26 +1,12 @@
-import { Result } from '../../../shared/result';
-import type { ILogger } from '../../../shared/logging';
+import { Result } from '../../../../shared/result';
+import type { ILogger } from '../../../../shared/logging';
 import type { IAssessmentRepository } from '@/features/assessment/domain/entities';
-import type { CreateBillingRequestUseCase } from './CreateBillingRequestUseCase';
-import type { CollectCustomerDetailsUseCase } from './CollectCustomerDetailsUseCase';
-import type { CollectBankAccountUseCase } from './CollectBankAccountUseCase';
-import type { CreateBillingRequestFlowUseCase } from './CreateBillingRequestFlowUseCase';
+import type { CreateBillingRequestUseCase } from '../CreateBillingRequest/CreateBillingRequestUseCase';
+import type { CollectCustomerDetailsUseCase } from '../CollectCustomerDetails/CollectCustomerDetailsUseCase';
+import type { CollectBankAccountUseCase } from '../CollectBankAccount/CollectBankAccountUseCase';
+import type { CreateBillingRequestFlowUseCase } from '../CreateBillingRequestFlow/CreateBillingRequestFlowUseCase';
 import { ICustomerRepository } from '@/features/customer/application/repository/ICustomerRepository';
-
-export interface InitiateDirectDebitSetupInput {
-  userId: string;
-  accountHolderName: string;
-  /** Where GC should redirect the customer back to after authorization */
-  redirectUri: string;
-  /** Where GC should redirect the customer if they exit the flow early */
-  exitUri: string;
-}
-
-export interface InitiateDirectDebitSetupOutput {
-  authorizationUrl: string;
-  billingRequestId: string;
-  flowId: string;
-}
+import type { InitiateDirectDebitSetupInput, InitiateDirectDebitSetupOutput } from './InitiateDirectDebitSetup.dto';
 
 /**
  * InitiateDirectDebitSetupUseCase

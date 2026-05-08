@@ -1,6 +1,6 @@
 import { ILogger } from '@/features/shared/logging';
 import { RequestHandler, Router as ExpressRouter, Router } from 'express';
-import { SelectPlanUseCase } from '@/features/assessment/application/useCases/SelectPlanUseCase';
+import { SelectPlanUseCase } from '@/features/assessment/application/useCases/SelectPlan';
 import { PrismaAssessmentRepository } from '@/features/assessment/infrastructure/repositories/prisma/PrismaAssessmentRepository';
 import { PrismaCustomerRepository } from '@/features/customer/infrastructure/repositories/PrismaCustomerRepository';
 import prisma from '@/features/shared/utils/db';

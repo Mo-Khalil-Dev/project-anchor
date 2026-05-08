@@ -1,4 +1,4 @@
-import { SelectPlanUseCase } from '@/features/assessment/application/useCases/SelectPlanUseCase';
+import { SelectPlanUseCase } from '@/features/assessment/application/useCases/SelectPlan';
 import { AuthenticatedRequest } from '@/features/shared/types/auth';
 import type { ILogger } from '@/features/shared/logging';
 import type { Response } from 'express';

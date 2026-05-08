@@ -1,16 +1,7 @@
 import type { GoCardlessClient } from 'gocardless-nodejs';
-import { Result } from '../../../shared/result';
-import type { ILogger } from '../../../shared/logging';
-
-export interface CollectBankAccountInput {
-  billingRequestId: string;
-  accountHolderName: string;
-  /** Defaults to GC sandbox test sort code if omitted */
-  branchCode?: string;
-  /** Defaults to GC sandbox test account number if omitted */
-  accountNumber?: string;
-  countryCode?: string;
-}
+import { Result } from '../../../../shared/result';
+import type { ILogger } from '../../../../shared/logging';
+import type { CollectBankAccountInput } from './CollectBankAccount.dto';
 
 /** GoCardless sandbox test bank details */
 const SANDBOX_DEFAULTS = {

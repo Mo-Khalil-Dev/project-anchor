@@ -5,7 +5,7 @@ import { Assessment } from '@/features/assessment/domain/entities';
 import type { ILogger } from '@/features/shared/logging';
 import { PaymentPlanCalculationService } from '@/features/assessment/application/services/paymentPlanCalculations/PaymentPlanCalculationService';
 import type { IBackgroundJob } from '@/core/application/services/IBackgroundJob';
-import { FailAssessmentUseCase } from '@/features/assessment/application/useCases/FailAssessmentUseCase';
+import { FailAssessmentUseCase } from '@/features/assessment/application/useCases/FailAssessment';
 import type { IBankReportRepository } from '@/features/bankConnection/application/repositories/IBankReportRepository';
 import { AssessmentCompletedEvent } from '@/features/assessment/domain/events';
 

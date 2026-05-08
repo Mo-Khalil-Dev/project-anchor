@@ -36,23 +36,13 @@ describe('ProcessAssessmentJob', () => {
     child: jest.fn().mockReturnThis(),
   };
 
-  const prisma = {
-    assessmentJob: {
-      findUnique: jest.fn(),
-      update: jest.fn(),
-    },
-    bankReports: {
-      findUnique: jest.fn(),
-    },
+  const bankReportRepository = {
+    findByBankConnectionIdOrThrow: jest.fn(),
   } as any;
 
   const assessmentRepository = {
-    findById: jest.fn(),
+    findByIdOrThrow: jest.fn(),
     update: jest.fn(),
-  } as any;
-
-  const completeAssessmentUseCase = {
-    execute: jest.fn(),
   } as any;
 
   const failAssessmentUseCase = {
@@ -64,12 +54,11 @@ describe('ProcessAssessmentJob', () => {
   });
 
   it('returns failed result when assessment does not exist', async () => {
-    assessmentRepository.findById.mockResolvedValue(Result.fail(new Error('Assessment not found')));
+    assessmentRepository.findByIdOrThrow.mockRejectedValue(new Error('Assessment not found'));
     const job = new ProcessAssessmentJob(
-      prisma,
       assessmentRepository,
+      bankReportRepository,
       logger,
-      completeAssessmentUseCase,
       failAssessmentUseCase
     );
 
@@ -81,20 +70,13 @@ describe('ProcessAssessmentJob', () => {
   });
 
   it('processes assessment successfully and completes it', async () => {
-    assessmentRepository.findById.mockResolvedValue(Result.ok(buildAssessment()));
-    prisma.bankReports.findUnique.mockResolvedValue({
+    const assessment = buildAssessment();
+    assessmentRepository.findByIdOrThrow.mockResolvedValue(assessment);
+    bankReportRepository.findByBankConnectionIdOrThrow.mockResolvedValue({
       incomeJson: '{"salary":2500,"benefits":100,"pension":0,"other":0,"total":2600}',
       expensesJson: '{"housing":1000,"food":400,"transport":200,"utilities":180,"other":120,"total":1900}',
     });
-    assessmentRepository.update.mockResolvedValue(Result.ok(buildAssessment()));
-    completeAssessmentUseCase.execute.mockResolvedValue(
-      Result.ok({
-        assessmentId: 'assessment-1',
-        status: 'COMPLETED',
-        hardshipLevel: 'MODERATE',
-        disposableIncome: 700,
-      })
-    );
+    assessmentRepository.update.mockResolvedValue(Result.ok(assessment));
     jest.spyOn(TinkResponseParser, 'extractIncome').mockReturnValue(
       Result.ok({
         salary: 2500,
@@ -115,10 +97,9 @@ describe('ProcessAssessmentJob', () => {
       }) as any
     );
     const job = new ProcessAssessmentJob(
-      prisma,
       assessmentRepository,
+      bankReportRepository,
       logger,
-      completeAssessmentUseCase,
       failAssessmentUseCase
     );
 
@@ -126,8 +107,5 @@ describe('ProcessAssessmentJob', () => {
 
     expect(result.isOk).toBe(true);
     expect(assessmentRepository.update).toHaveBeenCalled();
-    expect(completeAssessmentUseCase.execute).toHaveBeenCalledWith({
-      assessmentId: 'assessment-1',
-    });
   });
 });

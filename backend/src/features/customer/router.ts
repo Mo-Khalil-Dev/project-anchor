@@ -3,7 +3,7 @@ import type { PrismaClient } from '@prisma/client';
 import type { ILogger } from '../shared/logging';
 
 // Import use cases
-import { LinkUserToCustomerUseCase } from './application/useCases/LinkUserToCustomerUseCase';
+import { LinkUserToCustomerUseCase } from './application/useCases/LinkUserToCustomer';
 
 // Import shared utilities
 import { asyncHandler } from '@/features/shared/middleware';

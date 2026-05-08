@@ -1,11 +1,11 @@
-import { Result } from '../../../shared/result';
-import type { ILogger } from '../../../shared/logging';
+import { Result } from '../../../../shared/result';
+import type { ILogger } from '../../../../shared/logging';
 import type { IAssessmentRepository } from '@/features/assessment/domain/entities';
 import type { ApplicationError } from '@/core/domain/errors';
 import type {
   CompleteAssessmentInput,
   CompleteAssessmentOutput,
-} from './CompleteAssessmentUseCase.dto';
+} from './CompleteAssessment.dto';
 import {
   AssessmentNotFoundError,
   CompleteAssessmentExecutionError,

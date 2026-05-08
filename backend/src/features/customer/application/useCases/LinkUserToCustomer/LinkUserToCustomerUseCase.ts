@@ -1,10 +1,10 @@
-import { Result } from '../../../shared/result';
-import type { ILogger } from '../../../shared/logging';
+import { Result } from '../../../../shared/result';
+import type { ILogger } from '../../../../shared/logging';
 import type {
   LinkUserToCustomerInput,
   LinkUserToCustomerOutput,
-} from '../../types/customer.types';
-import { LinkUserToCustomerSchema } from '../../types/customer.types';
+} from '../../../types/customer.types';
+import { LinkUserToCustomerSchema } from '../../../types/customer.types';
 import { ICustomerRepository } from '@/features/customer/application/repository/ICustomerRepository';
 
 /**

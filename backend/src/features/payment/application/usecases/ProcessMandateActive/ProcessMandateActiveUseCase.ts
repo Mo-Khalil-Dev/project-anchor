@@ -1,9 +1,9 @@
 import type { GoCardlessClient } from 'gocardless-nodejs';
-import { Result } from '../../../shared/result';
-import type { ILogger } from '../../../shared/logging';
+import { Result } from '../../../../shared/result';
+import type { ILogger } from '../../../../shared/logging';
 import type { IAssessmentRepository } from '@/features/assessment/domain/entities';
-import type { IPaymentRepository } from '../respositories/IPaymentRepository';
-import type { CreateInstalmentScheduleUseCase } from './CreateInstalmentScheduleUseCase';
+import type { IPaymentRepository } from '../../respositories/IPaymentRepository';
+import type { CreateInstalmentScheduleUseCase } from '../CreateInstalmentSchedule/CreateInstalmentScheduleUseCase';
 
 const DEFAULT_DAY_OF_MONTH = 15;
 
