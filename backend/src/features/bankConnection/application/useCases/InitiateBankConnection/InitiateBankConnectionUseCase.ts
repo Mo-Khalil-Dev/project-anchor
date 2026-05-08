@@ -2,13 +2,13 @@ import { randomBytes } from 'crypto';
 import { Result } from '@/features/shared/result';
 import type { ILogger } from '@/features/shared/logging';
 import type { TinkApiClient } from '@/features/bankConnection/infrastructure/services/Tink/TinkApiClient';
-import type { ICustomerRepository } from '@/features/customer/types/customer.types';
 import { IBankConnectionRepository } from '@/features/bankConnection/application/respositories/IBankConnectionRepository';
 import { BankConnection } from '@/features/bankConnection/domain/entites/bankConnection';
 import type {
   InitiateBankConnectionInput,
   InitiateBankConnectionOutput,
 } from './InitiateBankConnection.dto';
+import { ICustomerRepository } from '@/features/customer/application/repository/ICustomerRepository';
 
 export class InitiateBankConnectionUseCase {
   constructor(

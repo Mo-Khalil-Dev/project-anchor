@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { parse as parseGCWebhook, InvalidSignatureError } from 'gocardless-nodejs';
 import type { ILogger } from '../../../shared/logging';
-import type { AuthenticatedRequest } from '../../../shared/middleware/authenticateRequest';
+import type { AuthenticatedRequest } from '@/features/shared/types/auth';
 import type { InitiateDirectDebitSetupUseCase } from '@/features/payment/application/usecases/InitiateDirectDebitSetupUseCase';
 import type {
   HandleWebhookEventUseCase,

@@ -1,7 +1,7 @@
 import { Response, NextFunction } from 'express';
-import type { AuthenticatedRequest } from '../../shared/middleware/authenticateRequest';
-import type { LinkUserToCustomerUseCase } from '../services/LinkUserToCustomerUseCase';
 import { ApplicationError } from '@/core/domain/errors';
+import { AuthenticatedRequest } from '@/features/shared/types/auth';
+import { LinkUserToCustomerUseCase } from '@/features/customer/application/useCases/LinkUserToCustomerUseCase';
 
 export class CustomerController {
   constructor(private linkUserToCustomerUseCase: LinkUserToCustomerUseCase) {}

@@ -1,11 +1,11 @@
 import { Result } from '../../../shared/result';
 import type { ILogger } from '../../../shared/logging';
-import type { ICustomerRepository } from '../../../customer/types/customer.types';
 import type { IAssessmentRepository } from '@/features/assessment/domain/entities';
 import type { CreateBillingRequestUseCase } from './CreateBillingRequestUseCase';
 import type { CollectCustomerDetailsUseCase } from './CollectCustomerDetailsUseCase';
 import type { CollectBankAccountUseCase } from './CollectBankAccountUseCase';
 import type { CreateBillingRequestFlowUseCase } from './CreateBillingRequestFlowUseCase';
+import { ICustomerRepository } from '@/features/customer/application/repository/ICustomerRepository';
 
 export interface InitiateDirectDebitSetupInput {
   userId: string;

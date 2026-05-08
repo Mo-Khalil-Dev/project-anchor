@@ -1,5 +1,5 @@
 import type { Response } from 'express';
-import type { AuthenticatedRequest } from '../../../shared/middleware/authenticateRequest';
+import type { AuthenticatedRequest } from '@/features/shared/types/auth';
 import type {
   InitiateLoginUseCase,
   HandleAuthCallbackUseCase,

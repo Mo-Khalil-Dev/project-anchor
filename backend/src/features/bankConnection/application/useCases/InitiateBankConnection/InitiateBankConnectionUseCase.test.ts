@@ -1,9 +1,9 @@
 import { Result } from '@/features/shared/result';
 import type { ILogger } from '@/features/shared/logging';
 import type { IBankConnectionRepository } from '../../respositories/IBankConnectionRepository';
-import type { ICustomerRepository } from '@/features/customer/types/customer.types';
 import type { TinkApiClient } from '@/features/bankConnection/infrastructure/services/Tink/TinkApiClient';
 import { InitiateBankConnectionUseCase } from './InitiateBankConnectionUseCase';
+import { ICustomerRepository } from '@/features/customer/application/repository/ICustomerRepository';
 
 const mockLogger: ILogger = {
   debug: jest.fn(),

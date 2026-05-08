@@ -1,7 +1,6 @@
 import type { Router, RequestHandler } from 'express';
 import { Router as ExpressRouter } from 'express';
 import type { ILogger } from '../../shared/logging';
-import { PrismaCustomerRepository } from '../../customer/repositories/PrismaCustomerRepository';
 import { PrismaBankConnectionRepository } from '@/features/bankConnection/infrastructure/repositories/PrismaBankConnectionRepository';
 import { PrismaAssessmentRepository } from '@/features/assessment/infrastructure/repositories/prisma/PrismaAssessmentRepository';
 import { GetReferenceDataUseCase } from '../application/useCases/GetReferenceDataUseCase';
@@ -11,6 +10,7 @@ import { FailAssessmentUseCase } from '@/features/assessment/application/useCase
 import { asyncHandler } from '@/features/shared/middleware';
 import { ReferenceDataController } from '@/features/referenceData/infrastructure/controllers/ReferenceDataController';
 import prisma from '@/features/shared/utils/db';
+import { PrismaCustomerRepository } from '@/features/customer/infrastructure/repositories/PrismaCustomerRepository';
 
 export function createReferenceDataRouter(
   logger: ILogger,

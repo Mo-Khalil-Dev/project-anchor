@@ -5,9 +5,9 @@ import type { ReferenceData, NextStep } from './GetReferenceDataUseCase.dto';
 import { GetAccountSetupQuery } from './GetAccountSetupQuery';
 import { GetBankConnectionQuery } from './GetBankConnectionQuery';
 import { GetAssessmentQuery } from './GetAssessmentQuery';
-import type { ICustomerRepository } from '../../../customer/types/customer.types';
 import type { IAssessmentRepository } from '@/features/assessment/domain/entities';
 import { IBankConnectionRepository } from '@/features/bankConnection/application/respositories/IBankConnectionRepository';
+import { ICustomerRepository } from '@/features/customer/application/repository/ICustomerRepository';
 
 export class GetReferenceDataUseCase {
   private getAccountSetupQuery: GetAccountSetupQuery;

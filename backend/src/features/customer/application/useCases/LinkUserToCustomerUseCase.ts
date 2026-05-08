@@ -1,11 +1,11 @@
 import { Result } from '../../../shared/result';
 import type { ILogger } from '../../../shared/logging';
 import type {
-  ICustomerRepository,
   LinkUserToCustomerInput,
   LinkUserToCustomerOutput,
 } from '../../types/customer.types';
 import { LinkUserToCustomerSchema } from '../../types/customer.types';
+import { ICustomerRepository } from '@/features/customer/application/repository/ICustomerRepository';
 
 /**
  * LinkUserToCustomerUseCase

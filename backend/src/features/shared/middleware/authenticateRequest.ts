@@ -1,14 +1,6 @@
-import type { Request, Response, NextFunction } from 'express';
+import type { Response, NextFunction } from 'express';
 import type { ValidateTokenUseCase } from '../../auth/application/usecases';
-
-export interface AuthenticatedRequest extends Request {
-  user?: {
-    id: string;
-    email: string;
-    firstName?: string;
-    lastName?: string;
-  };
-}
+import type { AuthenticatedRequest } from '../types/auth';
 
 export function createAuthenticateMiddleware(validateTokenUseCase: ValidateTokenUseCase) {
   return async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {

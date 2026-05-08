@@ -1,6 +1,7 @@
-import { prisma } from '../../shared/utils/db';
-import { Result } from '../../shared/result';
-import type { Customer, ICustomerRepository } from '../types/customer.types';
+import { ICustomerRepository } from '@/features/customer/application/repository/ICustomerRepository';
+import { Result } from '@/features/shared/result';
+import { Customer } from '@/features/customer/domain/entities/customer';
+import prisma from '@/features/shared/utils/db';
 
 export class PrismaCustomerRepository implements ICustomerRepository {
   async create(email: string): Promise<Result<Customer, Error>> {

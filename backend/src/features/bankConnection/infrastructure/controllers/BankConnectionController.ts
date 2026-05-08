@@ -1,9 +1,9 @@
 import { Response, NextFunction } from 'express';
 import type { InitiateBankConnectionUseCase } from '../../application/useCases/InitiateBankConnection/InitiateBankConnectionUseCase';
 import type { FinalizeBankConnectionUseCase } from '../../application/useCases/FinalizeBankConnection/FinalizeBankConnectionUseCase';
-import type { ICustomerRepository } from '../../../customer/types/customer.types';
 import { ApplicationError } from '@/core/domain/errors';
-import type { AuthenticatedRequest } from '../../../shared/types/auth';
+import type { AuthenticatedRequest } from '@/features/shared/types/auth';
+import { ICustomerRepository } from '@/features/customer/application/repository/ICustomerRepository';
 
 export class BankConnectionController {
   constructor(

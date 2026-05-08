@@ -9,7 +9,6 @@ import { FinalizeBankConnectionUseCase } from '../application/useCases/FinalizeB
 import { TinkApiClient } from '@/features/bankConnection/infrastructure/services/Tink/TinkApiClient';
 import { TinkFinancialDataProvider } from '@/features/bankConnection/infrastructure/services/Tink/TinkFinancialDataProvider';
 import { PrismaBankConnectionRepository } from '@/features/bankConnection/infrastructure/repositories/PrismaBankConnectionRepository';
-import { PrismaCustomerRepository } from '../../customer/repositories/PrismaCustomerRepository';
 import { PrismaAssessmentRepository } from '@/features/assessment/infrastructure/repositories/prisma/PrismaAssessmentRepository';
 import { AssessmentReadyLocalDatabaseHandler } from '@/features/assessment/infrastructure/handlers/AssessmentReadyLocalDatabaseHandler';
 import { AssessmentReadySnsEventHandler } from '@/features/assessment/infrastructure/handlers/AssessmentReadySnsEventHandler';
@@ -19,6 +18,7 @@ import type { IBackgroundJob } from '@/core/application/services/IBackgroundJob'
 import { ProcessAssessmentJob } from '@/features/assessment/infrastructure/services/jobs/ProcessAssessmentJob';
 import { CompleteAssessmentUseCase } from '@/features/assessment/application/useCases/CompleteAssessmentUseCase';
 import { FailAssessmentUseCase } from '@/features/assessment/application/useCases/FailAssessmentUseCase';
+import { PrismaCustomerRepository } from '@/features/customer/infrastructure/repositories/PrismaCustomerRepository';
 
 export function createBankConnectionRouter(
   config: AppConfig,
