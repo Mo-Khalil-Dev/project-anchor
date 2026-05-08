@@ -5,7 +5,7 @@ import type { AppConfig } from '../../shared/config';
 import { asyncHandler } from '@/features/shared/middleware';
 import { initGoCardlessClient } from '../../shared/utils/gocardlessClient';
 import { PaymentController } from '@/features/payment/infrastructure/controllers/PaymentController';
-import { SelectPlanUseCase } from '@/features/payment/application/usecases/SelectPlanUseCase';
+import { SelectPlanUseCase } from '@/features/assessment/application/useCases/SelectPlanUseCase';
 import { CreateBillingRequestUseCase } from '@/features/payment/application/usecases/CreateBillingRequestUseCase';
 import { CollectCustomerDetailsUseCase } from '@/features/payment/application/usecases/CollectCustomerDetailsUseCase';
 import { CollectBankAccountUseCase } from '@/features/payment/application/usecases/CollectBankAccountUseCase';
@@ -15,8 +15,8 @@ import { HandleWebhookEventUseCase } from '@/features/payment/application/usecas
 import { CreateInstalmentScheduleUseCase } from '@/features/payment/application/usecases/CreateInstalmentScheduleUseCase';
 import { ProcessMandateActiveUseCase } from '@/features/payment/application/usecases/ProcessMandateActiveUseCase';
 import { PrismaAssessmentRepository } from '@/features/assessment/infrastructure/repositories/prisma/PrismaAssessmentRepository';
-import { PrismaCustomerRepository } from '../../customer/repositories/PrismaCustomerRepository';
 import { PrismaPaymentRepository } from '@/features/payment/infrastructure/repositories/prisma/PrismaPaymentRepository';
+import { PrismaCustomerRepository } from '@/features/customer/infrastructure/repositories/PrismaCustomerRepository';
 
 export function createPaymentRouter(
   config: AppConfig,
