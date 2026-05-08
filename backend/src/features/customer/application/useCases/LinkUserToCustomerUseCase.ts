@@ -1,11 +1,11 @@
-import { Result } from '../../shared/result';
-import type { ILogger } from '../../shared/logging';
+import { Result } from '../../../shared/result';
+import type { ILogger } from '../../../shared/logging';
 import type {
   ICustomerRepository,
   LinkUserToCustomerInput,
   LinkUserToCustomerOutput,
-} from '../types/customer.types';
-import { LinkUserToCustomerSchema } from '../types/customer.types';
+} from '../../types/customer.types';
+import { LinkUserToCustomerSchema } from '../../types/customer.types';
 
 /**
  * LinkUserToCustomerUseCase
@@ -22,7 +22,7 @@ export class LinkUserToCustomerUseCase {
   constructor(
     private customerRepository: ICustomerRepository,
     private logger: ILogger
-  ) {}
+  ) { }
 
   async execute(
     userId: string,

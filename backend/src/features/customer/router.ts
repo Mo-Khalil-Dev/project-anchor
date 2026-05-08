@@ -3,16 +3,19 @@ import type { PrismaClient } from '@prisma/client';
 import type { ILogger } from '../shared/logging';
 
 // Import use cases
-import { LinkUserToCustomerUseCase } from './services/LinkUserToCustomerUseCase';
-
-// Import repositories
-import { PrismaCustomerRepository } from './repositories/PrismaCustomerRepository';
-
-// Import controller
-import { CustomerController } from './controllers/CustomerController';
+import { LinkUserToCustomerUseCase } from './application/useCases/LinkUserToCustomerUseCase';
 
 // Import shared utilities
 import { asyncHandler } from '@/features/shared/middleware';
+
+
+// Import repositories
+import { PrismaCustomerRepository } from '@/features/customer/infrastructure/repositories/PrismaCustomerRepository';
+
+
+// Import controller
+import { CustomerController } from '@/features/customer/infrastructure/controllers/CustomerController';
+
 
 export function createCustomerRouter(
   _prisma: PrismaClient,

@@ -1,21 +1,4 @@
 import { z } from 'zod';
-import type { Result } from '../../shared/result';
-
-export interface Customer {
-  id: string;
-  email: string;
-  firstName?: string | null;
-  lastName?: string | null;
-  phone?: string | null;
-  address?: string | null;
-  postcode?: string | null;
-  utilityAccountNo?: string | null;
-  utilityType?: string | null;
-  monthlyBill?: number | null;
-  arrears?: number | null;
-  createdAt: Date;
-  updatedAt: Date;
-}
 
 export const LinkUserToCustomerSchema = z.object({
   utilityType: z.enum(['Electricity', 'Gas', 'Water'], {
@@ -41,14 +24,4 @@ export interface LinkUserToCustomerOutput {
   postcode: string | null;
   utilityAccountNo: string | null;
   createdAt: Date;
-}
-
-export interface ICustomerRepository {
-  create(email: string): Promise<Result<Customer, Error>>;
-  findById(id: string): Promise<Result<Customer | null, Error>>;
-  findByEmail(email: string): Promise<Result<Customer | null, Error>>;
-  findByUtilityAccountNumber(accountNumber: string): Promise<Result<Customer | null, Error>>;
-  findCustomerIdByUserId(userId: string): Promise<Result<string | null, Error>>;
-  isUserAlreadyLinked(userId: string): Promise<Result<boolean, Error>>;
-  linkToUser(customerId: string, userId: string): Promise<Result<void, Error>>;
 }
